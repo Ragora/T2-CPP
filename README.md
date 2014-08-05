@@ -17,7 +17,7 @@ Credit Attribution
 Usage
 ====
 
-Essentially, you just need to compile a Release version of the ModLoader DLL and replace Tribes 2's IFC22.dll with the new DLL you built. To use the DLL, you must make sure you have Force Feedback enabled (it works for dedicated servers too) otherwise the IFC22.dll replacement code is never executed. You can test if you did it correctly by checking for the existence of the Torque Script function "loadMod". Refer to the [Base Mod](Mod Sources/BaseMod) for C++ mod template and refer to both the [Linker and DX API's](Mod Sources/TSExtension/TSExtension/source) for how to manipulate Tribes 2.
+Essentially, you just need to compile a Release version of the [ModLoader DLL](ModLoader) and replace Tribes 2's IFC22.dll with the new DLL you built. To use the DLL, you must make sure you have Force Feedback enabled (it works for dedicated servers too) otherwise the IFC22.dll replacement code is never executed. You can test if you did it correctly by checking for the existence of the Torque Script function "loadMod". Refer to the [Base Mod](Mod Sources/BaseMod) for C++ mod template and refer to both the [Linker and DX API's](Mod Sources/TSExtension/TSExtension/source) for how to manipulate Tribes 2.
 
 Once everything is running, you must create a "mods" folder in the GameData folder of your Tribes 2 installation, this is where the compiled DLL mods you wish to run will go. If you install a mod called "RandomMod.dll" to the mods folder, you must stick a line of Torque Script somewhere (probably autoexec) that's always executed that reads:
 
