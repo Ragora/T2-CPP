@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual C++ Express 2010
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BaseMod", "BaseMod\BaseMod.vcxproj", "{2A498B2D-84B2-4BBF-9532-EA17E5BA51BB}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RandomMod", "RandomMod\RandomMod.vcxproj", "{2A498B2D-84B2-4BBF-9532-EA17E5BA51BB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
