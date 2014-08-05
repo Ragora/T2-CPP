@@ -1,0 +1,9 @@
+*.obj
+*.lib
+*.dll
+*.exe
+*.manifest
+*.log
+*.pch
+*.pdb
+*.tlog
