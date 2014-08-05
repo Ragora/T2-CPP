@@ -10,5 +10,5 @@ Credit Attribution
 | Name                      | Reasons                                                                               |
 | ------------------------- | ------------------------------------------------------------------------------------- |
 | Robert MacGregor          | Main Coding                                                                           |
-| Calvin Bahke              | Found Projectile::explode                                                             |
+| Calvin Balke              | Found Projectile::explode                                                             |
 | Linker                    | [Original T2DLL Code](http://www.the-construct.net/forums/showthread.php?t=500)       |
