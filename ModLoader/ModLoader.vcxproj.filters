@@ -9,16 +9,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\config.h">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="include\stdafx.h">
-      <Filter>Include</Filter>
-    </ClInclude>
     <ClInclude Include="include\t2api.h">
       <Filter>Include</Filter>
     </ClInclude>
-    <ClInclude Include="include\t2ConCmds.h">
+    <ClInclude Include="include\modLoader.h">
       <Filter>Include</Filter>
     </ClInclude>
   </ItemGroup>
@@ -26,10 +20,10 @@
     <ClCompile Include="source\t2api.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="source\t2ConCmds.cpp">
+    <ClCompile Include="source\t2dll.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="source\t2dll.cpp">
+    <ClCompile Include="..\..\ModLoader\source\modLoader.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>

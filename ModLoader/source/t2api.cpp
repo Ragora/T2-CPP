@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include <t2api.h>
 
 SimIdDictionary* gIdDictionary = reinterpret_cast<SimIdDictionary*>(0x009E9194);
 

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string.h>
+
 void initT2Api();
 
 
