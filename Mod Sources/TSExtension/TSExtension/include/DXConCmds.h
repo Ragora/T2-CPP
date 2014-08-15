@@ -21,6 +21,10 @@ const char* conGetAddress(SimObject *obj, S32 argc, const char *argv[]);
 bool conPlayerGetJumpingState(SimObject *obj, S32 argc, const char* argv[]);
 bool conPlayerGetJettingState(SimObject *obj, S32 argc, const char* argv[]);
 
+// GrenadeProjectile Commands ------------------------
+const char* conGrenadeProjectileGetPosition(SimObject *obj, S32 argc, const char* argv[]);
+const char* conGrenadeProjectileGetVelocity(SimObject *obj, S32 argc, const char* argv[]);
+
 // Projectile explode
 bool conProjectileExplode(SimObject *obj, S32 argc, const char* argv[]);
 

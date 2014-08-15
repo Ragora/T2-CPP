@@ -56,3 +56,21 @@ bool conProjectileExplode(SimObject *obj, S32 argc, const char* argv[])
 
 	return true;
 }
+
+const char* conGrenadeProjectileGetPosition(SimObject *obj, S32 argc, const char* argv[])
+{
+	char result[256];
+
+	DX::GrenadeProjectile grenade = DX::GetGrenadeProjectilePointer(obj);
+	sprintf_s<256>(result, "%f %f %f", grenade.position_x, grenade.position_y, grenade.position_z);
+	return result;
+}
+
+const char* conGrenadeProjectileGetVelocity(SimObject *obj, S32 argc, const char* argv[])
+{
+	char result[256];
+
+	DX::GrenadeProjectile grenade = DX::GetGrenadeProjectilePointer(obj);
+	sprintf_s<256>(result, "%f %f %f", grenade.velocity_x, grenade.velocity_y, grenade.velocity_z);
+	return result;
+}

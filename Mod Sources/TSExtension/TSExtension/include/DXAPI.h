@@ -42,6 +42,8 @@ namespace DX
 		const bool &is_jetting;
 		//! Player Object Jumping State (readonly, writing it doesn't do anything)
 		const bool &is_jumping;
+		//! Player Object Using Toggable Pack
+		bool &is_using_toggledpack;
 	} Player;
 
 	/**
@@ -64,6 +66,25 @@ namespace DX
 		//! Z Coordinate of the position.
 		float &position_z;
 	} StaticShape;
+	
+	//! Structure representing a grenade projectile.
+	typedef struct
+	{
+		//! X Coordinate of the position.
+		float &position_x;
+		//! Y Coordinate of the position.
+		float &position_y;
+		//! Z Coordinate of the position.
+		float &position_z;
+
+		// Note: Thile these values can be set, they're not networked properly
+		//! The X Coordinate of the velocity.
+		const float &velocity_x;
+		//! The Y Coordinate of the velocity.
+		const float &velocity_y;
+		//! The Z Coordinate of the velocity.
+		const float &velocity_z;
+	} GrenadeProjectile;
 
 	/**
 	 *	@brief Returns a usable StaticShape structure from a void
@@ -102,6 +123,14 @@ namespace DX
 	 *	@return A usable FlyingVehicle structure to manipulate.
 	 */
 	FlyingVehicle GetFlyingVehiclePointer(UnresolvedObject obj);
+
+	/**
+	 *	@brief Returns a usable GrenadeProjectile structure from a void
+	 *	pointer.
+	 *	@param obj A void pointer to attempt to resolve from.
+	 *	@return A usable GrenadeProjectile structure to manipulate.
+	 */
+	GrenadeProjectile GetGrenadeProjectilePointer(UnresolvedObject obj);
 
 	void Projectile_explode(Projectile *obj, const Point3F &position, const Point3F &normal, const unsigned int collideType);
 }

@@ -30,7 +30,8 @@ namespace DX
 			*(float*)(base_tribes_pointer + 184),        // Position Y
 			*(float*)(base_tribes_pointer + 200),        // Position Z
 			*(bool*)(base_tribes_pointer + 735),         // Jetting State
-			*(bool*)(base_tribes_pointer + 734)	         // Jumping State
+			*(bool*)(base_tribes_pointer + 734),	     // Jumping State
+			*(bool*)(base_tribes_pointer + 1172)		 // Using Toggled Pack
 		};
 		return result;
 	}
@@ -68,6 +69,24 @@ namespace DX
 		{ 
 			*(float*)(base_tribes_pointer + 2200),  // Strafing Status
 		};
+
+		return result;
+	}
+
+	GrenadeProjectile GetGrenadeProjectilePointer(UnresolvedObject obj)
+	{
+		unsigned int base_tribes_pointer = (unsigned int)obj;
+
+		GrenadeProjectile result = 
+		{
+			*(float*)(base_tribes_pointer + 168), // Position X
+			*(float*)(base_tribes_pointer + 504), // Position Y
+			*(float*)(base_tribes_pointer + 520), // Position Z
+			*(float*)(base_tribes_pointer + 892), // Velocity X
+			*(float*)(base_tribes_pointer + 896), // Velocity Y
+			*(float*)(base_tribes_pointer + 900), // Velocity Z
+		};
+
 		return result;
 	}
 
