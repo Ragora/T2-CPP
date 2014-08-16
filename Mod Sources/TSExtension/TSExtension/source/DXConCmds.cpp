@@ -68,7 +68,6 @@ const char* conGrenadeProjectileGetVelocity(SimObject *obj, S32 argc, const char
 #include <vector>
 #include <string.h>
 
-#define va_end _crt_va_end
 const char* conSprintf(SimObject *obj, S32 argc, const char* argv[])
 {
 	std::vector<const char*> input;
@@ -78,9 +77,7 @@ const char* conSprintf(SimObject *obj, S32 argc, const char* argv[])
 	char result[256];
 	
 	va_list variable_args = reinterpret_cast<va_list>(input.data());
-	//variable_args = (va_list)_ADDRESSOF(variable_args) + _INTSIZEOF(input.size() * 4);
 	vsprintf(result, argv[1], variable_args);
-	//va_end(variable_args);
 
 	return result;
 }
