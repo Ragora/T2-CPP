@@ -13,7 +13,7 @@ This function did not exist before in Torque Script. It returns the current velo
 This function already existed to return the position of a GrenadeProjectile object but it is now much more accurate.
 
 #### Player.isJetting()
-Self-explanatory.
+This function did not exist before in Torque Script, it returns whether or not the Player is currently jetting.
 
 #### Player.isJumping()
-Self-explanatory.
+This function did not exist before in Torque Script, it returns whether or not the Player is currently jumping.
