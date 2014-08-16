@@ -1,7 +1,7 @@
 /**
  *	
  */
- 
+
 #include <LinkerAPI.h>
 #include <DXAPI.h>
 
@@ -10,18 +10,6 @@ const char *conGetAddress(SimObject *obj, S32 argc, const char *argv[])
 	// Hmm...
 	char result[256];
 	sprintf(result, "%x", obj);
-	return result;
-}
-
-const char *conPlayerSetZ(SimObject *obj, S32 argc, const char *argv[])
-{
-	DX::Player test = DX::GetPlayerPointer(obj);
-	test.position_y = 100;
-	test.position_z = 300;
-	test.position_x = 500;
-
-	char result[256];
-	sprintf(result, "LOL");
 	return result;
 }
 
@@ -72,5 +60,35 @@ const char* conGrenadeProjectileGetVelocity(SimObject *obj, S32 argc, const char
 
 	DX::GrenadeProjectile grenade = DX::GetGrenadeProjectilePointer(obj);
 	sprintf_s<256>(result, "%f %f %f", grenade.velocity_x, grenade.velocity_y, grenade.velocity_z);
+	return result;
+}
+
+// General Commands ---------------------------------
+#include <cstdarg>
+#include <vector>
+#include <string.h>
+
+
+
+#define _crt_va_start(ap,v)  ( ap = (va_list)_ADDRESSOF(v) + _INTSIZEOF(v) )
+#define _crt_va_arg(ap,t)    ( *(t *)((ap += _INTSIZEOF(t)) - _INTSIZEOF(t)) )
+#define _crt_va_end(ap)      ( ap = (va_list)0 )
+
+#define va_start _crt_va_start
+#define va_arg _crt_va_arg
+#define va_end _crt_va_end
+const char* conSprintf(SimObject *obj, S32 argc, const char* argv[])
+{
+	std::vector<const char*> input;
+	for (unsigned int i = 2; i < argc; i++)
+		input.push_back(argv[i]);
+
+	char result[256];
+	
+	va_list variable_args = reinterpret_cast<va_list>(input.data());
+	//variable_args = (va_list)_ADDRESSOF(variable_args) + _INTSIZEOF(input.size() * 4);
+	vsprintf(result, argv[1], variable_args);
+	//va_end(variable_args);
+
 	return result;
 }

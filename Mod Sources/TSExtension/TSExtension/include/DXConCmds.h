@@ -25,8 +25,8 @@ bool conPlayerGetJettingState(SimObject *obj, S32 argc, const char* argv[]);
 const char* conGrenadeProjectileGetPosition(SimObject *obj, S32 argc, const char* argv[]);
 const char* conGrenadeProjectileGetVelocity(SimObject *obj, S32 argc, const char* argv[]);
 
-// Projectile explode
+// Projectile explode -------------------------------
 bool conProjectileExplode(SimObject *obj, S32 argc, const char* argv[]);
 
-// Tests Position Z
-const char *conPlayerSetZ(SimObject *obj, S32 argc, const char *argv[]);
+// General Commands ---------------------------------
+const char* conSprintf(SimObject *obj, S32 argc, const char* argv[]);

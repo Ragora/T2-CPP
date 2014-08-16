@@ -17,3 +17,9 @@ This function did not exist before in Torque Script, it returns whether or not t
 
 #### Player.isJumping()
 This function did not exist before in Torque Script, it returns whether or not the Player is currently jumping.
+
+#### sprintf(format, ...)
+This function did not exist before in Torque Script. It returns a formatted string according to format with all variable
+arguments up to a total of twenty filled in. Refer to C's sprintf for more information.
+
+Note: Only %s should be used in the format as Torque Script passes all data around as strings.
