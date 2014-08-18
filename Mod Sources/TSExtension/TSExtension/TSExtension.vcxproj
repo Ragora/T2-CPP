@@ -11,14 +11,37 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="source\BaseMod.cpp" />
     <ClCompile Include="source\dllmain.cpp" />
-    <ClCompile Include="source\DXAPI.cpp" />
+    <ClCompile Include="source\DXAPI\DXAPI.cpp" />
+    <ClCompile Include="source\DXAPI\FlyingVehicle.cpp" />
+    <ClCompile Include="source\DXAPI\GameBase.cpp" />
+    <ClCompile Include="source\DXAPI\GrenadeProjectile.cpp" />
+    <ClCompile Include="source\DXAPI\NetObject.cpp" />
+    <ClCompile Include="source\DXAPI\Player.cpp" />
+    <ClCompile Include="source\DXAPI\Point3F.cpp" />
+    <ClCompile Include="source\DXAPI\Projectile.cpp" />
+    <ClCompile Include="source\DXAPI\SceneObject.cpp" />
+    <ClCompile Include="source\DXAPI\ShapeBase.cpp" />
+    <ClCompile Include="source\DXAPI\SimObject.cpp" />
+    <ClCompile Include="source\DXAPI\StaticShape.cpp" />
+    <ClCompile Include="source\DXAPI\Vehicle.cpp" />
     <ClCompile Include="source\DXConCmds.cpp" />
     <ClCompile Include="source\LinkerAPI.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\DXAPI.h" />
+    <ClInclude Include="include\DXAPI\DXAPI.h" />
+    <ClInclude Include="include\DXAPI\FlyingVehicle.h" />
+    <ClInclude Include="include\DXAPI\GameBase.h" />
+    <ClInclude Include="include\DXAPI\GrenadeProjectile.h" />
+    <ClInclude Include="include\DXAPI\NetObject.h" />
+    <ClInclude Include="include\DXAPI\Player.h" />
+    <ClInclude Include="include\DXAPI\Point3F.h" />
+    <ClInclude Include="include\DXAPI\Projectile.h" />
+    <ClInclude Include="include\DXAPI\SceneObject.h" />
+    <ClInclude Include="include\DXAPI\ShapeBase.h" />
+    <ClInclude Include="include\DXAPI\SimObject.h" />
+    <ClInclude Include="include\DXAPI\StaticShape.h" />
+    <ClInclude Include="include\DXAPI\Vehicle.h" />
     <ClInclude Include="include\DXConCmds.h" />
     <ClInclude Include="include\LinkerAPI.h" />
   </ItemGroup>

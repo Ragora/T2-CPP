@@ -27,6 +27,7 @@ const char* conGrenadeProjectileGetVelocity(SimObject *obj, S32 argc, const char
 
 // Projectile explode -------------------------------
 bool conProjectileExplode(SimObject *obj, S32 argc, const char* argv[]);
+bool conProjectileMakeNerf(SimObject *obj, S32 argc, const char* argv[]);
 
 // General Commands ---------------------------------
 const char* conSprintf(SimObject *obj, S32 argc, const char* argv[]);

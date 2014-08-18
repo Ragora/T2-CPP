@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\DXAPI">
+      <UniqueIdentifier>{6d8e53d2-8590-4c42-b4e2-ff67cedefcce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\DXAPI">
+      <UniqueIdentifier>{5269716c-2798-40ef-aa8a-2c8e784cf99b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\DXConCmds.cpp">
@@ -21,25 +27,94 @@
     <ClCompile Include="source\LinkerAPI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\BaseMod.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="source\dllmain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\DXAPI.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="source\DXAPI\DXAPI.cpp">
+      <Filter>Source Files\DXAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="source\DXAPI\Point3F.cpp">
+      <Filter>Source Files\DXAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="source\DXAPI\FlyingVehicle.cpp">
+      <Filter>Source Files\DXAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="source\DXAPI\GameBase.cpp">
+      <Filter>Source Files\DXAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="source\DXAPI\Projectile.cpp">
+      <Filter>Source Files\DXAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="source\DXAPI\ShapeBase.cpp">
+      <Filter>Source Files\DXAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="source\DXAPI\GrenadeProjectile.cpp">
+      <Filter>Source Files\DXAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="source\DXAPI\SceneObject.cpp">
+      <Filter>Source Files\DXAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="source\DXAPI\NetObject.cpp">
+      <Filter>Source Files\DXAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="source\DXAPI\StaticShape.cpp">
+      <Filter>Source Files\DXAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="source\DXAPI\Player.cpp">
+      <Filter>Source Files\DXAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="source\DXAPI\SimObject.cpp">
+      <Filter>Source Files\DXAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="source\DXAPI\Vehicle.cpp">
+      <Filter>Source Files\DXAPI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\LinkerAPI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\DXAPI.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\DXConCmds.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\DXAPI\Player.h">
+      <Filter>Header Files\DXAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\DXAPI\Projectile.h">
+      <Filter>Header Files\DXAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\DXAPI\SceneObject.h">
+      <Filter>Header Files\DXAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\DXAPI\ShapeBase.h">
+      <Filter>Header Files\DXAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\DXAPI\SimObject.h">
+      <Filter>Header Files\DXAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\DXAPI\StaticShape.h">
+      <Filter>Header Files\DXAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\DXAPI\DXAPI.h">
+      <Filter>Header Files\DXAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\DXAPI\GameBase.h">
+      <Filter>Header Files\DXAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\DXAPI\NetObject.h">
+      <Filter>Header Files\DXAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\DXAPI\Point3F.h">
+      <Filter>Header Files\DXAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\DXAPI\FlyingVehicle.h">
+      <Filter>Header Files\DXAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\DXAPI\Vehicle.h">
+      <Filter>Header Files\DXAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\DXAPI\GrenadeProjectile.h">
+      <Filter>Header Files\DXAPI</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
