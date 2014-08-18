@@ -36,3 +36,8 @@ This simply means that loadMod() was unable to locate the desired DLL in the mod
 
 
 This error means that the DLL you specified probably isn't a proper mod DLL for this system. Either that or the DLL wasn't built correctly. The "void ModInitialize(void)" function **must** be built as extern C and should be defined with "__declspec(dllexport)" to work.
+
+#### loadMod() is not found and I have the IFC22.dll replacement installed.
+
+You probably don't have Force Feedback enabled. It can be enabled in Tribes 2's Settings under the "Game" tab or with the following preference:
+$Pref::useImmersion = "1";
