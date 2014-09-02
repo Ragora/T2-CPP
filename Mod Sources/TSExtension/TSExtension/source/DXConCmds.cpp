@@ -5,7 +5,7 @@
 #include <LinkerAPI.h>
 #include <DXAPI/DXAPI.h>
 
-const char *conGetAddress(SimObject *obj, S32 argc, const char *argv[])
+const char *conGetAddress(Linker::SimObject *obj, S32 argc, const char *argv[])
 {
 	// Hmm...
 	char result[256];
@@ -13,39 +13,42 @@ const char *conGetAddress(SimObject *obj, S32 argc, const char *argv[])
 	return result;
 }
 
-bool conPlayerGetJumpingState(SimObject *obj, S32 argc, const char* argv[])
+bool conPlayerGetJumpingState(Linker::SimObject *obj, S32 argc, const char* argv[])
 {
 	DX::Player operand = DX::Player((unsigned int)obj);
 
 	return operand.is_jumping;
 }
 
-bool conPlayerGetJettingState(SimObject *obj, S32 argc, const char* argv[])
+bool conPlayerGetJettingState(Linker::SimObject *obj, S32 argc, const char* argv[])
 {
 	DX::Player operand = DX::Player((unsigned int)obj);
 
 	return operand.is_jetting;
 }
 
-bool conProjectileExplode(SimObject *obj, S32 argc, const char* argv[])
+bool conGameConnectionSetHeatLevel(Linker::SimObject *obj, S32 argc, const char *argv[])
 {
-	Point3F position;
-	position.x = 0;
-	position.y = 0;
-	position.z = 0;
+	DX::GameConnection operand = DX::GameConnection((unsigned int)obj);
+	operand.getControlObject().heat_level = atof(argv[1]);
+	return true;
+}
 
-	Point3F normal;
-	normal.x = 0;
-	normal.y = 0;
-	normal.z = 0;
+bool conProjectileExplode(Linker::SimObject *obj, S32 argc, const char* argv[])
+{
+	Linker::Point3F position(0,0,0);
+	Linker::Point3F normal(0,0,0);
 
 	unsigned int collideType = atoi(argv[4]);
-	//DX::Projectile_explode((DX::Projectile*)obj, position, normal, collideType);
+	DX::Projectile projectile((unsigned int)obj);
+
+	projectile.net_flags |= DX::NetFlags::ScopeAlways;
+	projectile.explode(position, normal, collideType);
 
 	return true;
 }
 
-bool conProjectileMakeNerf(SimObject *obj, S32 argc, const char* argv[])
+bool conProjectileMakeNerf(Linker::SimObject *obj, S32 argc, const char* argv[])
 {
 	DX::GrenadeProjectile grenade = DX::GrenadeProjectile((unsigned int)obj);
 	grenade.hidden = true;
@@ -53,7 +56,7 @@ bool conProjectileMakeNerf(SimObject *obj, S32 argc, const char* argv[])
 	return true;
 }
 
-const char* conGrenadeProjectileGetPosition(SimObject *obj, S32 argc, const char* argv[])
+const char* conGrenadeProjectileGetPosition(Linker::SimObject *obj, S32 argc, const char* argv[])
 {
 	char result[256];
 
@@ -62,7 +65,7 @@ const char* conGrenadeProjectileGetPosition(SimObject *obj, S32 argc, const char
 	return result;
 }
 
-const char* conGrenadeProjectileGetVelocity(SimObject *obj, S32 argc, const char* argv[])
+const char* conGrenadeProjectileGetVelocity(Linker::SimObject *obj, S32 argc, const char* argv[])
 {
 	char result[256];
 
@@ -77,7 +80,7 @@ const char* conGrenadeProjectileGetVelocity(SimObject *obj, S32 argc, const char
 #include <vector>
 #include <string.h>
 
-const char* conSprintf(SimObject *obj, S32 argc, const char* argv[])
+const char* conSprintf(Linker::SimObject *obj, S32 argc, const char* argv[])
 {
 	std::vector<const char*> input;
 	for (unsigned int i = 2; i < argc; i++)

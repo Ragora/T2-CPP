@@ -8,8 +8,9 @@ namespace DX
 		SimObject(unsigned int obj);
 
 		void deleteObject(void);
+		const char *TSCall(const char *name, unsigned int argc, ...);
 
-	protected:
+		const unsigned int &identifier;
 		const unsigned int base_pointer_value;
 	};
 } // End NameSpace DX

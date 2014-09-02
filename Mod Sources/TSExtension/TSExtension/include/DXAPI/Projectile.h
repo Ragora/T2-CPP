@@ -1,6 +1,9 @@
 #pragma once
 
+#include <DXAPI/Point3F.h>
 #include <DXAPI/GameBase.h>
+
+#include <LinkerAPI.h>
 
 namespace DX
 {
@@ -8,6 +11,8 @@ namespace DX
 	{
 	public:
 		Projectile(unsigned int obj);
+
+		void explode(const Linker::Point3F &position, const Linker::Point3F &normal, const unsigned int collideType);
 
 		//! Velocity. It is constant because modifying it directly breaks the sim.
 		const Point3F velocity;

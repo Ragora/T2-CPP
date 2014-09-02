@@ -8,5 +8,8 @@ namespace DX
 	{
 	public:
 		ShapeBase(unsigned int obj);
+
+		//! Heat Level
+		float &heat_level;
 	};
 } // End NameSpace DX

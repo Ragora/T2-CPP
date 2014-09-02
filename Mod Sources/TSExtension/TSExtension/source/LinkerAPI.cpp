@@ -1,17 +1,17 @@
 #include <LinkerAPI.h>
 
-SimIdDictionary* gIdDictionary = reinterpret_cast<SimIdDictionary*>(0x009E9194);
+//SimIdDictionary* gIdDictionary = reinterpret_cast<SimIdDictionary*>(0x009E9194);
 
 //439550
 namespace Sim {
-	SimObject* (*findObject)(U32 id) = 
-		(SimObject* (_cdecl *)(U32 id) )
+	Linker::SimObject* (*findObject)(U32 id) = 
+		(Linker::SimObject* (_cdecl *)(U32 id) )
 		0x439550;
 }
 
 //hackey way to do member functions, ....
-void GuiTSCtrl_project(GuiTSCtrl *obj, const Point3F &pt, Point3F *dest) {
-	typedef void (__cdecl *projFunc)(const Point3F &pt, Point3F *dest);
+void GuiTSCtrl_project(GuiTSCtrl *obj, const Linker::Point3F &pt, Linker::Point3F *dest) {
+	typedef void (__cdecl *projFunc)(const Linker::Point3F &pt, Linker::Point3F *dest);
 	static projFunc p = (projFunc)0x4d0b40;
 
 	__asm {
@@ -55,8 +55,8 @@ const char * (*evaluate)(const char* string, bool echo, const char *fileName, bo
 	(const char * (__cdecl *)(const char* string, bool echo, const char *fileName, bool cf))
 	0x426690;
 
-const char * (*executem)(SimObject *object, S32 argc, const char *argv[]) = 
-	(const char * (__cdecl *)(SimObject *object, S32 argc, const char *argv[]))
+const char * (*executem)(Linker::SimObject *object, S32 argc, const char *argv[]) = 
+	(const char * (__cdecl *)(Linker::SimObject *object, S32 argc, const char *argv[]))
 	0x426800;
 
 const char * (*getVariable)(const char *name) = 

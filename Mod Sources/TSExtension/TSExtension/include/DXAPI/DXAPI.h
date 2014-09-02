@@ -27,17 +27,12 @@
 #include <DXAPI/StaticShape.h>
 #include <DXAPI/GrenadeProjectile.h>
 #include <DXAPI/FlyingVehicle.h>
+#include <DXAPI/GameConnection.h>
+#include <DXAPI/NetConnection.h>
+#include <DXAPI/TCPObject.h>
 
 namespace DX
 {
 	//! A typedef referring to some type of unresolved object in the game.
 	typedef void* UnresolvedObject;
-
-	//! Structure representing a static shape in the game.
-	//typedef struct
-	//{
-
-//	} StaticShape;
-
-	void Projectile_explode(Projectile *obj, const Point3F &position, const Point3F &normal, const unsigned int collideType);
 } // End NameSpace DX

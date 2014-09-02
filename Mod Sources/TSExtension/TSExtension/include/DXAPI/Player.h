@@ -22,5 +22,8 @@ namespace DX
 		const bool &is_jumping;
 		//! Player Object Using Toggable Pack
 		bool &is_using_toggledpack;
+
+		//! Player Velocity.
+		Point3F velocity;
 	};
 } // End NameSpace DX

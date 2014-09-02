@@ -22,74 +22,76 @@ inline dsize_t dStrlen(const char *str)
    return (dsize_t)strlen(str);
 }
 
-class Namespace 
-{
-	const char* mName;
-};
+//class Namespace 
+//{
+//	const char* mName;
+//};
 
-struct SimObject
-{
-	SimObject* group;
-	const char* objectName; //04h: objectName
-	SimObject*       nextNameObject;	//8
-	SimObject*       nextManagerNameObject; //c
-	SimObject* nextIdObject;	//10h: nextIdObject
-	U32 stuff; //14
-	U32 mFlags; //18h
-	U32 mNotifyList; //actually a pointer
-	U32 mId; //20h: mId
-	//more stuff
-};
+//class SimIdDictionary
+//{
+   //enum
+   //{
+   //  DefaultTableSize = 4096,
+    //  TableBitMask = 4095
+  // };
+//   Linker::SimObject *table[DefaultTableSize];
+//};
+//extern SimIdDictionary* gIdDictionary;
 
-class SimIdDictionary
+namespace Linker
 {
-   enum
-   {
-      DefaultTableSize = 4096,
-      TableBitMask = 4095
-   };
-   SimObject *table[DefaultTableSize];
-};
-extern SimIdDictionary* gIdDictionary;
-
-class Point3F
-{
-	public:
-	Point3F(F32 *x, F32 *y, F32 *z)
+	class Point3F
 	{
-		this->x = x;
-		this->y = y;
-		this->z = z;
-	}
+		public:
+		Point3F(F32 *x, F32 *y, F32 *z)
+		{
+			this->x = x;
+			this->y = y;
+			this->z = z;
+		}
 
-	Point3F(void)
+		Point3F(void)
+		{
+			this->x = 0;
+			this->y = 0;
+			this->z = 0;
+		}
+
+		F32 *x;
+		F32 *y;
+		F32 *z;
+	};
+
+	struct SimObject
 	{
-		this->x = 0;
-		this->y = 0;
-		this->z = 0;
-	}
-
-	F32 *x;
-	F32 *y;
-	F32 *z;
-};
-
+		SimObject* group;
+		const char* objectName; //04h: objectName
+		SimObject*       nextNameObject;	//8
+		SimObject*       nextManagerNameObject; //c
+		SimObject* nextIdObject;	//10h: nextIdObject
+		U32 stuff; //14
+		U32 mFlags; //18h
+		U32 mNotifyList; //actually a pointer
+		U32 mId; //20h: mId
+		//more stuff
+	};
+}
 
 //GuiTSCtrl
 class GuiTSCtrl {};
-void GuiTSCtrl_project(GuiTSCtrl *obj, const Point3F &pt, Point3F *dest); //fake
+void GuiTSCtrl_project(GuiTSCtrl *obj, const Linker::Point3F &pt, Linker::Point3F *dest); //fake
 
 namespace Sim {
-	extern SimObject* (*findObject)(U32 id);
+	extern Linker::SimObject* (*findObject)(U32 id);
 }
 
 //console
 
-typedef const char * (*StringCallback)(SimObject *obj, S32 argc, const char *argv[]);
-typedef S32             (*IntCallback)(SimObject *obj, S32 argc, const char *argv[]);
-typedef F32           (*FloatCallback)(SimObject *obj, S32 argc, const char *argv[]);
-typedef void           (*VoidCallback)(SimObject *obj, S32 argc, const char *argv[]);
-typedef bool           (*BoolCallback)(SimObject *obj, S32 argc, const char *argv[]);
+typedef const char * (*StringCallback)(Linker::SimObject *obj, S32 argc, const char *argv[]);
+typedef S32             (*IntCallback)(Linker::SimObject *obj, S32 argc, const char *argv[]);
+typedef F32           (*FloatCallback)(Linker::SimObject *obj, S32 argc, const char *argv[]);
+typedef void           (*VoidCallback)(Linker::SimObject *obj, S32 argc, const char *argv[]);
+typedef bool           (*BoolCallback)(Linker::SimObject *obj, S32 argc, const char *argv[]);
 
 
 //functions
@@ -109,7 +111,7 @@ extern void (*errorf)(U32 type, const char* fmt,...);
 extern const char * (*getVariable)(const char *name);
 extern const char * (*execute)(S32 argc, const char *argv[]);
 extern const char * (*executef)(S32 argc, ...);
-extern const char * (*executem)(SimObject *object, S32 argc, const char *argv[]);
+extern const char * (*executem)(Linker::SimObject *object, S32 argc, const char *argv[]);
 extern const char * (*evaluate)(const char* string, bool echo, const char *fileName, bool cf);
 }
 

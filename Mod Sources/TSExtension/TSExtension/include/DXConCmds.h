@@ -15,19 +15,27 @@
 #include <LinkerAPI.h>
 
 // Returns the address of an object in memory
-const char* conGetAddress(SimObject *obj, S32 argc, const char *argv[]);
+const char* conGetAddress(Linker::SimObject *obj, S32 argc, const char *argv[]);
 
 // Player Commands -----------------------------------
-bool conPlayerGetJumpingState(SimObject *obj, S32 argc, const char* argv[]);
-bool conPlayerGetJettingState(SimObject *obj, S32 argc, const char* argv[]);
+bool conPlayerGetJumpingState(Linker::SimObject *obj, S32 argc, const char* argv[]);
+bool conPlayerGetJettingState(Linker::SimObject *obj, S32 argc, const char* argv[]);
+
+bool conGameConnectionSetHeatLevel(Linker::SimObject *obj, S32 argc, const char *argv[]);
 
 // GrenadeProjectile Commands ------------------------
-const char* conGrenadeProjectileGetPosition(SimObject *obj, S32 argc, const char* argv[]);
-const char* conGrenadeProjectileGetVelocity(SimObject *obj, S32 argc, const char* argv[]);
+const char* conGrenadeProjectileGetPosition(Linker::SimObject *obj, S32 argc, const char* argv[]);
+const char* conGrenadeProjectileGetVelocity(Linker::SimObject *obj, S32 argc, const char* argv[]);
 
 // Projectile explode -------------------------------
-bool conProjectileExplode(SimObject *obj, S32 argc, const char* argv[]);
-bool conProjectileMakeNerf(SimObject *obj, S32 argc, const char* argv[]);
+bool conProjectileExplode(Linker::SimObject *obj, S32 argc, const char* argv[]);
+bool conProjectileMakeNerf(Linker::SimObject *obj, S32 argc, const char* argv[]);
+
+// TCPObject Commands -------------------------------
+const char* conTCPObjectConnect(Linker::SimObject *obj, S32 argc, const char *argv[]);
+bool conTCPObjectSend(Linker::SimObject *obj, S32 argc, const char *argv[]);
+bool conTCPObjectDisconnect(Linker::SimObject *obj, S32 argc, const char *argv[]);
 
 // General Commands ---------------------------------
-const char* conSprintf(SimObject *obj, S32 argc, const char* argv[]);
+const char* conSprintf(Linker::SimObject *obj, S32 argc, const char* argv[]);
+bool conTSExtensionUpdate(Linker::SimObject *obj, S32 argc, const char *argv[]);

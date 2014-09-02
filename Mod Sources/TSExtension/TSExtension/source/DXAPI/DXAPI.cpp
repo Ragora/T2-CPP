@@ -19,20 +19,5 @@
 
 namespace DX 
 {
-	void Projectile_explode(Projectile *obj, const Point3F &position, const Point3F &normal, const unsigned int collideType) 
-	{
-		typedef void (__cdecl *explodeFunc)(const Point3F &position, const Point3F &normal, const unsigned int collideType);
-		static explodeFunc function_call = (explodeFunc)0x62DC30;
 
-		__asm 
-		{
-			push collideType;
-			push normal;
-			push position;
-			mov ecx,obj;
-			lea eax, function_call;
-			mov eax, [eax];
-			call eax;
-		}
-	}
 }

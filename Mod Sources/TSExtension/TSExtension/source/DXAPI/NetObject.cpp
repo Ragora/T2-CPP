@@ -2,7 +2,8 @@
 
 namespace DX
 {
-	NetObject::NetObject(unsigned int obj) : SimObject(obj)
+	NetObject::NetObject(unsigned int obj) : net_flags(*(unsigned int*)(obj + 64)),
+	SimObject(obj)
 	{
 	}
 }
