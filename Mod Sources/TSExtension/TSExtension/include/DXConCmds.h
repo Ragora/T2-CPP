@@ -36,6 +36,9 @@ const char* conTCPObjectConnect(Linker::SimObject *obj, S32 argc, const char *ar
 bool conTCPObjectSend(Linker::SimObject *obj, S32 argc, const char *argv[]);
 bool conTCPObjectDisconnect(Linker::SimObject *obj, S32 argc, const char *argv[]);
 
+// HTTPObject Commands ------------------------------
+bool conHTTPObjectDoNothing(Linker::SimObject *obj, S32 argc, const char *argv[]);
+
 // General Commands ---------------------------------
 const char* conSprintf(Linker::SimObject *obj, S32 argc, const char* argv[]);
 bool conTSExtensionUpdate(Linker::SimObject *obj, S32 argc, const char *argv[]);

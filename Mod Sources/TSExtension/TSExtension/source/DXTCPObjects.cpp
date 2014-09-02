@@ -5,6 +5,8 @@
 #include <WinDNS.h>
 
 #define TCPOBJECT_MAXCOUNT 256
+#define TCPOBJECT_BUFFERSIZE 256
+#define TCPOBJECT_SENDQUEUELENGTH 64 // Number of elements
 
 static unsigned int TSEXTENSION_RUNNINGTCPOBJECTCOUNT = 0;
 static DX::TCPObject *TSEXTENSION_RUNNINGTCPOBJECTS[TCPOBJECT_MAXCOUNT];
@@ -27,7 +29,10 @@ typedef struct
 	unsigned int buffer_length;
 	char *buffer;
 
-	bool send_retry;
+	unsigned int send_queue_count;
+	char *send_queue[TCPOBJECT_SENDQUEUELENGTH];
+
+	bool is_connected;
 
 	SOCKET socket;
 } ConnectionInformation;
@@ -62,32 +67,16 @@ inline bool TCPObject_Disconnect(unsigned int identifier)
 	return true;
 }
 
-#define TCPOBJECT_BUFFERSIZE 256
-enum TCPObjectEvent
-{
-	TCPObjectEvent_FailedDNSLookup = 1,
-	TCPObjectEvent_FailedConnection = 2,
-	TCPObjectEvent_FailedConnectionNoPort = 3,
-	TCPObjectEvent_FailedSocketCreation = 4,
-	TCPObjectEvent_FailedRecv = 5,
-	TCPObjectEvent_NULL = 6, // Should be the first Good Identifier
-	TCPObjectEvent_GoodDNSLookup = 7,
-	TCPObjectEvent_GoodConnection = 8,
-	TCPObjectEvent_ReceivedData = 9,
-};
-
 const char* conTCPObjectConnect(Linker::SimObject *obj, S32 argc, const char *argv[])
 {
-	DX::TCPObject *operand = new DX::TCPObject((unsigned int)obj);
-	DX::TCPObject *search_object = TCPObject_Find(operand->identifier);
-	if (search_object)
+	DX::TCPObject *operand = TCPObject_Find(atoi(argv[1]));
+	if (operand)
 	{
+		TCPObject_Disconnect(operand->identifier);
 		delete operand;
-		operand = search_object;
-		TCPObject_Disconnect(search_object->identifier);
-		
-		return false;
 	}
+		
+	operand = new DX::TCPObject((unsigned int)obj);
 
 	// Copy the hostname over
 	char *desired_hostname = (char*)malloc(strlen(argv[2]) + 1);
@@ -98,8 +87,8 @@ const char* conTCPObjectConnect(Linker::SimObject *obj, S32 argc, const char *ar
 	connection->target_hostname = desired_hostname;
 	connection->buffer = 0x00;
 	connection->buffer_length = 0;
-	connection->send_retry = false;
-	connection->socket = 10;
+	connection->is_connected = false;
+	connection->socket = 0;
 
 	// Hack: Store the Ptr to our connection information struct in the old unused state value
 	operand->state = (unsigned int)connection;
@@ -169,53 +158,59 @@ const char* conTCPObjectConnect(Linker::SimObject *obj, S32 argc, const char *ar
 		return "FAILED_SOCKET_CREATION";
 	}
 
+	// Stick us in the TCPObject array
+	TSEXTENSION_RUNNINGTCPOBJECTS[TSEXTENSION_RUNNINGTCPOBJECTCOUNT] = operand;
+	TSEXTENSION_RUNNINGTCPOBJECTCOUNT++;
+
 	// Attempt the Connection
-	if(connect(connection->socket, (SOCKADDR*)&target_host, sizeof(target_host)) != 0)
+	if(connect(connection->socket, (SOCKADDR*)&target_host, sizeof(target_host)) == SOCKET_ERROR)
 	{
 		Con::errorf(0, "Failed to connect!");
 		operand->TSCall("onConnectFailed", 0);
 		return "CANNOT_CONNECT";
 	}
 	else
+	{
+		// Set Blocking Mode
+		u_long imode = 1;
+		ioctlsocket(connection->socket, FIONBIO, &imode);
+
+		// Connected
+		connection->is_connected = true;
+
+		// Notify TS
 		operand->TSCall("onConnected", 0);
+	}
 
-	// Set Blocking Mode
-	u_long imode = 1;
-	ioctlsocket(connection->socket, FIONBIO, &imode);
-
-	// Stick us in the TCPObject array
-	TSEXTENSION_RUNNINGTCPOBJECTS[TSEXTENSION_RUNNINGTCPOBJECTCOUNT] = operand;
-	TSEXTENSION_RUNNINGTCPOBJECTCOUNT++;
 
 	return "unknown_error";
 }
 
 bool conTCPObjectSend(Linker::SimObject *obj, S32 argc, const char *argv[])
 {
+	Con::errorf(0, "Should Send? - SimID %s", argv[1]);
+
+	if (!TCPObject_Find(atoi(argv[1])))
+		return false;
+
+	Con::errorf(0, "Queued Data");
 	DX::TCPObject operand((unsigned int)obj);
-
-	Con::errorf(0, "Should Send? - SimID %u", operand.identifier);
-	//if (!TCPObject_Find(operand.identifier))
-	//	return false;
-
-	Con::errorf(0, "Sending");
-
 	ConnectionInformation *connection = (ConnectionInformation*)operand.state;
 
-	// Pause the thread as we're doing an recv in the main thread
+	if (!connection->is_connected)
+		Con::errorf(0, "Attempted to send before connected.");
+
 	if (send(connection->socket, argv[2], strlen(argv[2]), 0) == SOCKET_ERROR)
 	{
-		Con::errorf(0, "Failed to send: %u (Socket: %u, SimID: %u)", WSAGetLastError(), connection->socket, operand.identifier);
-		return false;
+		Con::errorf(0, "Unable to send data!");
 	}
-	
+
 	return true;
 }
 
 bool conTCPObjectDisconnect(Linker::SimObject *obj, S32 argc, const char *argv[])
 {	
-	DX::TCPObject operand((unsigned int)obj);
-	return TCPObject_Disconnect(operand.identifier);
+	return TCPObject_Disconnect(atoi(argv[1]));
 }
 
 bool conTSExtensionUpdate(Linker::SimObject *obj, S32 argc, const char *argv[])
@@ -232,10 +227,6 @@ bool conTSExtensionUpdate(Linker::SimObject *obj, S32 argc, const char *argv[])
 	{
 		DX::TCPObject *current_connection = TSEXTENSION_RUNNINGTCPOBJECTS[iteration];
 		ConnectionInformation *connection_information = (ConnectionInformation*)current_connection->state;
-
-		// TODO: Kill the TCPObject
-		if (connection_information->socket == 0)
-			continue;
 
 		unsigned int data_length = recv(connection_information->socket, character_buffer, TCPOBJECT_BUFFERSIZE, 0);
 
@@ -256,13 +247,25 @@ bool conTSExtensionUpdate(Linker::SimObject *obj, S32 argc, const char *argv[])
 				if (connection_information->buffer[split_iteration] == '\n' || split_iteration == connection_information->buffer_length - 1)
 				{
 					unsigned int desired_length = (split_iteration - current_start);
-					char *current_line = (char*)malloc(desired_length + 1);
-					memset(current_line, 0x00, desired_length + 1);
-					memcpy(current_line, &connection_information->buffer[current_start], desired_length);
+					connection_information->buffer[connection_information->buffer_length - 1] = 0x00;
 
-					current_start = split_iteration + 1;
-					current_connection->TSCall("onLine", 1, current_line);
-					free(current_line);
+					if (desired_length == data_length)
+						current_connection->TSCall("onLine", 1, connection_information->buffer);
+					else
+					{
+						char *current_line = (char*)malloc(desired_length + 1);
+						memset(current_line, 0x00, desired_length + 1);
+						memcpy(current_line, &connection_information->buffer[current_start], desired_length);
+						current_line[desired_length + 1] = 0x00;
+
+						// Is it some newline?
+						if (strlen(current_line) == 1 && current_line[0] == 0xD) // Carriage Return
+							current_line[0] = 0x20; // Space
+
+						current_start = split_iteration + 1;
+						current_connection->TSCall("onLine", 1, current_line);
+						free(current_line);
+					}
 				}
 
 			closesocket(connection_information->socket);
@@ -304,5 +307,10 @@ bool conTSExtensionUpdate(Linker::SimObject *obj, S32 argc, const char *argv[])
 	for (unsigned int iteration = 0; iteration < disconnected_object_count; iteration++)
 		TCPObject_Disconnect(disconnected_objects[iteration]->identifier);
 
+	return true;
+}
+
+bool conHTTPObjectDoNothing(Linker::SimObject *obj, S32 argc, const char *argv[])
+{
 	return true;
 }
