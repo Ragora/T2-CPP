@@ -14,22 +14,34 @@ function tsExtensionLoop()
 	$TSExtension::LastUpdateHandle = schedule(32,0,"tsExtensionLoop");
 }
 
-if (!$TSExtension::isActive)
-	loadMod("TSExtension");
-tsExtensionLoop();
-
-// Test
-function Whatever::onSocketCreationFailed(%this){ error("Failed to create Socket"); }
-function Whatever::onConnectFailed(%this, %wsaError){ error(%wsaError); }
-function Whatever::onConnected(%this){ echo("GOOD"); }
-function Whatever::onDNSFailed(%this){ error("DNS Failed"); }
-function Whatever::onDisconnect(%this){ echo("Disconnected"); }
-
-function Whatever::onLine(%this, %line)
+package TSExtension
 {
-	echo(%line);
-	%this.buffer = %this.buffer @ %line;
+	function LoginDlg::onWake(%this)
+	{
+		parent::onWake(%this);
+		
+		if (!$TSExtension::isActive)
+		{
+			loadMod("TSExtension");
+			schedule(2000,0,"tsExtensionLoop");
+		}
+	}
 	
-	//if (trim(%line) $= "")
-	//	%this.altDisconnect();
-}
+	function GameGUI::onWake(%this)
+	{
+		parent::onWake(%this);
+		
+		if (!$TSExtension::isActive)
+		{
+			//loadMod("TSExtension");
+			//schedule(2000,0,"tsExtensionLoop");
+		}
+	}
+};
+
+if (!isActivePackage(TSExtension))
+	activatePackage(TSExtension);
+	
+memPatch("005BD190","C3");
+memPatch("005BD1F0","C3");
+memPatch("005BD210","C3");
