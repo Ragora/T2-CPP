@@ -27,7 +27,7 @@ namespace DX
 		}
 	}
 
-	const char *SimObject::TSCall(const char *name, unsigned int argc, ...)
+	const char *SimObject::CallMethod(const char *name, unsigned int argc, ...)
 	{
 		char **argv = (char**)malloc(sizeof(char*) * (2 + argc));
 		argv[0]= (char*)name;

@@ -8,7 +8,7 @@ namespace DX
 		SimObject(unsigned int obj);
 
 		void deleteObject(void);
-		const char *TSCall(const char *name, unsigned int argc, ...);
+		const char *CallMethod(const char *name, unsigned int argc, ...);
 
 		const unsigned int &identifier;
 		const unsigned int base_pointer_value;
