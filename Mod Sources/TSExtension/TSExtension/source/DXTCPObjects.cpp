@@ -11,7 +11,7 @@
 static unsigned int TSEXTENSION_RUNNINGTCPOBJECTCOUNT = 0;
 static DX::TCPObject *TSEXTENSION_RUNNINGTCPOBJECTS[TCPOBJECT_MAXCOUNT];
 
-// Since wants TS function call arguments to be of type char*, we use this 
+// Since TS wants function call arguments to be of type char*, we use this 
 // helper function to painlessly pass in unsigned int arguments for things
 // such as the return value from WSAGetLastError().
 __forceinline static char *S32ToCharPtr(unsigned int in)

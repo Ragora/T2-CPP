@@ -39,6 +39,17 @@ bool conTCPObjectDisconnect(Linker::SimObject *obj, S32 argc, const char *argv[]
 // HTTPObject Commands ------------------------------
 bool conHTTPObjectDoNothing(Linker::SimObject *obj, S32 argc, const char *argv[]);
 
+// BinaryObject Commands ----------------------------
+bool conBinaryObjectOpenForRead(Linker::SimObject *obj, S32 argc, const char *argv[]);
+const char *conBinaryObjectReadU32(Linker::SimObject *obj, S32 argc, const char *argv[]);
+const char *conBinaryObjectReadF32(Linker::SimObject *obj, S32 argc, const char *argv[]);
+const char *conBinaryObjectReadU8(Linker::SimObject *obj, S32 argc, const char *argv[]);
+const char *conBinaryObjectGetBufferLength(Linker::SimObject *obj, S32 argc, const char *argv[]);
+bool conBinaryObjectSetBufferPointer(Linker::SimObject *obj, S32 argc, const char *argv[]);
+const char *conBinaryObjectGetBufferPointer(Linker::SimObject *obj, S32 argc, const char *argv[]);
+bool conBinaryObjectClose(Linker::SimObject *obj, S32 argc, const char *argv[]);
+bool conBinaryObjectSave(Linker::SimObject *obj, S32 argc, const char *argv[]);
+
 // General Commands ---------------------------------
 const char* conSprintf(Linker::SimObject *obj, S32 argc, const char* argv[]);
 bool conTSExtensionUpdate(Linker::SimObject *obj, S32 argc, const char *argv[]);

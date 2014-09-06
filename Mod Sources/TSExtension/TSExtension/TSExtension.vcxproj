@@ -15,32 +15,42 @@
     <ClCompile Include="source\DXAPI\DXAPI.cpp" />
     <ClCompile Include="source\DXAPI\FlyingVehicle.cpp" />
     <ClCompile Include="source\DXAPI\GameBase.cpp" />
+    <ClCompile Include="source\DXAPI\GameConnection.cpp" />
     <ClCompile Include="source\DXAPI\GrenadeProjectile.cpp" />
+    <ClCompile Include="source\DXAPI\NetConnection.cpp" />
     <ClCompile Include="source\DXAPI\NetObject.cpp" />
     <ClCompile Include="source\DXAPI\Player.cpp" />
     <ClCompile Include="source\DXAPI\Point3F.cpp" />
     <ClCompile Include="source\DXAPI\Projectile.cpp" />
     <ClCompile Include="source\DXAPI\SceneObject.cpp" />
+    <ClCompile Include="source\DXAPI\ScriptObject.cpp" />
     <ClCompile Include="source\DXAPI\ShapeBase.cpp" />
     <ClCompile Include="source\DXAPI\SimObject.cpp" />
     <ClCompile Include="source\DXAPI\StaticShape.cpp" />
+    <ClCompile Include="source\DXAPI\TCPObject.cpp" />
     <ClCompile Include="source\DXAPI\Vehicle.cpp" />
+    <ClCompile Include="source\DXBinaryObjects.cpp" />
     <ClCompile Include="source\DXConCmds.cpp" />
+    <ClCompile Include="source\DXTCPObjects.cpp" />
     <ClCompile Include="source\LinkerAPI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\DXAPI\DXAPI.h" />
     <ClInclude Include="include\DXAPI\FlyingVehicle.h" />
     <ClInclude Include="include\DXAPI\GameBase.h" />
+    <ClInclude Include="include\DXAPI\GameConnection.h" />
     <ClInclude Include="include\DXAPI\GrenadeProjectile.h" />
+    <ClInclude Include="include\DXAPI\NetConnection.h" />
     <ClInclude Include="include\DXAPI\NetObject.h" />
     <ClInclude Include="include\DXAPI\Player.h" />
     <ClInclude Include="include\DXAPI\Point3F.h" />
     <ClInclude Include="include\DXAPI\Projectile.h" />
     <ClInclude Include="include\DXAPI\SceneObject.h" />
+    <ClInclude Include="include\DXAPI\ScriptObject.h" />
     <ClInclude Include="include\DXAPI\ShapeBase.h" />
     <ClInclude Include="include\DXAPI\SimObject.h" />
     <ClInclude Include="include\DXAPI\StaticShape.h" />
+    <ClInclude Include="include\DXAPI\TCPObject.h" />
     <ClInclude Include="include\DXAPI\Vehicle.h" />
     <ClInclude Include="include\DXConCmds.h" />
     <ClInclude Include="include\LinkerAPI.h" />
@@ -91,6 +101,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>ws2_32.lib;Dnsapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -107,6 +118,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>ws2_32.lib;Dnsapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

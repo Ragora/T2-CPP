@@ -30,9 +30,19 @@
 #include <DXAPI/GameConnection.h>
 #include <DXAPI/NetConnection.h>
 #include <DXAPI/TCPObject.h>
+#include <DXAPI/ScriptObject.h>
 
 namespace DX
 {
 	//! A typedef referring to some type of unresolved object in the game.
 	typedef void* UnresolvedObject;
+
+	const char *GetModPaths(void);
+
+	bool IsFile(const char *filename);
+
+	bool GetRelativePath(const char *filename, char *ret, int buffer_length);
+	bool GetRunningMod(char *ret, int buffer_length);
+
+	bool SanitizeFileName(char *ret, int buffer_length);
 } // End NameSpace DX

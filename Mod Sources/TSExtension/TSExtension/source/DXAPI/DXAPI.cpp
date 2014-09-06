@@ -19,5 +19,107 @@
 
 namespace DX 
 {
+	const char *GetModPaths(void)
+	{
+		int pointer = *(int*)0x9E8690;
+		pointer = *(int*)(pointer + 2048);
+		return (const char*)pointer;
+	}
 
+	bool IsFile(const char *filename)
+	{
+		typedef bool (*IsFileFuncPtr)(void*, const char *filename, int);
+		static IsFileFuncPtr IsFileFunc = (IsFileFuncPtr)0x440DF0;
+
+		// File Manager Object or something?
+		void *unknown = *(void**)0x9E8690;
+		int unknown_int = 0; // Not sure what this is
+
+		int result = 0;
+		__asm
+		{
+			push unknown_int;
+			push filename;
+			mov ecx, unknown;
+			lea eax, IsFileFunc;
+			mov eax, [eax];
+			call eax;
+			mov result, eax;
+		}
+
+		return result != 0;
+	}
+
+	bool GetRelativePath(const char *filename, char *ret, int buffer_length)
+	{
+		// Make sure T2 can see it first off, we don't want to be loading
+		// arbitrary files on disk
+		if (!IsFile(filename))
+			return false;
+
+		const char *modpaths = GetModPaths();
+
+		int modpaths_len = strlen(modpaths);
+		char *modpaths_temp = new char[modpaths_len + 1];
+		memcpy(modpaths_temp, modpaths, modpaths_len + 1);
+
+		// Now we process all the modpaths
+		int last_start = 0;
+		for (int iteration = 0; iteration < modpaths_len + 1; iteration++)
+			if (modpaths_temp[iteration] == ';' || iteration == modpaths_len)
+			{
+				memset(ret, 0x00, buffer_length);
+				modpaths_temp[iteration] = 0x00;
+				char *modname = &modpaths_temp[last_start];
+
+				sprintf_s(ret, buffer_length, "%s/%s", modname, filename);
+				
+				// Check if it exists
+				FILE *handle = fopen(ret, "r");
+				if (handle)
+				{
+					fclose(handle);
+					delete[] modpaths_temp;
+					return true;
+				}
+
+				last_start = iteration + 1;
+			}
+
+		delete[] modpaths_temp;
+		return false;
+	}
+
+	bool GetRunningMod(char *ret, int buffer_length)
+	{
+		const char *modpaths = GetModPaths();
+		unsigned int start_point = (unsigned int)modpaths;
+		unsigned int end_point = (unsigned int)strstr(modpaths, ";");
+
+		// FIXME: Potential Buffer overflow
+		if (end_point == 0)
+			memcpy(ret, modpaths, strlen(modpaths));
+		else
+			memcpy(ret, modpaths, end_point - start_point);
+
+		// FIXME: Attackers can use setModPath() to attempt to trick my code into loading files
+		// outside of Tribes 2's reach
+		return SanitizeFileName(ret, buffer_length);
+	}
+
+	bool SanitizeFileName(char *ret, int buffer_length)
+	{
+		bool was_dirty = false;
+		for (unsigned int iteration = 0; iteration < strlen(ret); iteration++)
+			if (ret[iteration] == '.' || ret[iteration] == '\\' || ret[iteration] == '/' || ret[iteration] == '~')
+			{
+				was_dirty = true;
+				ret[iteration] == 0x20; // In the event the occurence is at the very end
+
+				for (unsigned int replace_iteration = iteration; replace_iteration < strlen(ret); replace_iteration++)
+					ret[replace_iteration] = ret[replace_iteration + 1];
+			}
+
+		return was_dirty;
+	}
 }
