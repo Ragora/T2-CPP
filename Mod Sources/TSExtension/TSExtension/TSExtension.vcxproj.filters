@@ -69,6 +69,24 @@
     <ClCompile Include="source\DXAPI\Vehicle.cpp">
       <Filter>Source Files\DXAPI</Filter>
     </ClCompile>
+    <ClCompile Include="source\DXAPI\NetConnection.cpp">
+      <Filter>Source Files\DXAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="source\DXAPI\GameConnection.cpp">
+      <Filter>Source Files\DXAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="source\DXAPI\TCPObject.cpp">
+      <Filter>Source Files\DXAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="source\DXTCPObjects.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\DXBinaryObjects.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\DXAPI\ScriptObject.cpp">
+      <Filter>Source Files\DXAPI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\LinkerAPI.h">
@@ -114,6 +132,18 @@
       <Filter>Header Files\DXAPI</Filter>
     </ClInclude>
     <ClInclude Include="include\DXAPI\GrenadeProjectile.h">
+      <Filter>Header Files\DXAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\DXAPI\NetConnection.h">
+      <Filter>Header Files\DXAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\DXAPI\GameConnection.h">
+      <Filter>Header Files\DXAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\DXAPI\TCPObject.h">
+      <Filter>Header Files\DXAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\DXAPI\ScriptObject.h">
       <Filter>Header Files\DXAPI</Filter>
     </ClInclude>
   </ItemGroup>
