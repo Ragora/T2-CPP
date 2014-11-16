@@ -22,7 +22,7 @@ bool conPlayerGetJumpingState(Linker::SimObject *obj, S32 argc, const char* argv
 bool conPlayerGetJettingState(Linker::SimObject *obj, S32 argc, const char* argv[]);
 
 bool conGameConnectionSetHeatLevel(Linker::SimObject *obj, S32 argc, const char *argv[]);
-
+bool conSetProcessTicks(Linker::SimObject *obj, S32 argc, const char* argv[]) ;
 // GrenadeProjectile Commands ------------------------
 const char* conGrenadeProjectileGetPosition(Linker::SimObject *obj, S32 argc, const char* argv[]);
 const char* conGrenadeProjectileGetVelocity(Linker::SimObject *obj, S32 argc, const char* argv[]);
@@ -50,6 +50,9 @@ const char *conBinaryObjectGetBufferPointer(Linker::SimObject *obj, S32 argc, co
 bool conBinaryObjectClose(Linker::SimObject *obj, S32 argc, const char *argv[]);
 bool conBinaryObjectSave(Linker::SimObject *obj, S32 argc, const char *argv[]);
 
+// Network Commands ---------------------------------
+S32 conGetGhostIndex(Linker::SimObject *obj, S32 argc, const char* argv[]);
+bool conForceUpdate(Linker::SimObject *obj, S32 argc, const char* argv[]);
 // General Commands ---------------------------------
 const char* conSprintf(Linker::SimObject *obj, S32 argc, const char* argv[]);
 bool conTSExtensionUpdate(Linker::SimObject *obj, S32 argc, const char *argv[]);

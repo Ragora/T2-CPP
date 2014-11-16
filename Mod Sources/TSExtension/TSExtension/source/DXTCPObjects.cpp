@@ -1,15 +1,21 @@
+#include <WinSock.h>
+#include <WinDNS.h>
+
+#include <map>
+#include <set>
+#include <string>
+#include <memory>
+
 #include <LinkerAPI.h>
 #include <DXAPI/DXAPI.h>
 
-#include <WinSock.h>
-#include <WinDNS.h>
 
 #define TCPOBJECT_MAXCOUNT 256
 #define TCPOBJECT_BUFFERSIZE 256
 #define TCPOBJECT_SENDQUEUELENGTH 64 // Number of elements
 
-static unsigned int TSEXTENSION_RUNNINGTCPOBJECTCOUNT = 0;
-static DX::TCPObject *TSEXTENSION_RUNNINGTCPOBJECTS[TCPOBJECT_MAXCOUNT];
+//! A mapping of object ID's to DX::TCPObject instance pointers.
+static std::map<int, std::unique_ptr<DX::TCPObject>> sRunningTCPObjects;
 
 // Since TS wants function call arguments to be of type char*, we use this 
 // helper function to painlessly pass in unsigned int arguments for things
@@ -23,28 +29,13 @@ __forceinline static char *S32ToCharPtr(unsigned int in)
 }
 
 // Also a helper function to return the status of a socket
-static bool DXTCP_GetSocketStatus(SOCKET sock)
+static unsigned int DXTCP_GetSocketTime(SOCKET sock)
 {
-	fd_set sockets;
-	sockets.fd_array[0] = sock;
-	sockets.fd_count = 1;
-		
-	// We don't want to do any waiting at all
-	timeval wait_time;
-	wait_time.tv_sec = 0;
-	wait_time.tv_usec = 0;
+	unsigned int optVal;
+	int optLen = sizeof(unsigned int);
 
-	return select(sock, &sockets, &sockets, NULL, &wait_time) != SOCKET_ERROR;
-}
-
-inline DX::TCPObject *TCPObject_Find(unsigned int identifier)
-{
-	// Make sure it's in our list of objects
-	for (unsigned int iteration = 0; iteration < TSEXTENSION_RUNNINGTCPOBJECTCOUNT; iteration++)
-		if (TSEXTENSION_RUNNINGTCPOBJECTS[iteration]->identifier == identifier)
-			return TSEXTENSION_RUNNINGTCPOBJECTS[iteration];
-
-	return 0x00;
+	getsockopt(sock, SOL_SOCKET, SO_CONNECT_TIME, (char*)&optVal, &optLen);
+	return optVal;
 }
 
 typedef struct
@@ -53,56 +44,42 @@ typedef struct
 	unsigned int target_port;
 
 	unsigned int buffer_length;
-	char *buffer;
 
-	unsigned int message_count;
-	char *message_queue[TCPOBJECT_SENDQUEUELENGTH];
-
+	std::set<std::string> mOutgoingQueue;
+	std::string mIncomingBuffer;
 	bool is_connected;
 
 	SOCKET socket;
 } ConnectionInformation;
 
-
-inline bool TCPObject_Disconnect(unsigned int identifier)
+inline void TCPObject_Disconnect(DX::TCPObject *obj)
 {
-	DX::TCPObject *obj = TCPObject_Find(identifier);
-	if (!obj)
-		return false;
+	ConnectionInformation *connectionInfo = (ConnectionInformation*)obj->state;
 
-	ConnectionInformation *connection = (ConnectionInformation*)obj->state;
+	if (connectionInfo->socket == 0)
+	{
+		closesocket(connectionInfo->socket);
+		connectionInfo->socket = 0;
 
-	closesocket(connection->socket);
-	connection->socket = 0;
-
-	// Find us in the array
-	unsigned int target_index = 0;
-	for (unsigned int iteration = 0; iteration < TSEXTENSION_RUNNINGTCPOBJECTCOUNT; iteration++)
-		if (TSEXTENSION_RUNNINGTCPOBJECTS[iteration] == obj)
-		{
-			target_index = iteration;
-			break;
-		}
-		
-	// Fix the array
-	for (unsigned int iteration = target_index; iteration < TSEXTENSION_RUNNINGTCPOBJECTCOUNT; iteration++)
-		TSEXTENSION_RUNNINGTCPOBJECTS[iteration] = TSEXTENSION_RUNNINGTCPOBJECTS[iteration + 1];
-	TSEXTENSION_RUNNINGTCPOBJECTCOUNT--;
+		Con::errorf(0, "Attempted to disconnect an already disconnected TCPObject - %u", obj->identifier);
+		return;
+	}
 
 	obj->CallMethod("onDisconnect", 0);
-	return true;
+	delete connectionInfo;
+
+	// Causes the ptr to our DX::TCPObject to deallocate
+	sRunningTCPObjects.erase(obj->identifier);
+
+	Con::errorf(0, "Processed Disconnect");
 }
 
 const char* conTCPObjectConnect(Linker::SimObject *obj, S32 argc, const char *argv[])
 {
-	DX::TCPObject *operand = TCPObject_Find(atoi(argv[1]));
-	if (operand)
-	{
-		TCPObject_Disconnect(operand->identifier);
-		delete operand;
-	}
+	if (sRunningTCPObjects.count(obj->mId) >= 1)
+		TCPObject_Disconnect(sRunningTCPObjects[obj->mId].get());
 		
-	operand = new DX::TCPObject((unsigned int)obj);
+	DX::TCPObject *operand = new DX::TCPObject((unsigned int)obj);
 
 	// Copy the hostname over
 	char *desired_hostname = (char*)malloc(strlen(argv[2]) + 1);
@@ -111,10 +88,8 @@ const char* conTCPObjectConnect(Linker::SimObject *obj, S32 argc, const char *ar
 	// Create the connection info
 	ConnectionInformation *connection = new ConnectionInformation;
 	connection->target_hostname = desired_hostname;
-	connection->buffer = 0x00;
 	connection->buffer_length = 0;
 	connection->is_connected = false;
-	connection->message_count = 0;
 	connection->socket = 0;
 
 	// Hack: Store the Ptr to our connection information struct in the old unused state value
@@ -182,20 +157,18 @@ const char* conTCPObjectConnect(Linker::SimObject *obj, S32 argc, const char *ar
 	u_long imode = 1;
 	ioctlsocket(connection->socket, FIONBIO, &imode);
 
-	// Stick us in the TCPObject array
-	TSEXTENSION_RUNNINGTCPOBJECTS[TSEXTENSION_RUNNINGTCPOBJECTCOUNT] = operand;
-	TSEXTENSION_RUNNINGTCPOBJECTCOUNT++;
+	sRunningTCPObjects[obj->mId] = std::unique_ptr<DX::TCPObject>(operand);
 
 	// Attempt the Connection
 	connect(connection->socket, (SOCKADDR*)&target_host, sizeof(target_host));
-	if (DXTCP_GetSocketStatus(connection->socket) == SOCKET_ERROR)
+
+	if (getsockopt(connection->socket, SOL_SOCKET, SO_ERROR, NULL, NULL) < 0)
 	{
 		operand->CallMethod("onConnectFailed", 2, S32ToCharPtr(3), S32ToCharPtr(WSAGetLastError()));
 		return "CANNOT_CONNECT";
 	}
 	else
 	{
-		connection->is_connected = true;
 		operand->CallMethod("onConnected", 0);
 		return "SUCCESS";
 	}
@@ -207,25 +180,18 @@ bool conTCPObjectSend(Linker::SimObject *obj, S32 argc, const char *argv[])
 {
 	Con::errorf(0, "Should Send? - SimID %s", argv[1]);
 
-	if (!TCPObject_Find(atoi(argv[1])))
+	if (sRunningTCPObjects.count(obj->mId) == 0)
 		return false;
 
-	DX::TCPObject operand((unsigned int)obj);
-	ConnectionInformation *connection = (ConnectionInformation*)operand.state;
+	DX::TCPObject *operand = sRunningTCPObjects[obj->mId].get();
+	ConnectionInformation *connection = (ConnectionInformation*)operand->state;
 
 	// Since we can be attempting to send data before we're connected, we'll just queue 
 	// the data here and send it all in our update function next call
 	if (!connection->is_connected)
 		Con::errorf(0, "Attempted to send before connected.");
 
-	// Tribes 2 probably deallocates the memory associated with the arguments at some point
-	// so we'll copy the send payload into an independent chunk of memory
-	char *send_payload = new char[strlen(argv[2]) + 1];
-	memset(send_payload, 0x00, strlen(argv[2]) + 1);
-	memcpy(send_payload, argv[2], strlen(argv[2]) + 1);
-
-	connection->message_queue[connection->message_count] = send_payload;
-	connection->message_count++;
+	connection->mOutgoingQueue.insert(connection->mOutgoingQueue.end(), argv[2]);
 
 	Con::errorf(0,"Queued data: %s", argv[2]);
 	return true;
@@ -233,7 +199,11 @@ bool conTCPObjectSend(Linker::SimObject *obj, S32 argc, const char *argv[])
 
 bool conTCPObjectDisconnect(Linker::SimObject *obj, S32 argc, const char *argv[])
 {	
-	return TCPObject_Disconnect(atoi(argv[1]));
+	if (sRunningTCPObjects.count(obj->mId) == 0)
+		return false;
+
+	TCPObject_Disconnect(sRunningTCPObjects[obj->mId].get());
+	return true;
 }
 
 bool conTSExtensionUpdate(Linker::SimObject *obj, S32 argc, const char *argv[])
@@ -242,36 +212,36 @@ bool conTSExtensionUpdate(Linker::SimObject *obj, S32 argc, const char *argv[])
 	static char *incoming_buffer = new char[TCPOBJECT_BUFFERSIZE];
 
 	// List of objects to D/C
-	unsigned int disconnected_object_count = 0;
-	static DX::TCPObject **disconnected_objects = (DX::TCPObject**)malloc(sizeof(DX::TCPObject*) * TCPOBJECT_MAXCOUNT);
+	std::set<std::unique_ptr<DX::TCPObject>> disconnections;
 
-	for (unsigned int iteration = 0; iteration < TSEXTENSION_RUNNINGTCPOBJECTCOUNT; iteration++)
+	for (std::map<int, std::unique_ptr<DX::TCPObject>>::iterator it = sRunningTCPObjects.begin(); it != sRunningTCPObjects.end(); it++)
 	{
-		// Zero out the incoming buffer per iteration
 		memset(incoming_buffer, 0x00, TCPOBJECT_BUFFERSIZE);
 
-		DX::TCPObject *current_connection = TSEXTENSION_RUNNINGTCPOBJECTS[iteration];
-		ConnectionInformation *connection_information = (ConnectionInformation*)current_connection->state;
+		const std::unique_ptr<DX::TCPObject> &currentConnection = (*it).second;
 
-		// FIXME: ::onConnect is never called if is where we finally realize we're connected
-		// Check if we're ready to be performing network operations
-		if (DXTCP_GetSocketStatus(connection_information->socket))
-			connection_information->is_connected = true;
-		else
+		ConnectionInformation *connectionInfo = (ConnectionInformation*)currentConnection.get()->state;
+
+		const int socketTime = DXTCP_GetSocketTime(connectionInfo->socket);
+		if (socketTime >= 1 && !connectionInfo->is_connected)
 		{
-			Con::errorf(0,"Socket status error!");
-			disconnected_objects[disconnected_object_count] = current_connection;
-			disconnected_object_count++;
-			break;
+			connectionInfo->is_connected = true;
+			currentConnection.get()->CallMethod("onConnected", 0);
 		}
 
 		// Process the send queue first
 		bool connection_is_ready = true;
-		if (connection_information->is_connected && connection_information->message_count != 0)
-			for (unsigned int queue_iteration = 0; queue_iteration < connection_information->message_count; queue_iteration++)
-				if (send(connection_information->socket, connection_information->message_queue[queue_iteration], strlen(connection_information->message_queue[queue_iteration]), 0) == SOCKET_ERROR)
+		if (connectionInfo->is_connected)
+		{
+			for (std::set<std::string>::iterator it = connectionInfo->mOutgoingQueue.begin(); it != connectionInfo->mOutgoingQueue.end(); it++)
+			{
+				const std::string &currentMessage = *it;
+				Con::errorf(0, "Processing Send: %s", currentMessage.c_str());
+
+				if (send(connectionInfo->socket, currentMessage.c_str(), currentMessage.length(), 0) == SOCKET_ERROR)
 				{
 					int wsa_error = WSAGetLastError();
+
 					// We're not ready yet, just break and we should eventually be ready
 					if (wsa_error == WSAEWOULDBLOCK)
 					{
@@ -279,122 +249,75 @@ bool conTSExtensionUpdate(Linker::SimObject *obj, S32 argc, const char *argv[])
 						break;
 					}
 
-					connection_information->is_connected = false;
-					disconnected_objects[disconnected_object_count] = current_connection;
-					disconnected_object_count++;
+					connectionInfo->is_connected = false;
+					disconnections.insert(disconnections.end(), currentConnection.get());
+					Con::errorf(0,"Got a send error! SimID: %u - Error %u", currentConnection->identifier, wsa_error);
 
-					Con::errorf(0,"Got a send error! SimID: %u - Error %u", current_connection->identifier, wsa_error);
 					break;
 				}
-				else
-					delete[] connection_information->message_queue[queue_iteration];
-		
+			}
+
+			// Empty the queue
+			connectionInfo->mOutgoingQueue.clear();
+		}
+
 		// We can break if the connection was never made yet or if there was an error processing the message queue
-		if (!connection_information->is_connected || !connection_is_ready)
-			break;
+		if (!connectionInfo->is_connected || !connection_is_ready)
+			continue;
 
 		// FIXME: Under send() error conditions we can't deallocate all of the associated memory
-		connection_information->message_count = 0;
-		unsigned int data_length = recv(connection_information->socket, incoming_buffer, TCPOBJECT_BUFFERSIZE, 0);
+		unsigned int data_length = recv(connectionInfo->socket, incoming_buffer, TCPOBJECT_BUFFERSIZE, 0);
 
 		int currentError = WSAGetLastError();
+
+		Con::errorf(0, "%u", DXTCP_GetSocketTime(connectionInfo->socket));
+
 		if (currentError != WSAEWOULDBLOCK && currentError != 0)
 		{
-			Con::errorf(0, "Got an error! %u - SimID %u", currentError, current_connection->identifier);
-			disconnected_objects[disconnected_object_count] = current_connection;
-			disconnected_object_count++;
+			Con::errorf(0, "Got an error! %u - SimID %u", currentError, currentConnection.get()->identifier);
+
+			disconnections.insert(disconnections.end(), currentConnection.get());
 		}
 		else if (data_length == 0)
 		{
 			Con::errorf(0, "Finished receiving?");
 
 			// Put us on the D/C list
-			disconnected_objects[disconnected_object_count] = current_connection;
-			disconnected_object_count++;
+			disconnections.insert(disconnections.end(), currentConnection.get());
 
-			// Our actual buffer is +1 bytes in length, so will set the extra byte to 0x00 to ensure NULL termination
-			connection_information->buffer[connection_information->buffer_length] = 0x00;
-
-			Con::errorf(0, "Stream Len: %u Bytes", connection_information->buffer_length);
 			// Stream the data into ::onLine
 			unsigned int current_start = 0;
-			for (unsigned int split_iteration = 0; split_iteration < connection_information->buffer_length; split_iteration++)
+
+			for (unsigned int split_iteration = 0; split_iteration < connectionInfo->mIncomingBuffer.length(); split_iteration++)
 			{
-				bool streaming_line = false;
-				if (connection_information->buffer[split_iteration] == '\n') //  || split_iteration == connection_information->buffer_length - 1
+				if (connectionInfo->mIncomingBuffer[split_iteration] == '\r')
+					connectionInfo->mIncomingBuffer[split_iteration] = ' ';
+
+				if (connectionInfo->mIncomingBuffer[split_iteration] == '\n') //  || split_iteration == connection_information->buffer_length - 1
 				{
-					connection_information->buffer[split_iteration] = 0x00;
-					streaming_line = true;
-				}
-				else if (split_iteration == connection_information->buffer_length - 1)
-					streaming_line = true;
-
-				//unsigned int desired_length = (split_iteration - current_start);
-	
-				//if (desired_length == data_length)
-				//	current_connection->TSCall("onLine", 1, connection_information->buffer);
-				//else
-				//{
-				//if(split_iteration != connection_information->buffer_length - 1)
-				//	connection_information->buffer[split_iteration] = 0x00;
-
-				if (streaming_line)
-				{
-					// Time to be clever: Since T2 doesn't care what happens to the string after it's passed in, I'm not
-					// Bothering to allocate more memory for the results. I'm just going to manipulate it to appear as
-					// different lines but in reality they're all sourced from the same memory.
-					char *current_line = &connection_information->buffer[current_start];
-
-					Con::errorf(0, "Streamed: %s", current_line);
-
-					// If we just have a blank line (a carriage return), replace it with the space character
-					if (strlen(current_line) == 1 && current_line[0] == 0xD)
-						current_line[0] = 0x20;
+					const std::string currentLine = connectionInfo->mIncomingBuffer.substr(current_start, split_iteration - current_start);
 
 					current_start = split_iteration + 1;
-					current_connection->CallMethod("onLine", 1, current_line);
+
+					Con::errorf(0, "Streaming: %s", currentLine.c_str());
+					currentConnection.get()->CallMethod("onLine", 1, currentLine.c_str());
 				}
 			}
-
-			closesocket(connection_information->socket);
-			connection_information->socket = 0;
-			delete[] connection_information->buffer;
 		}
 		else if (data_length <= TCPOBJECT_BUFFERSIZE)
 		{
 			Con::errorf(0, "Received Data: %u", data_length);
 
-			// If our connection hasn't buffered anything yet
-			if (connection_information->buffer == 0x00)
-			{
-				// Allocate our memory with a +1 Byte Size (to ensure it's properly NULL terminated when we stream to ::onLine)
-				connection_information->buffer = new char[data_length + 1];
-				memset(connection_information->buffer, 0x00, data_length + 1);
-
-				connection_information->buffer_length = data_length;
-				memcpy(connection_information->buffer, incoming_buffer, data_length);
-			}
-			else
-			{
-				unsigned int new_buffer_length = data_length + connection_information->buffer_length;
-				char *new_buffer = new char[new_buffer_length + 1];
-				memset(new_buffer, 0x00, new_buffer_length + 1);
-
-				// Copy the two halves
-				memcpy(new_buffer, connection_information->buffer, connection_information->buffer_length);
-				memcpy(&new_buffer[connection_information->buffer_length], incoming_buffer, data_length);
-
-				connection_information->buffer = new_buffer;
-				connection_information->buffer_length = new_buffer_length;
-			}
+			connectionInfo->mIncomingBuffer += incoming_buffer;
 		}
 	}
 
 	// Process Disconnect list
-	for (unsigned int iteration = 0; iteration < disconnected_object_count; iteration++)
-		TCPObject_Disconnect(disconnected_objects[iteration]->identifier);
+	for (std::set<std::unique_ptr<DX::TCPObject>>::iterator it = disconnections.begin(); it != disconnections.end(); it++)
+		TCPObject_Disconnect((*it).get());
 
 	return true;
+
 }
 
 bool conHTTPObjectDoNothing(Linker::SimObject *obj, S32 argc, const char *argv[])

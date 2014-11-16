@@ -38,7 +38,6 @@ namespace DX
 	typedef void* UnresolvedObject;
 
 	const char *GetModPaths(void);
-
 	bool IsFile(const char *filename);
 
 	bool GetRelativePath(const char *filename, char *ret, int buffer_length);

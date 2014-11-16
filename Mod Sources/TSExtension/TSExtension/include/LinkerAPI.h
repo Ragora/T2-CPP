@@ -83,9 +83,12 @@ void GuiTSCtrl_project(GuiTSCtrl *obj, const Linker::Point3F &pt, Linker::Point3
 
 namespace Sim {
 	extern Linker::SimObject* (*findObject)(U32 id);
+	extern Linker::SimObject* (*findObjectc)(const char* name);
 }
 
 //console
+#define BIT(x) (1 << (x))
+
 
 typedef const char * (*StringCallback)(Linker::SimObject *obj, S32 argc, const char *argv[]);
 typedef S32             (*IntCallback)(Linker::SimObject *obj, S32 argc, const char *argv[]);
@@ -102,7 +105,7 @@ extern char *	(*getReturnBuffer)(U32 bufferSize);
 
 extern void (*addMethodB)(const char *nsName, const char *name, BoolCallback   cb,   const char *usage, S32 minArgs, S32 maxArgs);
 extern void (*addMethodS)(const char *nsName, const char *name, StringCallback cb, const char *usage, S32 minArgs, S32 maxArgs);
-
+extern void (*addMethodI)(const char *nsName, const char *name, IntCallback   cb,   const char *usage, S32 minArgs, S32 maxArgs);
 extern bool (*addVariable)(const char *name, S32 t, void *dp);
 
 extern void (*printf)(const char* fmt,...);

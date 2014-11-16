@@ -9,7 +9,7 @@ namespace DX
 	SimObject::SimObject(unsigned int obj) : identifier(*(unsigned int*)(obj + 32)),
 	base_pointer_value(obj)
 	{
-	}
+	}	
 
 	void SimObject::deleteObject(void)
 	{

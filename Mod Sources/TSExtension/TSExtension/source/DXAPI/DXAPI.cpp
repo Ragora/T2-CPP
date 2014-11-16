@@ -19,6 +19,7 @@
 
 namespace DX 
 {
+	
 	const char *GetModPaths(void)
 	{
 		int pointer = *(int*)0x9E8690;

@@ -7,6 +7,9 @@ namespace Sim {
 	Linker::SimObject* (*findObject)(U32 id) = 
 		(Linker::SimObject* (_cdecl *)(U32 id) )
 		0x439550;
+	Linker::SimObject* (*findObjectc)(const char* name) = 
+		(Linker::SimObject* (_cdecl *)(const char* name) )
+		0x439450;
 }
 
 //hackey way to do member functions, ....
@@ -30,6 +33,10 @@ namespace Con
 char* (*getReturnBuffer)(U32 bufferSize) = 
 	(char *(__cdecl *)(U32))
 	0x42caa0;
+
+void (*addMethodI)(const char *nsName, const char *name, IntCallback   cb,   const char *usage, S32 minArgs, S32 maxArgs) = 
+	(void (__cdecl *)(const char *, const char *,IntCallback,const char *,S32,S32))
+	0x426490;
 
 void (*addMethodB)(const char *nsName, const char *name, BoolCallback   cb,   const char *usage, S32 minArgs, S32 maxArgs) = 
 	(void (__cdecl *)(const char *, const char *,BoolCallback,const char *,S32,S32))

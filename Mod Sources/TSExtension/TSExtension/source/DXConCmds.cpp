@@ -19,7 +19,6 @@ bool conPlayerGetJumpingState(Linker::SimObject *obj, S32 argc, const char* argv
 
 	return operand.is_jumping;
 }
-
 bool conPlayerGetJettingState(Linker::SimObject *obj, S32 argc, const char* argv[])
 {
 	DX::Player operand = DX::Player((unsigned int)obj);
@@ -55,7 +54,59 @@ bool conProjectileMakeNerf(Linker::SimObject *obj, S32 argc, const char* argv[])
 
 	return true;
 }
+bool conForceUpdate(Linker::SimObject *obj, S32 argc, const char* argv[]) {
+	DX::NetConnection conn = DX::NetConnection((unsigned int)obj);
+	DX::NetObject netobj = DX::NetObject((unsigned int)Sim::findObjectc(argv[2]));
+	if (netobj.base_pointer_value!=0) {
+	S32 index = conn.getGhostIndex(&netobj);
+		if (index > 0) {
+			conn.mGhostRefs[index].updateMask=conn.mGhostRefs[index].updateMask | GameBaseMasks::InitialUpdateMask;
+		}
+		return 1;
+	}
+	else 
+	{
+		return 0;
+	}
+}
+S32 conGetGhostIndex(Linker::SimObject *obj, S32 argc, const char* argv[]) {
+	DX::NetConnection conn = DX::NetConnection((unsigned int)obj);
+	DX::NetObject netobj = DX::NetObject((unsigned int)Sim::findObjectc(argv[2]));
+	if (netobj.base_pointer_value!=0) {
+	S32 index = conn.getGhostIndex(&netobj);
+	return index;
+	} else {
+	return (unsigned int)Sim::findObjectc(argv[1]);
+	}
+	//conn.mGhostRefs[index].updateMask=conn.mGhostRefs[index].updateMask | GameBaseMasks::InitialUpdateMask;
+}
+bool conSetProcessTicks(Linker::SimObject *obj, S32 argc, const char* argv[]) {
 
+			unsigned int result_ptr = 0;
+		unsigned int my_ptr = (unsigned int) obj;
+		if (atoi(argv[2])==1) {
+			__asm
+			{
+				mov eax, my_ptr;
+				add eax, 0x264;
+				mov ebx,eax
+				mov al, 1
+				mov [ebx],al
+				
+			}	
+		} else {
+			__asm
+			{
+				mov eax, my_ptr;
+				add eax, 0x264;
+				mov ebx,eax
+				mov al, 0
+				mov [ebx],al
+				
+			}	
+		}
+
+}
 const char* conGrenadeProjectileGetPosition(Linker::SimObject *obj, S32 argc, const char* argv[])
 {
 	char result[256];

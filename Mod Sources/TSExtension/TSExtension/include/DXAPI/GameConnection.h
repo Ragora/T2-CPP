@@ -2,7 +2,7 @@
 
 #include <DXAPI/Point3F.h>
 #include <DXAPI/NetConnection.h>
-
+#include <LinkerAPI.h>
 #include <DXAPI/ShapeBase.h>
 
 namespace DX
@@ -13,5 +13,6 @@ namespace DX
 		GameConnection(unsigned int obj);
 
 		ShapeBase getControlObject(void);
+		
 	};
 } // End NameSpace DX
