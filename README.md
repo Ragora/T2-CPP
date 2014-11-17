@@ -12,7 +12,7 @@ Credit Attribution
 | Robert MacGregor          | Main Coding                                                                           |
 | Calvin Balke              | Found Projectile::explode                                                             |
 | Linker                    | [Original T2DLL Code](http://www.the-construct.net/forums/showthread.php?t=500)       |
-| LouCypher                 | Reverse engineered a IFC22.dll replacement he made to build some template code        |
+| LouCypher                 | Reverse engineered a IFC22.dll replacement he made to build some [template code](https://github.com/Ragora/T2-IFC22Template)        |
 | Jason R. Blevins          | [Mersenne Twister Implementation](Mod Sources/RandomMod/RandomMod/source/mt.cc)       |
 
 Usage
