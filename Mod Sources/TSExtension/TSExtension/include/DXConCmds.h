@@ -13,7 +13,8 @@
 #pragma once
 
 #include <LinkerAPI.h>
-
+void serverProcessReplacement(unsigned int timeDelta) ;
+const char* congetServPAddr(Linker::SimObject *obj, S32 argc, const char *argv[]);
 // Returns the address of an object in memory
 const char* conGetAddress(Linker::SimObject *obj, S32 argc, const char *argv[]);
 
@@ -23,6 +24,8 @@ bool conPlayerGetJettingState(Linker::SimObject *obj, S32 argc, const char* argv
 
 bool conGameConnectionSetHeatLevel(Linker::SimObject *obj, S32 argc, const char *argv[]);
 bool conSetProcessTicks(Linker::SimObject *obj, S32 argc, const char* argv[]) ;
+bool conclientCmdSetProcessTicks(Linker::SimObject *obj, S32 argc, const char* argv[]) ;
+bool conclientCmdSetGhostTicks(Linker::SimObject *obj, S32 argc, const char* argv[]);
 // GrenadeProjectile Commands ------------------------
 const char* conGrenadeProjectileGetPosition(Linker::SimObject *obj, S32 argc, const char* argv[]);
 const char* conGrenadeProjectileGetVelocity(Linker::SimObject *obj, S32 argc, const char* argv[]);
@@ -49,9 +52,10 @@ bool conBinaryObjectSetBufferPointer(Linker::SimObject *obj, S32 argc, const cha
 const char *conBinaryObjectGetBufferPointer(Linker::SimObject *obj, S32 argc, const char *argv[]);
 bool conBinaryObjectClose(Linker::SimObject *obj, S32 argc, const char *argv[]);
 bool conBinaryObjectSave(Linker::SimObject *obj, S32 argc, const char *argv[]);
-
+const char *conResolveGhostParent(Linker::SimObject *obj, S32 argc, const char* argv[]);
+const char* conResolveGhost(Linker::SimObject *obj, S32 argc, const char* argv[]);
 // Network Commands ---------------------------------
-S32 conGetGhostIndex(Linker::SimObject *obj, S32 argc, const char* argv[]);
+const char *conGetGhostIndex(Linker::SimObject *obj, S32 argc, const char* argv[]);
 bool conForceUpdate(Linker::SimObject *obj, S32 argc, const char* argv[]);
 // General Commands ---------------------------------
 const char* conSprintf(Linker::SimObject *obj, S32 argc, const char* argv[]);

@@ -1,10 +1,37 @@
 /**
  *	
  */
-
+#define endian(hex) (((hex & 0x000000FF) << 24)+((hex & 0x0000FF00) << 8)+((hex & 0x00FF0000)>>8)+((hex & 0xFF000000) >> 24))
 #include <LinkerAPI.h>
 #include <DXAPI/DXAPI.h>
-
+void serverProcessReplacement(unsigned int timeDelta) {
+	unsigned int servertickaddr=0x602350;
+	unsigned int serverthisptr=0x9E5EC0;
+	__asm 
+	{
+		mov ecx,serverthisptr
+		push timeDelta
+		call servertickaddr
+	}
+	
+	return;
+}
+const char* congetServPAddr(Linker::SimObject *obj, S32 argc, const char *argv[]) {
+		char test[256] = "";
+		char test2[256]="";
+		int spr=(signed int)*serverProcessReplacement;
+		sprintf(test,"B8%8XFFD089EC5DC3",endian(spr));
+		test2[0]=test[6];
+		test2[1]=test[7];
+		test2[2]=test[4];
+		test2[3]=test[5];
+		test2[4]=test[2];
+		test2[5]=test[3];
+		test2[6]=test[0];
+		test2[7]=test[1];
+		test2[8]=0;
+		return test2;
+}
 const char *conGetAddress(Linker::SimObject *obj, S32 argc, const char *argv[])
 {
 	// Hmm...
@@ -57,10 +84,11 @@ bool conProjectileMakeNerf(Linker::SimObject *obj, S32 argc, const char* argv[])
 bool conForceUpdate(Linker::SimObject *obj, S32 argc, const char* argv[]) {
 	DX::NetConnection conn = DX::NetConnection((unsigned int)obj);
 	DX::NetObject netobj = DX::NetObject((unsigned int)Sim::findObjectc(argv[2]));
+	GhostInfo * mGhostRefs=conn.mGhostRefs;
 	if (netobj.base_pointer_value!=0) {
-	S32 index = conn.getGhostIndex(&netobj);
+	S32 index = conn.getGhostIndex(netobj);
 		if (index > 0) {
-			conn.mGhostRefs[index].updateMask=conn.mGhostRefs[index].updateMask | GameBaseMasks::InitialUpdateMask;
+			mGhostRefs[index].updateMask=mGhostRefs[index].updateMask | GameBaseMasks::InitialUpdateMask;
 		}
 		return 1;
 	}
@@ -69,16 +97,109 @@ bool conForceUpdate(Linker::SimObject *obj, S32 argc, const char* argv[]) {
 		return 0;
 	}
 }
-S32 conGetGhostIndex(Linker::SimObject *obj, S32 argc, const char* argv[]) {
+const char* conGetGhostIndex(Linker::SimObject *obj, S32 argc, const char* argv[]) {
+	char outint[20]="";
 	DX::NetConnection conn = DX::NetConnection((unsigned int)obj);
 	DX::NetObject netobj = DX::NetObject((unsigned int)Sim::findObjectc(argv[2]));
 	if (netobj.base_pointer_value!=0) {
-	S32 index = conn.getGhostIndex(&netobj);
-	return index;
+		S32 index = conn.getGhostIndex(netobj);
+		itoa(index,outint,10);
+		return outint;
 	} else {
-	return (unsigned int)Sim::findObjectc(argv[1]);
+		return "";
 	}
-	//conn.mGhostRefs[index].updateMask=conn.mGhostRefs[index].updateMask | GameBaseMasks::InitialUpdateMask;
+}
+const char* conResolveGhost(Linker::SimObject *obj, S32 argc, const char* argv[]) {
+	char outint[20]="";
+	DX::NetConnection conn = DX::NetConnection((unsigned int)obj);
+	S32 id = atoi(argv[2]);
+	DX::NetObject realobject = conn.resolveGhost(id);
+	if (realobject.base_pointer_value) {
+		return itoa(realobject.identifier,outint,10);
+	}
+	return "";
+}
+const char* conResolveGhostParent(Linker::SimObject *obj, S32 argc, const char* argv[]) {
+	char outint[20]="";
+	DX::NetConnection conn = DX::NetConnection((unsigned int)obj);
+	S32 ghostindex = atoi(argv[2]);
+	if (conn.base_pointer_value!=0) {
+		if (conn.resolveGhostParent(ghostindex).base_pointer_value)
+			{
+				S32 objid = conn.resolveGhostParent(ghostindex).identifier;
+				if (objid != 0) {
+					itoa(objid,outint,10);
+					return outint;
+				}
+			}
+	}
+		return "";
+}
+bool conclientCmdSetGhostTicks(Linker::SimObject *obj, S32 argc, const char* argv[]) {
+		unsigned int result_ptr = 0;
+		unsigned int my_ptr = 0;
+		unsigned int ghostindex=atoi(argv[1]);
+		DX::NetConnection conn = DX::NetConnection((unsigned int)Sim::findObjectc("ServerConnection"));
+		if (conn.base_pointer_value) {
+			DX::NetObject ghostobj = conn.resolveGhost(ghostindex);
+			if (ghostobj.base_pointer_value) 
+			{ 
+				my_ptr=(unsigned int)ghostobj.base_pointer_value;
+				if (atoi(argv[2])==1) {
+					__asm
+					{
+						mov eax, my_ptr;
+						add eax, 0x264;
+						mov ebx,eax
+						mov al, 1
+						mov [ebx],al
+						
+					}	
+				} else {
+					__asm
+					{
+						mov eax, my_ptr;
+						add eax, 0x264;
+						mov ebx,eax
+						mov al, 0
+						mov [ebx],al
+						
+					}	
+				}
+			}
+		}
+		return 1;
+}
+bool conclientCmdSetProcessTicks(Linker::SimObject *obj, S32 argc, const char* argv[]) {
+		unsigned int result_ptr = 0;
+		unsigned int my_ptr = 0;
+		DX::NetObject objptr=(unsigned int)Sim::findObjectc(argv[1]);
+		if (objptr.base_pointer_value) 
+		{ 
+			my_ptr=objptr.base_pointer_value;
+			if (atoi(argv[2])==1) {
+				__asm
+				{
+					mov eax, my_ptr;
+					add eax, 0x264;
+					mov ebx,eax
+					mov al, 1
+					mov [ebx],al
+					
+				}	
+			} else {
+				__asm
+				{
+					mov eax, my_ptr;
+					add eax, 0x264;
+					mov ebx,eax
+					mov al, 0
+					mov [ebx],al
+					
+				}	
+			}
+		}
+			return 1;
 }
 bool conSetProcessTicks(Linker::SimObject *obj, S32 argc, const char* argv[]) {
 
