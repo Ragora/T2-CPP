@@ -50,7 +50,7 @@ const char* congetServPAddr(Linker::SimObject *obj, S32 argc, const char *argv[]
 		char test[256] = "";
 		char test2[256]="";
 		int spr=(signed int)*serverProcessReplacement;
-		sprintf(test,"B8%8XFFD089EC5DC3",endian(spr));
+		sprintf(test,"B8%08XFFD089EC5DC3",endian(spr));
 		test2[0]=test[6];
 		test2[1]=test[7];
 		test2[2]=test[4];
