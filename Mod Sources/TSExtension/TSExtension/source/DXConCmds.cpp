@@ -4,9 +4,25 @@
 #define endian(hex) (((hex & 0x000000FF) << 24)+((hex & 0x0000FF00) << 8)+((hex & 0x00FF0000)>>8)+((hex & 0xFF000000) >> 24))
 #include <LinkerAPI.h>
 #include <DXAPI/DXAPI.h>
+#include <DXAPI/MatMath.h>
+static float counter=0;
 void serverProcessReplacement(unsigned int timeDelta) {
 	unsigned int servertickaddr=0x602350;
 	unsigned int serverthisptr=0x9E5EC0;
+	float basex=348.08;
+	float basey=-178.761;
+	float basez=113.037;
+	if (Sim::findObjectc("Team1TurretBaseLarge1")) {
+		basex+=counter/180.0;
+		DX::SceneObject sobj = DX::SceneObject((unsigned int)Sim::findObjectc("Team1TurretBaseLarge1"));
+		DX::MatrixF mat1=DX::MatrixF(sobj.objtoworld);
+		mat1.setColumn(3,&DX::Point3F(basex,basey,basez));
+		sobj.setTransform(mat1.m);
+		if (counter>=(30*180)){
+		counter=0;
+		}
+		counter+=1.0;
+	}
 	__asm 
 	{
 		mov ecx,serverthisptr
@@ -15,6 +31,20 @@ void serverProcessReplacement(unsigned int timeDelta) {
 	}
 	
 	return;
+}
+const char* conGetPosition(Linker::SimObject * obj, S32 argc, const char *argv[]) {
+	char returnstr[256]="";
+	DX::SceneObject sobj = DX::SceneObject((unsigned int)obj);
+	if (obj!=NULL) {
+			unsigned int bpv = (sobj.base_pointer_value);
+			unsigned int *matrixptr =(unsigned int *) (bpv+0x9C);
+			float *matrix1=(float*) matrixptr;
+			DX::MatrixF mat1=DX::MatrixF(sobj.objtoworld);
+			DX::Point3F test=DX::Point3F();
+			mat1.getColumn(3,&test);
+			sprintf (returnstr,"%g %g %g",test.x,test.y,test.z);
+		}
+	return returnstr;
 }
 const char* congetServPAddr(Linker::SimObject *obj, S32 argc, const char *argv[]) {
 		char test[256] = "";

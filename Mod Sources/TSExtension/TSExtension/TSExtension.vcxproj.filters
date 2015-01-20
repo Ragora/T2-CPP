@@ -33,9 +33,6 @@
     <ClCompile Include="source\DXAPI\DXAPI.cpp">
       <Filter>Source Files\DXAPI</Filter>
     </ClCompile>
-    <ClCompile Include="source\DXAPI\Point3F.cpp">
-      <Filter>Source Files\DXAPI</Filter>
-    </ClCompile>
     <ClCompile Include="source\DXAPI\FlyingVehicle.cpp">
       <Filter>Source Files\DXAPI</Filter>
     </ClCompile>
@@ -87,6 +84,9 @@
     <ClCompile Include="source\DXAPI\ScriptObject.cpp">
       <Filter>Source Files\DXAPI</Filter>
     </ClCompile>
+    <ClCompile Include="source\DXAPI\MatMath.cpp">
+      <Filter>Source Files\DXAPI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\LinkerAPI.h">
@@ -122,9 +122,6 @@
     <ClInclude Include="include\DXAPI\NetObject.h">
       <Filter>Header Files\DXAPI</Filter>
     </ClInclude>
-    <ClInclude Include="include\DXAPI\Point3F.h">
-      <Filter>Header Files\DXAPI</Filter>
-    </ClInclude>
     <ClInclude Include="include\DXAPI\FlyingVehicle.h">
       <Filter>Header Files\DXAPI</Filter>
     </ClInclude>
@@ -144,6 +141,9 @@
       <Filter>Header Files\DXAPI</Filter>
     </ClInclude>
     <ClInclude Include="include\DXAPI\ScriptObject.h">
+      <Filter>Header Files\DXAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\DXAPI\MatMath.h">
       <Filter>Header Files\DXAPI</Filter>
     </ClInclude>
   </ItemGroup>

@@ -20,7 +20,7 @@
     <ClCompile Include="source\DXAPI\NetConnection.cpp" />
     <ClCompile Include="source\DXAPI\NetObject.cpp" />
     <ClCompile Include="source\DXAPI\Player.cpp" />
-    <ClCompile Include="source\DXAPI\Point3F.cpp" />
+    <ClCompile Include="source\DXAPI\MatMath.cpp" />
     <ClCompile Include="source\DXAPI\Projectile.cpp" />
     <ClCompile Include="source\DXAPI\SceneObject.cpp" />
     <ClCompile Include="source\DXAPI\ScriptObject.cpp" />
@@ -43,7 +43,7 @@
     <ClInclude Include="include\DXAPI\NetConnection.h" />
     <ClInclude Include="include\DXAPI\NetObject.h" />
     <ClInclude Include="include\DXAPI\Player.h" />
-    <ClInclude Include="include\DXAPI\Point3F.h" />
+    <ClInclude Include="include\DXAPI\MatMath.h" />
     <ClInclude Include="include\DXAPI\Projectile.h" />
     <ClInclude Include="include\DXAPI\SceneObject.h" />
     <ClInclude Include="include\DXAPI\ScriptObject.h" />

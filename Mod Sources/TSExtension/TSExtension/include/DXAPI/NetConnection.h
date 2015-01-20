@@ -1,6 +1,6 @@
 #pragma once
 
-#include <DXAPI/Point3F.h>
+#include <DXAPI/MatMath.h>
 #include <DXAPI/SimObject.h>
 #include <DXAPI/NetObject.h>
 #include <LinkerAPI.h>

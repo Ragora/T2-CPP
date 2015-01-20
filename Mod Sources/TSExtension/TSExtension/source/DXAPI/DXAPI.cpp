@@ -12,7 +12,7 @@
  *	@copyright (c) 2014 Robert MacGregor
  */
 
-#include <DXAPI/Point3F.h>
+#include <DXAPI/MatMath.h>
 #include <DXAPI/DXAPI.h>
 
 #include <LinkerAPI.h>

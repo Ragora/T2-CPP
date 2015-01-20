@@ -1,6 +1,6 @@
 #pragma once
 
-#include <DXAPI/Point3F.h>
+#include <DXAPI/MatMath.h>
 #include <DXAPI/Projectile.h>
 
 namespace DX

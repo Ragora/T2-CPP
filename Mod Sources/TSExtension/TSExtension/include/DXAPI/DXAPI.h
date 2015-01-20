@@ -16,7 +16,7 @@
 
 #include "LinkerAPI.h"
 
-#include <DXAPI/Point3F.h>
+#include <DXAPI/MatMath.h>
 #include <DXAPI/GameBase.h>
 #include <DXAPI/NetObject.h>
 #include <DXAPI/Player.h>
