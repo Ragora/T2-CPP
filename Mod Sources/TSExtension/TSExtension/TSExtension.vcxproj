@@ -25,6 +25,7 @@
     <ClCompile Include="source\DXAPI\SceneObject.cpp" />
     <ClCompile Include="source\DXAPI\ScriptObject.cpp" />
     <ClCompile Include="source\DXAPI\ShapeBase.cpp" />
+    <ClCompile Include="source\DXAPI\SimGroup.cpp" />
     <ClCompile Include="source\DXAPI\SimObject.cpp" />
     <ClCompile Include="source\DXAPI\StaticShape.cpp" />
     <ClCompile Include="source\DXAPI\TCPObject.cpp" />
@@ -48,6 +49,7 @@
     <ClInclude Include="include\DXAPI\SceneObject.h" />
     <ClInclude Include="include\DXAPI\ScriptObject.h" />
     <ClInclude Include="include\DXAPI\ShapeBase.h" />
+    <ClInclude Include="include\DXAPI\SimGroup.h" />
     <ClInclude Include="include\DXAPI\SimObject.h" />
     <ClInclude Include="include\DXAPI\StaticShape.h" />
     <ClInclude Include="include\DXAPI\TCPObject.h" />

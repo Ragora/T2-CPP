@@ -43,6 +43,7 @@ extern "C"
 		Con::addMethodS("GrenadeProjectile", "getvelocity", &conGrenadeProjectileGetVelocity,"Gets the velocity of the GrenadeProjectile", 2, 2);
 		Con::addMethodB("Projectile", "makeNerf", &conProjectileMakeNerf,"Makes the Projectile deal no damage", 2, 2);
 		Con::addMethodS("SceneObject", "getPositionTest", &conGetPosition,"Gets the Rotation by alternate means as a test", 2, 2);
+		Con::addMethodB(NULL,"setMPS",&conSetMPS,"sets meters per second for turret", 2, 2);
 		// TCPObject
 #ifdef ENABLE_TCPOBJECT
 		Con::addMethodS("TCPObject", "connect", &conTCPObjectConnect, "Connects to a remote server", 3, 3);

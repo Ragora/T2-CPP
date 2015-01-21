@@ -24,6 +24,7 @@
 #include <DXAPI/SceneObject.h>
 #include <DXAPI/ShapeBase.h>
 #include <DXAPI/SimObject.h>
+#include <DXAPI/SimGroup.h>
 #include <DXAPI/StaticShape.h>
 #include <DXAPI/GrenadeProjectile.h>
 #include <DXAPI/FlyingVehicle.h>

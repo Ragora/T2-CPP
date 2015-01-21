@@ -6,11 +6,27 @@
 
 namespace DX
 {
-	SimObject::SimObject(unsigned int obj) : identifier(*(unsigned int*)(obj + 32)),
+	SimObject::SimObject(unsigned int obj) : identifier(*(unsigned int*)(obj + 32)), type(*(unsigned int*)(obj+0x28)),
 	base_pointer_value(obj)
 	{
 	}	
-
+	const char *SimObject::getClassName(){
+		unsigned int bpv=this->base_pointer_value;
+		unsigned int cnptr=0;
+		unsigned int bpv2=(*(unsigned int*)bpv);
+		__asm {
+		mov ecx,bpv2
+		mov eax,[ecx]
+		call eax
+		mov eax,[eax+0x1C]
+		mov cnptr,eax
+		};
+		if (cnptr) {
+			return (char *) cnptr;
+		} else {
+			return "";
+		}
+	}
 	void SimObject::deleteObject(void)
 	{
 		void *pointer = (void*)this->base_pointer_value;

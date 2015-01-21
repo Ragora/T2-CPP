@@ -6,22 +6,42 @@
 #include <DXAPI/DXAPI.h>
 #include <DXAPI/MatMath.h>
 static float counter=0;
+static float mps=0.0;
+void moveRecursive(unsigned int simgroup,float xoff){
+	
+	unsigned int mainsim=(unsigned int)simgroup;
+	if (mainsim) {
+		DX::SimObject sim1=DX::SimObject(mainsim);
+		if (strcmp((sim1.getClassName()),"SimGroup")==0) {
+			DX::SimGroup sim2 = DX::SimGroup(mainsim);
+			for (unsigned int x=0; x<sim2.getCount(); x++) {
+				DX::SimObject obj2=DX::SimObject(sim2.getObject(x));
+				if ((strcmp((obj2.getClassName()),"SimGroup")!=0)&&(strcmp((obj2.getClassName()),"SimSet")!=0)) {
+					if (obj2.type&0x8){
+						DX::SceneObject sobj = DX::SceneObject(sim2.getObject(x));
+						DX::MatrixF mat1=DX::MatrixF(sobj.objtoworld);
+						DX::Point3F test;
+						mat1.getColumn(3,&test);
+						test.x+=xoff;
+						mat1.setColumn(3,&test);
+					}
+				} else {
+					moveRecursive(sim2.getObject(x),xoff);
+				}
+			}
+		}
+	}
+}
 void serverProcessReplacement(unsigned int timeDelta) {
 	unsigned int servertickaddr=0x602350;
 	unsigned int serverthisptr=0x9E5EC0;
 	float basex=348.08;
 	float basey=-178.761;
 	float basez=113.037;
-	if (Sim::findObjectc("Team1TurretBaseLarge1")) {
-		basex+=counter/180.0;
-		DX::SceneObject sobj = DX::SceneObject((unsigned int)Sim::findObjectc("Team1TurretBaseLarge1"));
-		DX::MatrixF mat1=DX::MatrixF(sobj.objtoworld);
-		mat1.setColumn(3,&DX::Point3F(basex,basey,basez));
-		sobj.setTransform(mat1.m);
-		if (counter>=(30*180)){
-		counter=0;
-		}
-		counter+=1.0;
+	if (Sim::findObjectc("Team1")) {
+		basex+=counter;
+		DX::SceneObject sobj = DX::SceneObject((unsigned int)Sim::findObjectc("Team1"));
+		moveRecursive((unsigned int)Sim::findObjectc("Team1"),(mps*((float)((timeDelta)*0.001))));
 	}
 	__asm 
 	{
@@ -61,6 +81,10 @@ const char* congetServPAddr(Linker::SimObject *obj, S32 argc, const char *argv[]
 		test2[7]=test[1];
 		test2[8]=0;
 		return test2;
+}
+bool conSetMPS(Linker::SimObject *obj, S32 argc, const char *argv[]) {
+	mps=atof(argv[1]);
+	return false;
 }
 const char *conGetAddress(Linker::SimObject *obj, S32 argc, const char *argv[])
 {
