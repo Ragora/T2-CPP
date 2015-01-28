@@ -6,7 +6,10 @@
 #include <DXAPI/DXAPI.h>
 #include <DXAPI/MatMath.h>
 static float counter=0;
-static float mps=0.0;
+static float mpsx=0.0;
+static float mpsy=0.0;
+static float mpsz=0.0;
+static bool moveplayerstoo=1;
 static bool clientupdate=false;
 static float timecounter=0;
 #define CMALLOC (char*)malloc
@@ -60,7 +63,7 @@ void setClientPosition(unsigned int object,DX::Point3F pos){
 						sendGhostCommandAll(5,object,pos);
 						
 }
-void moveRecursive(unsigned int simgroup,float xoff){
+void moveRecursive(unsigned int simgroup,float xoff, float yoff, float zoff){
 	
 	unsigned int mainsim=(unsigned int)simgroup;
 	if (mainsim) {
@@ -76,14 +79,22 @@ void moveRecursive(unsigned int simgroup,float xoff){
 						DX::Point3F test;
 						mat1.getColumn(3,&test);
 						test.x+=xoff;
+						test.y+=yoff;
+						test.z+=zoff;
 						mat1.setColumn(3,&test);
 						sobj.setTransform(mat1.m);
+						if (moveplayerstoo==1) {
+							char evalstr[512]="";
+							
+							sprintf (evalstr,"onMoveRoutine(%d,\"%g %g %g\",\"%g %g %g\",%g);",sobj.identifier,xoff,yoff,zoff,sobj.worldspherecenter.x,sobj.worldspherecenter.y,sobj.worldspherecenter.z,sobj.worldsphereradius);
+							Con::eval(evalstr,false,NULL);
+						}
 						if (clientupdate==true) {
-						setClientPosition(sobj.base_pointer_value,test);
+							setClientPosition(sobj.base_pointer_value,test);
 						}
 					}
 				} else {
-					moveRecursive(sim2.getObject(x),xoff);
+					moveRecursive(sim2.getObject(x),xoff,yoff,zoff);
 				}
 			}
 		}
@@ -130,7 +141,8 @@ void serverProcessReplacement(unsigned int timeDelta) {
 	if (Sim::findObjectc("MoveGroup")) {
 		basex+=counter;
 		DX::SceneObject sobj = DX::SceneObject((unsigned int)Sim::findObjectc("MoveGroup"));
-		moveRecursive((unsigned int)Sim::findObjectc("MoveGroup"),(mps*((float)((timeDelta)*0.001))));
+		moveRecursive((unsigned int)Sim::findObjectc("MoveGroup"),(mpsx*((float)((timeDelta)*0.001))),(mpsy*((float)((timeDelta)*0.001))),(mpsz*((float)((timeDelta)*0.001))));
+		Con::eval("MoveRoutineDone();",false,NULL);
 	}
 	if (clientupdate==true) {
 	timecounter=0;
@@ -185,7 +197,9 @@ const char* congetServPAddr(Linker::SimObject *obj, S32 argc, const char *argv[]
 		return test2;
 }
 bool conSetMPS(Linker::SimObject *obj, S32 argc, const char *argv[]) {
-	mps=atof(argv[1]);
+	mpsx=atof(argv[1]);
+	mpsy=atof(argv[2]);
+	mpsz=atof(argv[3]);
 	return false;
 }
 const char *conGetAddress(Linker::SimObject *obj, S32 argc, const char *argv[])
