@@ -15,6 +15,7 @@
 #include <LinkerAPI.h>
 bool conSetMPS(Linker::SimObject *obj, S32 argc, const char *argv[]) ;
 void serverProcessReplacement(unsigned int timeDelta) ;
+bool conclientCmdSetPosition(Linker::SimObject *obj, S32 argc, const char* argv[]);
 const char* conGetPosition(Linker::SimObject * obj, S32 argc, const char *argv[]);
 const char* congetServPAddr(Linker::SimObject *obj, S32 argc, const char *argv[]);
 // Returns the address of an object in memory

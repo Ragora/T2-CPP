@@ -34,6 +34,7 @@
     <ClCompile Include="source\DXConCmds.cpp" />
     <ClCompile Include="source\DXTCPObjects.cpp" />
     <ClCompile Include="source\LinkerAPI.cpp" />
+    <ClCompile Include="source\ReverseTCPConnection.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\DXAPI\DXAPI.h" />
@@ -56,6 +57,7 @@
     <ClInclude Include="include\DXAPI\Vehicle.h" />
     <ClInclude Include="include\DXConCmds.h" />
     <ClInclude Include="include\LinkerAPI.h" />
+    <ClInclude Include="include\ReverseTCPConnection.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{2A498B2D-84B2-4BBF-9532-EA17E5BA51BB}</ProjectGuid>

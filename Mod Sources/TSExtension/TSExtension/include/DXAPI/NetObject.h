@@ -16,7 +16,8 @@ namespace DX
 	{
 	public:
 		NetObject(unsigned int obj);
-
+		void NetObject::setMaskBits(unsigned int bits);
+		void NetObject::clearMaskBits(unsigned int bits);
 		unsigned int &net_flags;
 	};
 } // End NameSpace DX

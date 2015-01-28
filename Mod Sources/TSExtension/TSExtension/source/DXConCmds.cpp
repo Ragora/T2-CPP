@@ -7,12 +7,65 @@
 #include <DXAPI/MatMath.h>
 static float counter=0;
 static float mps=0.0;
+static bool clientupdate=false;
+static float timecounter=0;
+#define CMALLOC (char*)malloc
+void sendCommandAll(int argc,char *cmd[])
+{
+	unsigned int mainsim=(unsigned int) Sim::findObjectc("ClientGroup");
+	if (mainsim) {
+		DX::SimGroup ccg=DX::SimGroup(mainsim);
+		for (unsigned int x=0; x<ccg.getCount(); x++){
+			DX::GameConnection gc = DX::GameConnection(ccg.getObject(x));
+			char argv2[256][256];
+			for (int c=0; c<argc;c++) {
+				strcpy(argv2[c+2],cmd[c]);
+			}
+			strcpy(argv2[0],"commandToClient");
+			char id[30]="";
+			sprintf (id,"%d",gc.identifier);
+			strcpy(argv2[1],id);
+			Con::execute((S32)argc+2,(const char **)cmd);
+		}
+
+	}
+}
+void sendGhostCommandAll(int argc,unsigned int obj, DX::Point3F pos)
+{
+	unsigned int mainsim=(unsigned int) Sim::findObjectc("ClientGroup");
+	if (mainsim) {
+		DX::SimGroup ccg=DX::SimGroup(mainsim);
+		for (unsigned int x=0; x<ccg.getCount(); x++){
+			DX::GameConnection gc = DX::GameConnection(ccg.getObject(x));
+			char id[30]="";
+
+			
+			if (obj!=0) {
+				DX::SceneObject sobj = DX::SceneObject(obj);
+				unsigned int idx = gc.getGhostIndex(sobj);
+				if (idx!=0) {
+					//Con::printf("%s %s %s %s %s %s",argv2[0],argv2[1],argv2[2],argv2[3],argv2[4],argv2[5]);
+					//Con::execute((S32)argc+2,(const char **)argv2);
+					char evalstring[2048]="";
+					sprintf (evalstring,"commandToClient(%d,'%s',%d,%g,%g,%g);",gc.identifier,"setPosition",idx,pos.x,pos.y,pos.z);
+					Con::eval(evalstring, false, NULL);
+				}
+			}
+		}
+
+	}
+}
+
+void setClientPosition(unsigned int object,DX::Point3F pos){
+						sendGhostCommandAll(5,object,pos);
+						
+}
 void moveRecursive(unsigned int simgroup,float xoff){
 	
 	unsigned int mainsim=(unsigned int)simgroup;
 	if (mainsim) {
 		DX::SimObject sim1=DX::SimObject(mainsim);
-		if (strcmp((sim1.getClassName()),"SimGroup")==0) {
+		if ((strcmp((sim1.getClassName()),"SimGroup")==0) || (strcmp((sim1.getClassName()),"SimSet")==0)) {
 			DX::SimGroup sim2 = DX::SimGroup(mainsim);
 			for (unsigned int x=0; x<sim2.getCount(); x++) {
 				DX::SimObject obj2=DX::SimObject(sim2.getObject(x));
@@ -24,6 +77,10 @@ void moveRecursive(unsigned int simgroup,float xoff){
 						mat1.getColumn(3,&test);
 						test.x+=xoff;
 						mat1.setColumn(3,&test);
+						sobj.setTransform(mat1.m);
+						if (clientupdate==true) {
+						setClientPosition(sobj.base_pointer_value,test);
+						}
 					}
 				} else {
 					moveRecursive(sim2.getObject(x),xoff);
@@ -32,17 +89,54 @@ void moveRecursive(unsigned int simgroup,float xoff){
 		}
 	}
 }
+bool conclientCmdSetPosition(Linker::SimObject *obj, S32 argc, const char* argv[]) 
+{	DX::NetConnection conn = DX::NetConnection((unsigned int)Sim::findObjectc("ServerConnection"));
+	unsigned int myptr=0;
+	//Con::printf ("ghost index %d\n",atoi(argv[1]));
+	//Con::printf ("vector %g %g %g\n",atof(argv[2]),atof(argv[3]),atof(argv[4]));
+	if (conn.base_pointer_value) {
+		myptr = conn.resolveGhost(atoi(argv[1])).base_pointer_value;
+		DX::SceneObject scene1 = DX::SceneObject(myptr);
+		if (scene1.base_pointer_value) {
+			//Con::printf ("ghost obj id %d\n",scene1.identifier);
+			DX::MatrixF mat1=DX::MatrixF(scene1.objtoworld);
+			DX::MatrixF mat2=DX::MatrixF(scene1.renderobjtoworld);
+			DX::Point3F test;
+			mat1.getColumn(3,&test);
+			test.x=atof(argv[2]);
+			test.y=atof(argv[3]);
+			test.z=atof(argv[4]);
+			mat1.setColumn(3,&test);
+			mat2.setColumn(3,&test);
+			scene1.setTransform(mat1.m);
+			//Con::printf ("done\n");
+			return 0;
+		} else {
+			return 1;
+		}
+	}
+	return 1;
+}
 void serverProcessReplacement(unsigned int timeDelta) {
 	unsigned int servertickaddr=0x602350;
 	unsigned int serverthisptr=0x9E5EC0;
 	float basex=348.08;
 	float basey=-178.761;
 	float basez=113.037;
-	if (Sim::findObjectc("Team1")) {
-		basex+=counter;
-		DX::SceneObject sobj = DX::SceneObject((unsigned int)Sim::findObjectc("Team1"));
-		moveRecursive((unsigned int)Sim::findObjectc("Team1"),(mps*((float)((timeDelta)*0.001))));
+	timecounter+=((float)((timeDelta)*0.001));
+	if (timecounter>=0.002) {
+		clientupdate=true;	
 	}
+	if (Sim::findObjectc("MoveGroup")) {
+		basex+=counter;
+		DX::SceneObject sobj = DX::SceneObject((unsigned int)Sim::findObjectc("MoveGroup"));
+		moveRecursive((unsigned int)Sim::findObjectc("MoveGroup"),(mps*((float)((timeDelta)*0.001))));
+	}
+	if (clientupdate==true) {
+	timecounter=0;
+	clientupdate=false;
+	}
+
 	__asm 
 	{
 		mov ecx,serverthisptr
@@ -66,12 +160,20 @@ const char* conGetPosition(Linker::SimObject * obj, S32 argc, const char *argv[]
 		}
 	return returnstr;
 }
+/*const char* congetTestAddr(Linker::SimObject *obj, S32 argc, const char *argv[]) {
+
+char test[256]="";
+int tpur=(signed int)*testpackUpdateReplacement;
+sprintf(test,"B8%08XFFE0",endian(tpur));
+return test;
+}*/
+
 const char* congetServPAddr(Linker::SimObject *obj, S32 argc, const char *argv[]) {
 		char test[256] = "";
 		char test2[256]="";
 		int spr=(signed int)*serverProcessReplacement;
-		sprintf(test,"B8%08XFFD089EC5DC3",endian(spr));
-		test2[0]=test[6];
+		sprintf(test2,"B8%08XFFD089EC5DC3",endian(spr));
+		/*test2[0]=test[6];
 		test2[1]=test[7];
 		test2[2]=test[4];
 		test2[3]=test[5];
@@ -79,7 +181,7 @@ const char* congetServPAddr(Linker::SimObject *obj, S32 argc, const char *argv[]
 		test2[5]=test[3];
 		test2[6]=test[0];
 		test2[7]=test[1];
-		test2[8]=0;
+		test2[8]=0;*/
 		return test2;
 }
 bool conSetMPS(Linker::SimObject *obj, S32 argc, const char *argv[]) {
@@ -189,6 +291,7 @@ const char* conResolveGhostParent(Linker::SimObject *obj, S32 argc, const char* 
 	}
 		return "";
 }
+
 bool conclientCmdSetGhostTicks(Linker::SimObject *obj, S32 argc, const char* argv[]) {
 		unsigned int result_ptr = 0;
 		unsigned int my_ptr = 0;

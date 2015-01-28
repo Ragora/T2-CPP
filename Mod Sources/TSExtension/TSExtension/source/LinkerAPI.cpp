@@ -61,7 +61,9 @@ const char * (*executef)(S32 argc, ...) =
 const char * (*evaluate)(const char* string, bool echo, const char *fileName, bool cf) = 
 	(const char * (__cdecl *)(const char* string, bool echo, const char *fileName, bool cf))
 	0x426690;
-
+const char * (*eval)(const char* string, unsigned int test, bool echo) = 
+	(const char * (__cdecl *)(const char* string, unsigned int test, bool echo))
+	0x426690;
 const char * (*executem)(Linker::SimObject *object, S32 argc, const char *argv[]) = 
 	(const char * (__cdecl *)(Linker::SimObject *object, S32 argc, const char *argv[]))
 	0x426800;

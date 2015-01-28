@@ -116,6 +116,7 @@ extern const char * (*execute)(S32 argc, const char *argv[]);
 extern const char * (*executef)(S32 argc, ...);
 extern const char * (*executem)(Linker::SimObject *object, S32 argc, const char *argv[]);
 extern const char * (*evaluate)(const char* string, bool echo, const char *fileName, bool cf);
+extern const char * (*eval)(const char* string, unsigned int test, bool echo);
 }
 
 //d-util
