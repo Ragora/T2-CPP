@@ -5,6 +5,8 @@
 #include <LinkerAPI.h>
 #include <DXAPI/DXAPI.h>
 #include <DXAPI/MatMath.h>
+#include <set>
+
 static float counter=0;
 static float mpsx=0.0;
 static float mpsy=0.0;
@@ -13,9 +15,10 @@ static bool moveplayerstoo=1;
 static bool clientupdate=false;
 static float timecounter=0;
 #define CMALLOC (char*)malloc
+
 void sendCommandAll(int argc,char *cmd[])
 {
-	unsigned int mainsim=(unsigned int) Sim::findObjectc("ClientGroup");
+	unsigned int mainsim=(unsigned int) Sim::findObjectc("ClientCommandGroup");
 	if (mainsim) {
 		DX::SimGroup ccg=DX::SimGroup(mainsim);
 		for (unsigned int x=0; x<ccg.getCount(); x++){
@@ -35,7 +38,7 @@ void sendCommandAll(int argc,char *cmd[])
 }
 void sendGhostCommandAll(int argc,unsigned int obj, DX::Point3F pos)
 {
-	unsigned int mainsim=(unsigned int) Sim::findObjectc("ClientGroup");
+	unsigned int mainsim=(unsigned int) Sim::findObjectc("ClientCommandGroup");
 	if (mainsim) {
 		DX::SimGroup ccg=DX::SimGroup(mainsim);
 		for (unsigned int x=0; x<ccg.getCount(); x++){
@@ -63,6 +66,57 @@ void setClientPosition(unsigned int object,DX::Point3F pos){
 						sendGhostCommandAll(5,object,pos);
 						
 }
+static unsigned int objcounter=0;
+static unsigned int scenearray[40000000];
+static unsigned int objcount1=0;
+void collide(unsigned int simgroup){
+	unsigned int mainsim=(unsigned int)simgroup;
+	DX::Point3F tmppoint;
+	objcounter=0;
+	objcount1=0;
+	if (mainsim) {
+		DX::SimObject sim1=DX::SimObject(mainsim);
+		if ((strcmp((sim1.getClassName()),"SimGroup")==0) || (strcmp((sim1.getClassName()),"SimSet")==0)) {
+			DX::SimGroup sim2 = DX::SimGroup(mainsim);
+			for (unsigned int x=0; x<sim2.getCount(); x++) {
+				DX::SimObject obj2=DX::SimObject(sim2.getObject(x));
+				if ((strcmp((obj2.getClassName()),"SimGroup")!=0)&&(strcmp((obj2.getClassName()),"SimSet")!=0)) {
+						scenearray[objcounter]=sim2.getObject(x);
+						objcounter++;
+				} else {
+					//collideRecursive(sim2.getObject(x));
+				}
+			}
+			objcount1=objcounter;
+			objcounter=0;
+			for (unsigned int idx=0; idx<objcount1; idx++) {
+				DX::SceneObject sobj2=DX::SceneObject(scenearray[idx]);
+				DX::MatrixF mat1=DX::MatrixF(sobj2.objtoworld);
+				DX::Point3F test;
+				mat1.getColumn(3,&test);
+				tmppoint=test;
+				for (unsigned int iidx=0; iidx<objcount1; iidx++) {
+						DX::SceneObject sobj3=DX::SceneObject(scenearray[iidx]);
+						DX::MatrixF mat2=DX::MatrixF(sobj3.objtoworld);
+						DX::Point3F test2;
+						mat2.getColumn(3,&test2);
+						if (DX::pointdistance(test,test2)>3) {
+							char evalstring[1024]="";
+							sprintf (evalstring,"ProjCollisionCallback(%d,%d);",sobj2.identifier,sobj3.identifier);
+							Con::eval(evalstring, false, NULL);
+						}
+				}
+			}
+
+
+
+
+
+		}
+	}
+	
+}
+
 void moveRecursive(unsigned int simgroup,float xoff, float yoff, float zoff){
 	
 	unsigned int mainsim=(unsigned int)simgroup;
@@ -134,19 +188,25 @@ void serverProcessReplacement(unsigned int timeDelta) {
 	float basex=348.08;
 	float basey=-178.761;
 	float basez=113.037;
-	timecounter+=((float)((timeDelta)*0.001));
-	if (timecounter>=0.002) {
+	//timecounter+=((float)((timeDelta)*0.001));
+	//if (timecounter>=0.002) {
 		clientupdate=true;	
-	}
+	//}
 	if (Sim::findObjectc("MoveGroup")) {
 		basex+=counter;
 		DX::SceneObject sobj = DX::SceneObject((unsigned int)Sim::findObjectc("MoveGroup"));
 		moveRecursive((unsigned int)Sim::findObjectc("MoveGroup"),(mpsx*((float)((timeDelta)*0.001))),(mpsy*((float)((timeDelta)*0.001))),(mpsz*((float)((timeDelta)*0.001))));
 		Con::eval("MoveRoutineDone();",false,NULL);
 	}
+	if (Sim::findObjectc("CollideGroup")) {
+		basex+=counter;
+		DX::SceneObject sobj = DX::SceneObject((unsigned int)Sim::findObjectc("CollideGroup"));
+		collide((unsigned int)Sim::findObjectc("CollideGroup"));
+//		Con::eval("MoveRoutineDone();",false,NULL);
+	}
 	if (clientupdate==true) {
 	timecounter=0;
-	clientupdate=false;
+	//clientupdate=false;
 	}
 
 	__asm 

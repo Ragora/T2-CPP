@@ -4,6 +4,7 @@ namespace DX
 {
 	SceneObject::SceneObject(unsigned int obj) : position(*(float*)(obj + 168), *(float*)(obj + 184), *(float*)(obj + 200)),
 	scale(*(float*)(obj + 284), *(float*)(obj + 288), *(float*)(obj + 292)),
+	container((void*)(unsigned int)(obj+0xD8)),
 	worldtoobj((float*)(obj + 0xDC)),
 	objtoworld((float*)(obj+0x9C)),
 	objboxmin(*(float*)(obj + 296), *(float*)(obj + 300), *(float*)(obj + 304)),

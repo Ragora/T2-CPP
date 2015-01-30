@@ -5,6 +5,9 @@
 
 namespace DX
 {
+
+
+	
 	class SceneObject : public NetObject
 	{
 	public:
@@ -12,6 +15,7 @@ namespace DX
 
 		Point3F position;
 		Point3F scale;
+		void  * container;
 		float * worldtoobj;
 		float * objtoworld;
 		Point3F objboxmin;

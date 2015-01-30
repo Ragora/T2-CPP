@@ -177,5 +177,7 @@ namespace DX
 			m_quatF_set_matF_C(ang->x,ang->y,ang->z,ang->w);
 		}
 	};
-
+	inline float pointdistance(DX::Point3F p1, DX::Point3F p2) {
+		return (sqrt(pow(p1.x-p2.x,2)+pow(p1.y-p2.y,2)+pow(p1.z-p2.z,2)));
+	}
 } // End NameSpace DX
