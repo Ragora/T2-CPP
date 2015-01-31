@@ -22,126 +22,23 @@ function onMoveRoutine(%obj, %offset, %center, %radius){
     $moveoffset=%offset;
 }
 $collidegroup = new SimSet(CollideGroup);
-function DiscImage::onFire(%data, %obj, %slot)
-{
-     if(%obj.fireTimeoutDisc)  //-nite-
-      return;
-//   %data.lightStart = getSimTime();
 
-//   if( %obj.station $= "" && %obj.isCloaked() )
-//   {
-//      if( %obj.respawnCloakThread !$= "" )
-//      {
-//         Cancel(%obj.respawnCloakThread);
-//         %obj.setCloaked( false );
-//         %obj.respawnCloakThread = "";
-//      }
-//      else
-//      {
-//         if( %obj.getEnergyLevel() > 20 )
-//         {
-//            %obj.setCloaked( false );
-//            %obj.reCloak = %obj.schedule( 500, "setCloaked", true );
-//         }
-//      }
-//   }
-
-        %vehicle = 0;
-        %weapon = %obj.getMountedImage(0).item;
-
-        if(%obj.client.mode[%weapon] == 0)
-        {
-             %projectile = "DiscProjectile";
-             %mode = "LinearProjectile";
-             %obj.fireTimeoutDisc = 1000;  //should be the same as 1.25  -Nite-
-             %enUse = 0;
-             %ammoUse = 1;
-        }                       //1250
-        else if(%obj.client.mode[%weapon] == 1)
-        {
-             %projectile = "TurboDisc";
-             %mode = "LinearProjectile";
-             %obj.fireTimeoutDisc = 1250;   //should be the same as .25  -Nite-
-             %enUse = 7;
-             %ammoUse = 1;
-        }                          //230
-        else if(%obj.client.mode[%weapon] == 2)
-        {
-             %projectile = "PowerDiscProjectile";
-             %mode = "LinearProjectile";
-             %enUse = 15;
-             %ammoUse = 2;
-             %obj.fireTimeoutDisc = 1500; //should be same as 2.25  -Nite-
-        }                                //2250
-
-        if(%obj.powerRecirculator)
-          %enUse *= 0.75;
-          
-     if(%ammoUse > %obj.getInventory(%data.ammo) || %enUse > %obj.getEnergyLevel())
-     {
-          schedule(%obj.fireTimeoutDisc, 0, "DiscFireTimeoutClear", %obj);
-          return;
-     }
-
-     %p = new(%mode)()
-     {
-         dataBlock        = %projectile;
-         initialDirection = %obj.getMuzzleVector(%slot);
-         initialPosition  = %obj.getMuzzlePoint(%slot);
-         sourceObject     = %obj;
-         sourceSlot       = %slot;
-         vehicleObject    = %vehicle;
-      };
-	CollideGroup.add(%p);
-   %useEnergyObj = %obj.getObjectMount();
-
-   if(!%useEnergyObj)
-        %useEnergyObj = %obj;
-
-   %vehicle = %useEnergyObj.getType() & $TypeMasks::VehicleObjectType ? %useEnergyObj : 0;
-
-   // Vehicle Damage Modifier
-   if(%vehicle)
-     %p.vehicleMod = %vehicle.damageMod;
-
-   if(%obj.damageMod)
-     %p.damageMod = %obj.damageMod;
-     
-   if (isObject(%obj.lastProjectile) && %obj.deleteLastProjectile)
-      %obj.lastProjectile.delete();
-
-   %obj.lastProjectile = %p;
-   %obj.deleteLastProjectile = %data.deleteLastProjectile;
-   MissionCleanup.add(%p);
-   // all this for emulating state stuff -Nite-
-   %obj.play3D(DiscFireSound);// play fire sounds -Nite-
-   if( %obj.getState() !$= "Dead" )				// +soph
-      %obj.setActionThread("light_recoil");  //Play anim recoil  -Nite-
-   schedule(500, %obj.play3D(DiscReloadSound),%obj);//play reload sound 500ms after we fire  -Nite-
-   schedule(%obj.fireTimeoutDisc, 0, "DiscFireTimeoutClear", %obj); //Use fire time out for each mode   -Nite-
-  // serverCmdPlayAnim(%obj.client,"light_recoil"); //this worked too lol  -Nite-
-
-   // AI hook
-   if(%obj.client)
-      %obj.client.projectile = %p;
-
-   %obj.decInventory(%data.ammo, %ammoUse);
-   %obj.useEnergy(%enUse);
-   
-   if(%obj.client.mode[%weapon] == 1)
-      %obj.applyKick(-500);
-      
-   if(%obj.client.mode[%weapon] == 2)
-      %obj.applyKick(-1000);
-}
 
 
 
 
 function ProjCollisionCallback(%proj1, %proj2) {
 	echo(%proj1 SPC "collided with" SPC %proj2);
-	%proj1.delete();
-	%proj2.delete();
+	if (isObject(%proj1) {
+		if (isObject(%proj2) {
+			if (%proj1.sourceObject != %proj2.sourceObject) {
+				CollideGroup.remove(%proj1);
+				CollideGroup.remove(%proj2);
+				%proj1.delete();
+				%proj2.delete();
+			}
+		}
+	}
 }
 function moveRoutineDone() {
     for (%x=0;%x<(MoveEffectSet.getCount()); %x++) {

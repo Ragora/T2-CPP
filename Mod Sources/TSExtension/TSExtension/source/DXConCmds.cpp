@@ -100,7 +100,7 @@ void collide(unsigned int simgroup){
 						DX::MatrixF mat2=DX::MatrixF(sobj3.objtoworld);
 						DX::Point3F test2;
 						mat2.getColumn(3,&test2);
-						if (DX::pointdistance(test,test2)>3) {
+						if (DX::pointdistance(test,test2)<40.0) {
 							char evalstring[1024]="";
 							sprintf (evalstring,"ProjCollisionCallback(%d,%d);",sobj2.identifier,sobj3.identifier);
 							Con::eval(evalstring, false, NULL);
