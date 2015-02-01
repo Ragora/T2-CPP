@@ -23,20 +23,28 @@ function onMoveRoutine(%obj, %offset, %center, %radius){
 }
 $collidegroup = new SimSet(CollideGroup);
 
+$ccd = new SimSet(ClientCommandGroup);
 
 
 
 
 function ProjCollisionCallback(%proj1, %proj2) {
-	echo(%proj1 SPC "collided with" SPC %proj2);
-	if (isObject(%proj1) {
-		if (isObject(%proj2) {
-			if (%proj1.sourceObject != %proj2.sourceObject) {
+	//echo(%proj1 SPC "collided with" SPC %proj2);
+	if (isObject(%proj1)) {
+		if (isObject(%proj2)) {
+			//if (%proj1.sourceObject != %proj2.sourceObject) {
+				if (CollideGroup.isMember(%proj2)) {
+				if (CollideGroup.isMember(%proj1)) {
 				CollideGroup.remove(%proj1);
 				CollideGroup.remove(%proj2);
+				echo("Radius Explosion");
+				RadiusExplosion(%proj1,%proj1.position,400,0,1000,%proj1.sourceObject,$DamageType::Default);
+				RadiusExplosion(%proj2,%proj2.position,400,0,1000,%proj2.sourceObject,$DamageType::Default);
 				%proj1.delete();
 				%proj2.delete();
-			}
+				}
+				}
+			//}
 		}
 	}
 }
@@ -45,7 +53,7 @@ function moveRoutineDone() {
         %obj=MoveEffectSet.getObject(%x);
 	  if(%obj.getType() | $TypeMasks::PlayerObjectType) {
 	        if (%obj.isjetting() || %obj.isjumping() ) { 
-	           echo ("Artificial Gravity Disengaged for" SPC %obj);
+	           //echo ("Artificial Gravity Disengaged for" SPC %obj);
 		  } else {
                  %obj.setPosition(VectorAdd(%obj.position,$moveoffset));
 		  }

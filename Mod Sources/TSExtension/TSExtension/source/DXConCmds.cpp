@@ -11,6 +11,7 @@ static float counter=0;
 static float mpsx=0.0;
 static float mpsy=0.0;
 static float mpsz=0.0;
+static float projdist=0.0;
 static bool moveplayerstoo=1;
 static bool clientupdate=false;
 static float timecounter=0;
@@ -100,10 +101,12 @@ void collide(unsigned int simgroup){
 						DX::MatrixF mat2=DX::MatrixF(sobj3.objtoworld);
 						DX::Point3F test2;
 						mat2.getColumn(3,&test2);
-						if (DX::pointdistance(test,test2)<40.0) {
+						if (DX::pointdistance(test,test2)<projdist) {
 							char evalstring[1024]="";
-							sprintf (evalstring,"ProjCollisionCallback(%d,%d);",sobj2.identifier,sobj3.identifier);
-							Con::eval(evalstring, false, NULL);
+							if (sobj2.identifier != sobj3.identifier) {
+								sprintf (evalstring,"ProjCollisionCallback(%d,%d);",sobj2.identifier,sobj3.identifier);
+								Con::eval(evalstring, false, NULL);
+							}
 						}
 				}
 			}
@@ -127,7 +130,7 @@ void moveRecursive(unsigned int simgroup,float xoff, float yoff, float zoff){
 			for (unsigned int x=0; x<sim2.getCount(); x++) {
 				DX::SimObject obj2=DX::SimObject(sim2.getObject(x));
 				if ((strcmp((obj2.getClassName()),"SimGroup")!=0)&&(strcmp((obj2.getClassName()),"SimSet")!=0)) {
-					if (obj2.type&0x8){
+					if ((obj2.type&0x2028)){
 						DX::SceneObject sobj = DX::SceneObject(sim2.getObject(x));
 						DX::MatrixF mat1=DX::MatrixF(sobj.objtoworld);
 						DX::Point3F test;
@@ -432,9 +435,14 @@ bool conclientCmdSetProcessTicks(Linker::SimObject *obj, S32 argc, const char* a
 		}
 			return 1;
 }
+bool conSetProjDist(Linker::SimObject *obj, S32 argc, const char* argv[]) {
+	float distance = atof(argv[1]);
+	projdist=distance;
+	return false;
+}
 bool conSetProcessTicks(Linker::SimObject *obj, S32 argc, const char* argv[]) {
 
-			unsigned int result_ptr = 0;
+		unsigned int result_ptr = 0;
 		unsigned int my_ptr = (unsigned int) obj;
 		if (atoi(argv[2])==1) {
 			__asm

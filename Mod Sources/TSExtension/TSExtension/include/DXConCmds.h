@@ -60,6 +60,7 @@ const char* conResolveGhost(Linker::SimObject *obj, S32 argc, const char* argv[]
 // Network Commands ---------------------------------
 const char *conGetGhostIndex(Linker::SimObject *obj, S32 argc, const char* argv[]);
 bool conForceUpdate(Linker::SimObject *obj, S32 argc, const char* argv[]);
+bool conSetProjDist(Linker::SimObject *obj, S32 argc, const char* argv[]);
 // General Commands ---------------------------------
 const char* conSprintf(Linker::SimObject *obj, S32 argc, const char* argv[]);
 bool conTSExtensionUpdate(Linker::SimObject *obj, S32 argc, const char *argv[]);

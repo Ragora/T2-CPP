@@ -75,6 +75,7 @@ extern "C"
 		Con::addMethodB(NULL,"clientCmdsetProcessTicks",&conclientCmdSetProcessTicks,"Client Command for disabling tick processing on ghost object",2,10);
 		Con::addMethodB(NULL,"clientCmdsetPosition",&conclientCmdSetPosition,"Client Command for setting transform on ghost object",2,10);
 		// General
+		Con::addMethodB(NULL,"setCollisionDistance",&conSetProjDist, "Sets Collision Distance for Collision Detection Algorithm",2,2);
 		Con::addMethodS(NULL, "sprintf", &conSprintf,"Formats a string. See the C sprintf.", 2, 20);
 		Con::addMethodB(NULL, "tsExtensionUpdate", &conTSExtensionUpdate,"Updates the TSExtension.", 1, 1);
 		Con::addMethodS(NULL, "getServPAddr",&congetServPAddr,"Gets the memPatch data for ServerProcess",1,1);
