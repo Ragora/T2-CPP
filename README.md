@@ -15,6 +15,25 @@ Credit Attribution
 | LouCypher                 | Reverse engineered a IFC22.dll replacement he made to build some [template code](https://github.com/Ragora/T2-IFC22Template)        |
 | Jason R. Blevins          | [Mersenne Twister Implementation](Mod Sources/RandomMod/RandomMod/source/mt.cc)       |
 
+What is it?
+====
+
+Tribes 2 C++ (T2CPP) provides a C++ API on top of the existing API left by [Linker](http://www.the-construct.net/forums/showthread.php?t=500&highlight=Linker).
+This is all provided from a custom built replacement IFC22.dll replacement for the game which was reverse engineered from the [IFC22.dll implementation](http://rdb.internectual.net/t2) of [TribesNext](http://www.tribesnext.com) by LouCypher.
+
+The template coding for my IFC22.dll can be found [[https://github.com/Ragora/T2-IFC22Template|here]] and the project page for T2CPP itself is [[https://github.com/Ragora/T2-CPP|here]].
+
+In this Repository
+====
+
+The T2CPP project also contains sources for three different mods, which are listed below.
+
+|                                       Mod Name                                                     |
+|----------------------------------------------------------------------------------------------------|
+|       [Template Mod](https://github.com/Ragora/T2-CPP/tree/master/Mod%20Sources/BaseMod)           |
+|       [TSExtension](https://github.com/Ragora/T2-CPP/tree/master/Mod%20Sources/TSExtension)        |
+|       [Random Mod](https://github.com/Ragora/T2-CPP/tree/master/Mod%20Sources/RandomMod)           |
+
 Usage
 ====
 
