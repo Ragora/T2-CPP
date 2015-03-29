@@ -42,7 +42,18 @@ const char *conGetAddress(Linker::SimObject *obj, S32 argc, const char *argv[])
 	sprintf(result, "%x", obj);
 	return result;
 }
+bool conShapeBaseSetCloakValue(Linker::SimObject *obj, S32 argc, const char* argv[])
+{
+	DX::ShapeBase operand = DX::ShapeBase((unsigned int)obj);
+	operand.cloaked=dAtob(argv[2]);
+	if (operand.cloaked==true) {
+		operand.cloak_level=atof(argv[3]);
+	} else {
+		operand.cloak_level=atof(argv[3]);
+	}
+	operand.setMaskBits(0x40);
 
+}
 bool conPlayerGetJumpingState(Linker::SimObject *obj, S32 argc, const char* argv[])
 {
 	DX::Player operand = DX::Player((unsigned int)obj);
