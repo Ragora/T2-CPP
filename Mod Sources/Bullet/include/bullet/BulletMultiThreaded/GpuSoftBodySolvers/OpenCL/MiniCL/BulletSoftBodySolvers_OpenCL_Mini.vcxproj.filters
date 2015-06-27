@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\btSoftBodySolver_OpenCL.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\btSoftBodySolver_OpenCL.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CPU\btSoftBodySolverData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\btSoftBodySolverVertexData_OpenCL.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\btSoftBodySolverTriangleData_OpenCL.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\btSoftBodySolverLinkData_OpenCL.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\btSoftBodySolverBuffer_OpenCL.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\OpenCLC10\UpdateNormals.cl" />
+    <None Include="..\OpenCLC10\Integrate.cl" />
+    <None Include="..\OpenCLC10\UpdatePositions.cl" />
+    <None Include="..\OpenCLC10\UpdateNodes.cl" />
+    <None Include="..\OpenCLC10\SolvePositions.cl" />
+    <None Include="..\OpenCLC10\UpdatePositionsFromVelocities.cl" />
+    <None Include="..\OpenCLC10\ApplyForces.cl" />
+    <None Include="..\OpenCLC10\PrepareLinks.cl" />
+    <None Include="..\OpenCLC10\VSolveLinks.cl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{C487BFC5-6BC8-47B3-88D6-C5D9B883A3BD}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{30F7A2E9-D73F-45A4-9CAC-B039D62294E1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,284 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|Win32">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|Win32">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGUID>{14266978-3E62-4DC3-AAEF-CB815EEB708D}</ProjectGUID>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>Win32</Platform>
+    <ProjectName>BulletSoftBodySolvers_OpenCL_Mini</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+    <PropertyGroup>
+      <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Documents and Settings\Robert MacGregor\Desktop\bullet-2.77\lib\Debug\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">BulletSoftBodySolvers_OpenCL_Mini.dir\Debug\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">BulletSoftBodySolvers_OpenCL_Mini</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.lib</TargetExt>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Documents and Settings\Robert MacGregor\Desktop\bullet-2.77\lib\Release\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">BulletSoftBodySolvers_OpenCL_Mini.dir\Release\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">BulletSoftBodySolvers_OpenCL_Mini</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.lib</TargetExt>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">C:\Documents and Settings\Robert MacGregor\Desktop\bullet-2.77\lib\MinSizeRel\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">BulletSoftBodySolvers_OpenCL_Mini.dir\MinSizeRel\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">BulletSoftBodySolvers_OpenCL_Mini</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">.lib</TargetExt>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:\Documents and Settings\Robert MacGregor\Desktop\bullet-2.77\lib\RelWithDebInfo\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">BulletSoftBodySolvers_OpenCL_Mini.dir\RelWithDebInfo\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">BulletSoftBodySolvers_OpenCL_Mini</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">.lib</TargetExt>
+    </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <AdditionalOptions> /Zm1000 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>C:/Documents and Settings/Robert MacGregor/Desktop/bullet-2.77/Glut;C:/Documents and Settings/Robert MacGregor/Desktop/bullet-2.77/src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_DEBUG;USE_GRAPHICAL_BENCHMARK;_IRR_STATIC_LIB_;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;USE_MINICL;CMAKE_INTDIR="Debug";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AssemblerListingLocation>Debug</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>C:/Documents and Settings/Robert MacGregor/Desktop/bullet-2.77/lib/Debug/BulletSoftBodySolvers_OpenCL_Mini.pdb</ProgramDataBaseFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_DEBUG;USE_GRAPHICAL_BENCHMARK;_IRR_STATIC_LIB_;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;USE_MINICL;CMAKE_INTDIR=\"Debug\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:/Documents and Settings/Robert MacGregor/Desktop/bullet-2.77/Glut;C:/Documents and Settings/Robert MacGregor/Desktop/bullet-2.77/src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:/Documents and Settings/Robert MacGregor/Desktop/bullet-2.77/Glut;C:/Documents and Settings/Robert MacGregor/Desktop/bullet-2.77/src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalOptions> /Zm1000 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>C:/Documents and Settings/Robert MacGregor/Desktop/bullet-2.77/Glut;C:/Documents and Settings/Robert MacGregor/Desktop/bullet-2.77/src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat></DebugInformationFormat>
+      <PreprocessorDefinitions>WIN32;NDEBUG;USE_GRAPHICAL_BENCHMARK;_IRR_STATIC_LIB_;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;USE_MINICL;CMAKE_INTDIR="Release";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AssemblerListingLocation>Release</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>C:/Documents and Settings/Robert MacGregor/Desktop/bullet-2.77/lib/Release/BulletSoftBodySolvers_OpenCL_Mini.pdb</ProgramDataBaseFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;NDEBUG;USE_GRAPHICAL_BENCHMARK;_IRR_STATIC_LIB_;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;USE_MINICL;CMAKE_INTDIR=\"Release\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:/Documents and Settings/Robert MacGregor/Desktop/bullet-2.77/Glut;C:/Documents and Settings/Robert MacGregor/Desktop/bullet-2.77/src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:/Documents and Settings/Robert MacGregor/Desktop/bullet-2.77/Glut;C:/Documents and Settings/Robert MacGregor/Desktop/bullet-2.77/src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">
+    <ClCompile>
+      <AdditionalOptions> /Zm1000 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>C:/Documents and Settings/Robert MacGregor/Desktop/bullet-2.77/Glut;C:/Documents and Settings/Robert MacGregor/Desktop/bullet-2.77/src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MinSpace</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat></DebugInformationFormat>
+      <PreprocessorDefinitions>WIN32;NDEBUG;USE_GRAPHICAL_BENCHMARK;_IRR_STATIC_LIB_;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;USE_MINICL;CMAKE_INTDIR="MinSizeRel";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AssemblerListingLocation>MinSizeRel</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>C:/Documents and Settings/Robert MacGregor/Desktop/bullet-2.77/lib/MinSizeRel/BulletSoftBodySolvers_OpenCL_Mini.pdb</ProgramDataBaseFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;NDEBUG;USE_GRAPHICAL_BENCHMARK;_IRR_STATIC_LIB_;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;USE_MINICL;CMAKE_INTDIR=\"MinSizeRel\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:/Documents and Settings/Robert MacGregor/Desktop/bullet-2.77/Glut;C:/Documents and Settings/Robert MacGregor/Desktop/bullet-2.77/src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:/Documents and Settings/Robert MacGregor/Desktop/bullet-2.77/Glut;C:/Documents and Settings/Robert MacGregor/Desktop/bullet-2.77/src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">
+    <ClCompile>
+      <AdditionalOptions> /Zm1000 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>C:/Documents and Settings/Robert MacGregor/Desktop/bullet-2.77/Glut;C:/Documents and Settings/Robert MacGregor/Desktop/bullet-2.77/src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;NDEBUG;USE_GRAPHICAL_BENCHMARK;_IRR_STATIC_LIB_;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;USE_MINICL;CMAKE_INTDIR="RelWithDebInfo";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AssemblerListingLocation>RelWithDebInfo</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>C:/Documents and Settings/Robert MacGregor/Desktop/bullet-2.77/lib/RelWithDebInfo/BulletSoftBodySolvers_OpenCL_Mini.pdb</ProgramDataBaseFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;NDEBUG;USE_GRAPHICAL_BENCHMARK;_IRR_STATIC_LIB_;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;USE_MINICL;CMAKE_INTDIR=\"RelWithDebInfo\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:/Documents and Settings/Robert MacGregor/Desktop/bullet-2.77/Glut;C:/Documents and Settings/Robert MacGregor/Desktop/bullet-2.77/src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:/Documents and Settings/Robert MacGregor/Desktop/bullet-2.77/Glut;C:/Documents and Settings/Robert MacGregor/Desktop/bullet-2.77/src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Building Custom Rule C:/Documents and Settings/Robert MacGregor/Desktop/bullet-2.77/src/BulletMultiThreaded/GpuSoftBodySolvers/OpenCL/MiniCL/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\CMake 2.8\bin\cmake.exe" "-HC:/Documents and Settings/Robert MacGregor/Desktop/bullet-2.77" "-BC:/Documents and Settings/Robert MacGregor/Desktop/bullet-2.77" --check-stamp-file "C:\Documents and Settings\Robert MacGregor\Desktop\bullet-2.77\src\BulletMultiThreaded\GpuSoftBodySolvers\OpenCL\MiniCL\CMakeFiles\generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:/Documents and Settings/Robert MacGregor/Desktop/bullet-2.77/src/BulletMultiThreaded/GpuSoftBodySolvers/OpenCL/MiniCL/CMakeLists.txt;C:\Documents and Settings\Robert MacGregor\Desktop\bullet-2.77\src\BulletMultiThreaded\GpuSoftBodySolvers\OpenCL\MiniCL\CMakeLists.txt;C:\Documents and Settings\Robert MacGregor\Desktop\bullet-2.77\src\BulletMultiThreaded\GpuSoftBodySolvers\OpenCL\MiniCL\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Documents and Settings\Robert MacGregor\Desktop\bullet-2.77\src\BulletMultiThreaded\GpuSoftBodySolvers\OpenCL\MiniCL\CMakeFiles\generate.stamp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Building Custom Rule C:/Documents and Settings/Robert MacGregor/Desktop/bullet-2.77/src/BulletMultiThreaded/GpuSoftBodySolvers/OpenCL/MiniCL/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\CMake 2.8\bin\cmake.exe" "-HC:/Documents and Settings/Robert MacGregor/Desktop/bullet-2.77" "-BC:/Documents and Settings/Robert MacGregor/Desktop/bullet-2.77" --check-stamp-file "C:\Documents and Settings\Robert MacGregor\Desktop\bullet-2.77\src\BulletMultiThreaded\GpuSoftBodySolvers\OpenCL\MiniCL\CMakeFiles\generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:/Documents and Settings/Robert MacGregor/Desktop/bullet-2.77/src/BulletMultiThreaded/GpuSoftBodySolvers/OpenCL/MiniCL/CMakeLists.txt;C:\Documents and Settings\Robert MacGregor\Desktop\bullet-2.77\src\BulletMultiThreaded\GpuSoftBodySolvers\OpenCL\MiniCL\CMakeLists.txt;C:\Documents and Settings\Robert MacGregor\Desktop\bullet-2.77\src\BulletMultiThreaded\GpuSoftBodySolvers\OpenCL\MiniCL\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Documents and Settings\Robert MacGregor\Desktop\bullet-2.77\src\BulletMultiThreaded\GpuSoftBodySolvers\OpenCL\MiniCL\CMakeFiles\generate.stamp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">Building Custom Rule C:/Documents and Settings/Robert MacGregor/Desktop/bullet-2.77/src/BulletMultiThreaded/GpuSoftBodySolvers/OpenCL/MiniCL/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\CMake 2.8\bin\cmake.exe" "-HC:/Documents and Settings/Robert MacGregor/Desktop/bullet-2.77" "-BC:/Documents and Settings/Robert MacGregor/Desktop/bullet-2.77" --check-stamp-file "C:\Documents and Settings\Robert MacGregor\Desktop\bullet-2.77\src\BulletMultiThreaded\GpuSoftBodySolvers\OpenCL\MiniCL\CMakeFiles\generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">C:/Documents and Settings/Robert MacGregor/Desktop/bullet-2.77/src/BulletMultiThreaded/GpuSoftBodySolvers/OpenCL/MiniCL/CMakeLists.txt;C:\Documents and Settings\Robert MacGregor\Desktop\bullet-2.77\src\BulletMultiThreaded\GpuSoftBodySolvers\OpenCL\MiniCL\CMakeLists.txt;C:\Documents and Settings\Robert MacGregor\Desktop\bullet-2.77\src\BulletMultiThreaded\GpuSoftBodySolvers\OpenCL\MiniCL\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">C:\Documents and Settings\Robert MacGregor\Desktop\bullet-2.77\src\BulletMultiThreaded\GpuSoftBodySolvers\OpenCL\MiniCL\CMakeFiles\generate.stamp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">Building Custom Rule C:/Documents and Settings/Robert MacGregor/Desktop/bullet-2.77/src/BulletMultiThreaded/GpuSoftBodySolvers/OpenCL/MiniCL/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\CMake 2.8\bin\cmake.exe" "-HC:/Documents and Settings/Robert MacGregor/Desktop/bullet-2.77" "-BC:/Documents and Settings/Robert MacGregor/Desktop/bullet-2.77" --check-stamp-file "C:\Documents and Settings\Robert MacGregor\Desktop\bullet-2.77\src\BulletMultiThreaded\GpuSoftBodySolvers\OpenCL\MiniCL\CMakeFiles\generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:/Documents and Settings/Robert MacGregor/Desktop/bullet-2.77/src/BulletMultiThreaded/GpuSoftBodySolvers/OpenCL/MiniCL/CMakeLists.txt;C:\Documents and Settings\Robert MacGregor\Desktop\bullet-2.77\src\BulletMultiThreaded\GpuSoftBodySolvers\OpenCL\MiniCL\CMakeLists.txt;C:\Documents and Settings\Robert MacGregor\Desktop\bullet-2.77\src\BulletMultiThreaded\GpuSoftBodySolvers\OpenCL\MiniCL\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:\Documents and Settings\Robert MacGregor\Desktop\bullet-2.77\src\BulletMultiThreaded\GpuSoftBodySolvers\OpenCL\MiniCL\CMakeFiles\generate.stamp</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\btSoftBodySolver_OpenCL.h" />
+    <ClInclude Include="..\..\CPU\btSoftBodySolverData.h" />
+    <ClInclude Include="..\btSoftBodySolverVertexData_OpenCL.h" />
+    <ClInclude Include="..\btSoftBodySolverTriangleData_OpenCL.h" />
+    <ClInclude Include="..\btSoftBodySolverLinkData_OpenCL.h" />
+    <ClInclude Include="..\btSoftBodySolverBuffer_OpenCL.h" />
+    <ClCompile Include="..\btSoftBodySolver_OpenCL.cpp"  />
+    <None Include="..\OpenCLC10\UpdateNormals.cl" />
+    <None Include="..\OpenCLC10\Integrate.cl" />
+    <None Include="..\OpenCLC10\UpdatePositions.cl" />
+    <None Include="..\OpenCLC10\UpdateNodes.cl" />
+    <None Include="..\OpenCLC10\SolvePositions.cl" />
+    <None Include="..\OpenCLC10\UpdatePositionsFromVelocities.cl" />
+    <None Include="..\OpenCLC10\ApplyForces.cl" />
+    <None Include="..\OpenCLC10\PrepareLinks.cl" />
+    <None Include="..\OpenCLC10\VSolveLinks.cl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="C:/Documents and Settings/Robert MacGregor/Desktop/bullet-2.77/ZERO_CHECK.vcxproj">
+      <Project>C0E57694-ABCD-4C08-B9A4-F249AD836120</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
