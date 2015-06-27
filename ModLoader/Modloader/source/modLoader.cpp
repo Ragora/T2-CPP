@@ -5,6 +5,27 @@
 #include "stdafx.h"
 #include <t2api.h>
 
+static std::tr1::unordered_set<ServerProcessPointer> sServerProcessResponders;
+
+void serverProcessReplacement(unsigned int timeDelta) 
+{
+	unsigned int servertickaddr=0x602350;
+	unsigned int serverthisptr=0x9E5EC0;
+
+	for (auto it = sServerProcessResponders.begin(); it != sServerProcessResponders.end(); it++)
+		(*it)(timeDelta);
+
+	__asm 
+	{
+		mov ecx,serverthisptr
+		push timeDelta
+		call servertickaddr
+	}
+	
+	return;
+
+}
+
 // Mod Loader Implementation
 bool conLoadMod(SimObject *obj,S32 argc, const char* argv[])
 {
@@ -35,5 +56,15 @@ bool conLoadMod(SimObject *obj,S32 argc, const char* argv[])
 
 		lpInitMod();
 		Con::errorf(0, "loadMod(): Loaded and executed entry point code for mod DLL '%s'", raw.c_str());
+
+		// Check if there's a server process responder in this DLL
+		ServerProcessPointer serverProcess = (ServerProcessPointer)GetProcAddress(hDLL, "ServerProcess"); // Attempt to load our entry point
+
+		if (serverProcess != NULL)
+		{
+			sServerProcessResponders.insert(sServerProcessResponders.end(), serverProcess);
+			Con::errorf(0, "loadMod(): Added server process responder for mod");
+		}
+
 		return true;
 }

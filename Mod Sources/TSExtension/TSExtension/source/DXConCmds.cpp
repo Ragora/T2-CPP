@@ -1,40 +1,9 @@
 /**
  *	
  */
-#define endian(hex) (((hex & 0x000000FF) << 24)+((hex & 0x0000FF00) << 8)+((hex & 0x00FF0000)>>8)+((hex & 0xFF000000) >> 24))
 #include <LinkerAPI.h>
 #include <DXAPI/DXAPI.h>
-void serverProcessReplacement(unsigned int timeDelta) {
-	unsigned int servertickaddr=0x602350;
-	unsigned int serverthisptr=0x9E5EC0;
-	char test[256]="";
-	sprintf (test,"TSTick(%f);",(float)timeDelta/1000);
-	Con::evaluate(test,false,NULL,false);
-	__asm 
-	{
-		mov ecx,serverthisptr
-		push timeDelta
-		call servertickaddr
-	}
-	
-	return;
-}
-const char* congetServPAddr(Linker::SimObject *obj, S32 argc, const char *argv[]) {
-		char test[256] = "";
-		char test2[256]="";
-		int spr=(signed int)*serverProcessReplacement;
-		sprintf(test2,"B8%08XFFD089EC5DC3",endian(spr));
-		/*test2[0]=test[6];
-		test2[1]=test[7];
-		test2[2]=test[4];
-		test2[3]=test[5];
-		test2[4]=test[2];
-		test2[5]=test[3];
-		test2[6]=test[0];
-		test2[7]=test[1];
-		test2[8]=0;*/
-		return test2;
-}
+
 const char *conGetAddress(Linker::SimObject *obj, S32 argc, const char *argv[])
 {
 	// Hmm...
@@ -42,6 +11,7 @@ const char *conGetAddress(Linker::SimObject *obj, S32 argc, const char *argv[])
 	sprintf(result, "%x", obj);
 	return result;
 }
+
 bool conShapeBaseSetCloakValue(Linker::SimObject *obj, S32 argc, const char* argv[])
 {
 	DX::ShapeBase operand = DX::ShapeBase((unsigned int)obj);
@@ -60,6 +30,7 @@ bool conPlayerGetJumpingState(Linker::SimObject *obj, S32 argc, const char* argv
 
 	return operand.is_jumping;
 }
+
 bool conPlayerGetJettingState(Linker::SimObject *obj, S32 argc, const char* argv[])
 {
 	DX::Player operand = DX::Player((unsigned int)obj);
