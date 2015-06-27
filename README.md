@@ -26,7 +26,7 @@ The template coding for my IFC22.dll can be found [here](https://github.com/Rago
 In this Repository
 ====
 
-The T2CPP project also contains sources for three different mods, which are listed below.
+The T2CPP project also contains sources for five different mods, which are listed below.
 
 |                                       Mod Name                                                     |
 |----------------------------------------------------------------------------------------------------|
@@ -34,6 +34,7 @@ The T2CPP project also contains sources for three different mods, which are list
 |       [TSExtension](https://github.com/Ragora/T2-CPP/tree/master/Mod%20Sources/TSExtension)        |
 |       [Random Mod](https://github.com/Ragora/T2-CPP/tree/master/Mod%20Sources/RandomMod)           |
 |         [Watchdog](https://github.com/Ragora/T2-CPP/tree/master/Mod%20Sources/Watchdog)            |
+|           [Bullet](https://github.com/Ragora/T2-CPP/tree/master/Mod%20Sources/Bullet)              |
 
 Usage
 ====
