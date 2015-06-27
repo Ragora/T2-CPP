@@ -33,6 +33,7 @@ The T2CPP project also contains sources for three different mods, which are list
 |       [Template Mod](https://github.com/Ragora/T2-CPP/tree/master/Mod%20Sources/BaseMod)           |
 |       [TSExtension](https://github.com/Ragora/T2-CPP/tree/master/Mod%20Sources/TSExtension)        |
 |       [Random Mod](https://github.com/Ragora/T2-CPP/tree/master/Mod%20Sources/RandomMod)           |
+|         [Watchdog](https://github.com/Ragora/T2-CPP/tree/master/Mod%20Sources/Watchdog)            |
 
 Usage
 ====
