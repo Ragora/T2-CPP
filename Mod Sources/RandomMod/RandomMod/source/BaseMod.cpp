@@ -3,7 +3,7 @@
 
 #include "BaseMod.h"
 
-#include "t2api.h"
+#include "LinkerAPI.h"
 #include "randomCmds.h"
 
 extern "C"

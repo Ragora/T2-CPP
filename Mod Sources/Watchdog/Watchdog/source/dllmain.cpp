@@ -30,7 +30,7 @@ DWORD WINAPI WatchDogThread(LPVOID lpParam)
 		time_t now = clock();
 		time_t seconds = (now - lastPet) / CLOCKS_PER_SEC;
 
-		if (!sDogPetted && seconds > 2) // Wait 2 seconds to be safe
+		if (!sDogPetted && seconds > 8) // Wait 8 seconds to be safe
 		{
 			CloseHandle(sMainThread);
 			exit(0);

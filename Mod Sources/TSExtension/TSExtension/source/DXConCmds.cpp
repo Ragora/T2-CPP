@@ -23,7 +23,9 @@ bool conShapeBaseSetCloakValue(Linker::SimObject *obj, S32 argc, const char* arg
 	}
 	operand.setMaskBits(0x40);
 
+	return true;
 }
+
 bool conPlayerGetJumpingState(Linker::SimObject *obj, S32 argc, const char* argv[])
 {
 	DX::Player operand = DX::Player((unsigned int)obj);
@@ -155,6 +157,7 @@ bool conclientCmdSetGhostTicks(Linker::SimObject *obj, S32 argc, const char* arg
 		}
 		return 1;
 }
+
 bool conclientCmdSetProcessTicks(Linker::SimObject *obj, S32 argc, const char* argv[]) {
 		unsigned int result_ptr = 0;
 		unsigned int my_ptr = 0;
@@ -186,6 +189,7 @@ bool conclientCmdSetProcessTicks(Linker::SimObject *obj, S32 argc, const char* a
 		}
 			return 1;
 }
+
 bool conSetProcessTicks(Linker::SimObject *obj, S32 argc, const char* argv[]) {
 
 			unsigned int result_ptr = 0;

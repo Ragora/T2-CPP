@@ -2,7 +2,7 @@
  *	modLoader.h
 */
 
-#include <t2api.h>
+#include <LinkerAPI.h>
 
 // Mod Loader Implementation
-bool conLoadMod(SimObject *obj,S32 argc, const char* argv[]);
+bool conLoadMod(Linker::SimObject *obj,S32 argc, const char* argv[]);

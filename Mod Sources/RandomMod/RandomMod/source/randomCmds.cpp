@@ -8,11 +8,11 @@
 
 #include "mt.h"
 
-#include "t2api.h"
+#include "LinkerAPI.h"
 
 // Merscenne Twister
 MersenneTwister *mt = NULL;
-const char *conMRandom(SimObject *obj, S32 argc, const char *argv[])
+const char *conMRandom(Linker::SimObject *obj, S32 argc, const char *argv[])
 {
 	if (!mt)
 	{
@@ -56,7 +56,7 @@ const char *conMRandom(SimObject *obj, S32 argc, const char *argv[])
 	return mem;
 }
 
-const char *conMRandomFloat(SimObject *obj, S32 argc, const char *argv[])
+const char *conMRandomFloat(Linker::SimObject *obj, S32 argc, const char *argv[])
 {
 	if (!mt)
 	{
@@ -95,7 +95,7 @@ const char *conMRandomFloat(SimObject *obj, S32 argc, const char *argv[])
 	return mem;
 }
 
-const char *conMSeed(SimObject *obj, S32 argc, const char *argv[])
+const char *conMSeed(Linker::SimObject *obj, S32 argc, const char *argv[])
 {
 	if (!mt)
 	{
@@ -125,7 +125,7 @@ static unsigned int CURRENT_STOPWATCH_COUNT = 0;
 static __int64 QPC_STOPWATCHES[QPC_MAX_STOPWATCHES];
 
 __int64 STARTING_QPC_TIME;
-const char*conQPCBegin(SimObject *obj, S32 argc, const char *argv[])
+const char*conQPCBegin(Linker::SimObject *obj, S32 argc, const char *argv[])
 {
 	if (!QueryPerformanceCounter((LARGE_INTEGER*)&QPC_STOPWATCHES[CURRENT_STOPWATCH_COUNT]))
 	{
@@ -147,7 +147,7 @@ const char*conQPCBegin(SimObject *obj, S32 argc, const char *argv[])
 	return result;
 }
 
-const char*conQPCEnd(SimObject *obj, S32 argc, const char *argv[])
+const char*conQPCEnd(Linker::SimObject *obj, S32 argc, const char *argv[])
 {
 	__int64 ENDING_QPC_TIME;
 	if (!QueryPerformanceCounter((LARGE_INTEGER*)&ENDING_QPC_TIME))

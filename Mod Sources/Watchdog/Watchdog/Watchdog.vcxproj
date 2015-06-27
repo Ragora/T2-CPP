@@ -14,7 +14,7 @@
     <ClCompile Include="source\dllmain.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{2A498B2D-84B2-4BBF-9532-EA17E5BA51BB}</ProjectGuid>
+    <ProjectGuid>{1C8B5AA4-B172-45DD-9D27-55F41B6F1755}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>BaseMod</RootNamespace>
     <ProjectName>WatchDog</ProjectName>
@@ -44,10 +44,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>include;$(IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)\Mods</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>include;$(IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)\Mods</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

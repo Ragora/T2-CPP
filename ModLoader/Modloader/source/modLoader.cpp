@@ -3,7 +3,7 @@
 */
 
 #include "stdafx.h"
-#include <t2api.h>
+#include <LinkerAPI.h>
 
 static std::tr1::unordered_set<ServerProcessPointer> sServerProcessResponders;
 
@@ -27,7 +27,7 @@ void serverProcessReplacement(unsigned int timeDelta)
 }
 
 // Mod Loader Implementation
-bool conLoadMod(SimObject *obj,S32 argc, const char* argv[])
+bool conLoadMod(Linker::SimObject *obj,S32 argc, const char* argv[])
 {
 		typedef void (*LPMODINIT)(void);
 		HINSTANCE hDLL = NULL;
@@ -42,7 +42,7 @@ bool conLoadMod(SimObject *obj,S32 argc, const char* argv[])
 		hDLL = LoadLibrary(modification.c_str());
 		if (hDLL == NULL)
 		{
-			Con::errorf(0, "loadMod(): Failed to load DLL '%s'. Does it exist in GameData\mods? (%u)", raw.c_str(), GetLastError());
+			Con::errorf(0, "loadMod(): Failed to load DLL '%s'. Does it exist in GameData\\mods? (%u)", raw.c_str(), GetLastError());
 			return false; // The DLL doesn't exist
 		}
 		

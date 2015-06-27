@@ -11,18 +11,18 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{10159605-BFF5-496F-8C23-0A1FB9850E55}</ProjectGuid>
+    <ProjectGuid>{9B3A3214-400B-4245-85FD-EA12D5F791D4}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>Modloader</RootNamespace>
+    <RootNamespace>Common</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
@@ -38,14 +38,15 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LinkIncremental>false</LinkIncremental>
-    <IncludePath>include;..\..\CommonAPI\Common\include;$(IncludePath)</IncludePath>
-    <TargetName>IFC22</TargetName>
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>include;$(IncludePath)</IncludePath>
+    <TargetName>Common</TargetName>
+    <OutDir>$(SolutionDir)</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>include;..\..\CommonAPI\Common\include;$(IncludePath)</IncludePath>
-    <TargetName>IFC22</TargetName>
+    <IncludePath>include;$(IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -53,12 +54,11 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;MODLOADER_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;COMMON_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(SolutionDir)\Common.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -69,23 +69,54 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;MODLOADER_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;COMMON_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>$(SolutionDir)\Common.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="source\modLoader.cpp" />
-    <ClCompile Include="source\t2dll.cpp" />
+    <ClInclude Include="include\DXAPI\DXAPI.h" />
+    <ClInclude Include="include\DXAPI\FlyingVehicle.h" />
+    <ClInclude Include="include\DXAPI\GameBase.h" />
+    <ClInclude Include="include\DXAPI\GameConnection.h" />
+    <ClInclude Include="include\DXAPI\GrenadeProjectile.h" />
+    <ClInclude Include="include\DXAPI\NetConnection.h" />
+    <ClInclude Include="include\DXAPI\NetObject.h" />
+    <ClInclude Include="include\DXAPI\Player.h" />
+    <ClInclude Include="include\DXAPI\Point3F.h" />
+    <ClInclude Include="include\DXAPI\Projectile.h" />
+    <ClInclude Include="include\DXAPI\SceneObject.h" />
+    <ClInclude Include="include\DXAPI\ScriptObject.h" />
+    <ClInclude Include="include\DXAPI\ShapeBase.h" />
+    <ClInclude Include="include\DXAPI\SimObject.h" />
+    <ClInclude Include="include\DXAPI\StaticShape.h" />
+    <ClInclude Include="include\DXAPI\TCPObject.h" />
+    <ClInclude Include="include\DXAPI\Vehicle.h" />
+    <ClInclude Include="include\LinkerAPI.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\modLoader.h" />
-    <ClInclude Include="include\stdafx.h" />
+    <ClCompile Include="source\DXAPI\DXAPI.cpp" />
+    <ClCompile Include="source\DXAPI\FlyingVehicle.cpp" />
+    <ClCompile Include="source\DXAPI\GameBase.cpp" />
+    <ClCompile Include="source\DXAPI\GameConnection.cpp" />
+    <ClCompile Include="source\DXAPI\GrenadeProjectile.cpp" />
+    <ClCompile Include="source\DXAPI\NetConnection.cpp" />
+    <ClCompile Include="source\DXAPI\NetObject.cpp" />
+    <ClCompile Include="source\DXAPI\Player.cpp" />
+    <ClCompile Include="source\DXAPI\Point3F.cpp" />
+    <ClCompile Include="source\DXAPI\Projectile.cpp" />
+    <ClCompile Include="source\DXAPI\SceneObject.cpp" />
+    <ClCompile Include="source\DXAPI\ScriptObject.cpp" />
+    <ClCompile Include="source\DXAPI\ShapeBase.cpp" />
+    <ClCompile Include="source\DXAPI\SimObject.cpp" />
+    <ClCompile Include="source\DXAPI\StaticShape.cpp" />
+    <ClCompile Include="source\DXAPI\TCPObject.cpp" />
+    <ClCompile Include="source\DXAPI\Vehicle.cpp" />
+    <ClCompile Include="source\LinkerAPI.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
