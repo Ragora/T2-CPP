@@ -2,7 +2,8 @@
 #include <SDKDDKVer.h>
 #include <Windows.h>
 #include <time.h>
-
+#include <stdio.h>
+#include <conio.h>
 BOOL APIENTRY DllMain( HMODULE hModule,
                        DWORD  ul_reason_for_call,
                        LPVOID lpReserved
@@ -20,26 +21,51 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 }
 
 static bool sDogPetted = false;
-static HANDLE sMainThread = NULL;
+static DWORD mainthreadid=0;
+void (*Tprintf)(const char* fmt,...) = 
+	(void (__cdecl *)(const char* fmt,...))
+	0x425F30;
 DWORD WINAPI WatchDogThread(LPVOID lpParam)
 {
-	time_t lastPet = clock();
-
+	time_t lastPet = time(0);
+	CONTEXT hamburger;
+	HANDLE mainThread = OpenThread(THREAD_ALL_ACCESS,false,mainthreadid);
 	while (true)
 	{
-		time_t now = clock();
-		time_t seconds = (now - lastPet) / CLOCKS_PER_SEC;
-
+		time_t now = time(0);
+		double seconds = difftime(now,lastPet);
+#ifdef SLOWSERVER
+		if (!sDogPetted && seconds > 15) // Wait 15 seconds to be extra safe
+#else
 		if (!sDogPetted && seconds > 8) // Wait 8 seconds to be safe
+#endif
 		{
-			CloseHandle(sMainThread);
+			Tprintf ("Dog has grabbed the hamburger\n");
+			SuspendThread(mainThread);
+			GetThreadContext(mainThread, &hamburger); // dog grabs hamburger;
+			Tprintf ("Dog has grabbed the hamburger again\n");
+			Tprintf ("Either grab Hamburger back and put dog back on leash, or let dog eat hamburger\n");
+			Tprintf ("the following text is from the Processor State\n");
+			FILE * wlog = fopen ("watchdog.log","a");
+			fprintf (wlog,"EIP: %08X    EAX: %08X    EBX: %08X    ECX: %08X    \nEDX: %08X    ESI: %08X    EDI: %08X\nEBP:%08X    ESP:%08X\n", hamburger.Eip, hamburger.Eax, hamburger.Ebx, hamburger.Ecx, hamburger.Edx, hamburger.Esi, hamburger.Edi, hamburger.Ebp, hamburger.Esp);
+			fclose (wlog);
+			Tprintf ("EIP: %08X    EAX: %08X    EBX: %08X    ECX: %08X    \nEDX: %08X    ESI: %08X    EDI: %08X\nEBP:%08X    ESP:%08X\n", hamburger.Eip, hamburger.Eax, hamburger.Ebx, hamburger.Ecx, hamburger.Edx, hamburger.Esi, hamburger.Edi, hamburger.Ebp, hamburger.Esp);
+			Tprintf ("Please press enter to try to continue\n  or wait for 30 more seconds to kill T2 and write log\n");
+			Sleep(30000);
+			if (_kbhit()) {
+				sDogPetted=true;
+				ResumeThread(mainThread);
+			} else {
+			CloseHandle(mainThread);
 			exit(0);
+			}
 		}
 		else if (sDogPetted)
 		{
 			sDogPetted = false;
 			lastPet = now;
 		}
+		Sleep(500);
 	}
 }
 
@@ -47,11 +73,30 @@ extern "C"
 {
 	__declspec(dllexport) void ModInitialize(void)
 	{
-	   sMainThread = GetCurrentThread();
-
+	   mainthreadid = GetThreadId(GetCurrentThread());
+	   SECURITY_DESCRIPTOR secDescVar;
 	   DWORD threadID;
-
+	   HANDLE token;
+	   LUID debugname;
+	   TOKEN_PRIVILEGES tokenpriv;
 	   HANDLE thread = CreateThread(NULL, 0, WatchDogThread, NULL, 0, &threadID);
+	   if (thread==NULL) {
+		    DWORD errorval = GetLastError();
+			Tprintf ("Error %08X, watchdog is not running properly\n",errorval);
+	   }
+	   OpenThreadToken(thread,TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY,false, &token);
+
+	   LookupPrivilegeValue(NULL,SE_DEBUG_NAME, &debugname);
+	   tokenpriv.PrivilegeCount = 1;
+	   tokenpriv.Privileges[0].Luid = debugname;
+	   tokenpriv.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
+	   if(AdjustTokenPrivileges(token, FALSE, &tokenpriv, sizeof tokenpriv, NULL, NULL)) {
+			Tprintf ("watchdog should work now\n");
+			CloseHandle(token);
+	   } else {
+			Tprintf ("Error, watchdog won't operate fully, WatchDog needs Admin Privileges for Debug\n");
+	   }
+
 	}
 
 	__declspec(dllexport) void ServerProcess(unsigned int deltaTime)
@@ -59,4 +104,5 @@ extern "C"
 		sDogPetted = true;
 	}
 }
+
 
