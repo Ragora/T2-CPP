@@ -40,8 +40,8 @@ DWORD WINAPI WatchDogThread(LPVOID lpParam)
 		if (!sDogPetted && seconds > 8) // Wait 8 seconds to be safe
 #endif
 		{
-			Tprintf ("Dog has grabbed the hamburger\n");
 			SuspendThread(mainThread);
+			hamburger.ContextFlags=CONTEXT_FULL; // Make sure to select which parts of the context to dump
 			GetThreadContext(mainThread, &hamburger); // dog grabs hamburger;
 			Tprintf ("Dog has grabbed the hamburger again\n");
 			Tprintf ("Either grab Hamburger back and put dog back on leash, or let dog eat hamburger\n");
@@ -54,6 +54,7 @@ DWORD WINAPI WatchDogThread(LPVOID lpParam)
 			Sleep(30000);
 			if (_kbhit()) {
 				sDogPetted=true;
+				_getch(); // make sure to clean the keyboard buffer
 				ResumeThread(mainThread);
 			} else {
 			CloseHandle(mainThread);
@@ -84,7 +85,7 @@ extern "C"
 		    DWORD errorval = GetLastError();
 			Tprintf ("Error %08X, watchdog is not running properly\n",errorval);
 	   }
-	   OpenThreadToken(thread,TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY,false, &token);
+	   OpenProcessToken(GetCurrentProcess(),TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY,&token);
 
 	   LookupPrivilegeValue(NULL,SE_DEBUG_NAME, &debugname);
 	   tokenpriv.PrivilegeCount = 1;
@@ -104,5 +105,4 @@ extern "C"
 		sDogPetted = true;
 	}
 }
-
 
