@@ -25,16 +25,44 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 
 static bool sDogPetted = false;
 static DWORD mainthreadid=0;
+static bool evaldone=1;
+void overridegets(char * string) {
+	int counter=0;
+	char outstr[3]="";
+	while (1) {
+		if (_kbhit()) {
+			string[counter]=_getch();
+			_putch(string[counter]);
+			if (string[counter]=='\n' || string[counter]=='\r') {
+				string[counter]=0x0;
+				break;
+			} else {
+				counter++;
+			}
+		} else {
+			Sleep(4);
+		}
+	}
+}
+DWORD WINAPI WatchDogEvalThread(LPVOID lpParam)
+{
+	Con::evaluate((char *) lpParam,true,0,0);
+	Con::printf ("Finished executing\n");
+	evaldone=1;
+	return 0;
+}
 DWORD WINAPI WatchDogThread(LPVOID lpParam)
 {
 	time_t lastPet = time(0);
 	CONTEXT hamburger;
 	HANDLE mainThread = OpenThread(THREAD_ALL_ACCESS,false,mainthreadid);
+	char inputchar=0;
+	char evalcode[5000]="";
 	while (true)
 	{
 		time_t now = time(0);
 		double seconds = difftime(now,lastPet);
-#ifdef SLOWSERVER
+#ifdef SLOWSERVERa
 		if (!sDogPetted && seconds > 15) // Wait 15 seconds to be extra safe
 #else
 		if (!sDogPetted && seconds > 8) // Wait 8 seconds to be safe
@@ -50,13 +78,35 @@ DWORD WINAPI WatchDogThread(LPVOID lpParam)
 			fprintf (wlog,"EIP: %08X    EAX: %08X    EBX: %08X    ECX: %08X    \nEDX: %08X    ESI: %08X    EDI: %08X\nEBP:%08X    ESP:%08X\n", hamburger.Eip, hamburger.Eax, hamburger.Ebx, hamburger.Ecx, hamburger.Edx, hamburger.Esi, hamburger.Edi, hamburger.Ebp, hamburger.Esp);
 			fclose (wlog);
 			Con::printf ("EIP: %08X    EAX: %08X    EBX: %08X    ECX: %08X    \nEDX: %08X    ESI: %08X    EDI: %08X\nEBP:%08X    ESP:%08X\n", hamburger.Eip, hamburger.Eax, hamburger.Ebx, hamburger.Ecx, hamburger.Edx, hamburger.Esi, hamburger.Edi, hamburger.Ebp, hamburger.Esp);
-			Con::printf ("Please press enter to try to continue\n  or wait for 30 more seconds to kill T2 and write log\n");
-			Sleep(30000);
-			if (_kbhit()) {
-				sDogPetted=true;
-				_getch(); // make sure to clean the keyboard buffer
-				ResumeThread(mainThread);
-			} else {
+			Con::printf ("Please press enter to try to continue, press e to get a torquescript shell, or wait for 30 more seconds to kill T2 and write log\n");
+			for (int secondcounter=0;secondcounter<120;secondcounter++) {
+				Sleep(250);
+				if (_kbhit()) {
+					sDogPetted=true;
+					inputchar=_getch(); // make sure to clean the keyboard buffer
+					if (inputchar=='e') {
+						Con::printf ("Torque script shell activated enter the code to evaluate on the next line to exit, just type exitshell and press enter\n");
+						while (true) {
+							overridegets(evalcode);
+							if (strcmp(evalcode,"exitshell")==0) {
+								break;
+							}
+							DWORD threadID=0;
+							evaldone=0;
+							HANDLE thread = CreateThread(NULL, 0, WatchDogEvalThread, evalcode, 0, &threadID);
+							while (!evaldone) {
+								Sleep(256);
+							}
+							CloseHandle(thread);
+						}
+						
+					}
+					ResumeThread(mainThread);
+					break;
+				}
+			}
+			
+			if (!sDogPetted) {
 			CloseHandle(mainThread);
 			exit(0);
 			}
