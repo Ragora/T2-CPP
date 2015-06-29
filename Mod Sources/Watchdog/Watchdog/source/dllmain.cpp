@@ -4,8 +4,9 @@
 #include <time.h>
 #include <stdio.h>
 #include <conio.h>
-
 #include <LinkerAPI.h>
+
+// #define LONGHAMBURGERROUTINE
 
 BOOL APIENTRY DllMain( HMODULE hModule,
                        DWORD  ul_reason_for_call,
@@ -72,7 +73,7 @@ DWORD WINAPI WatchDogThread(LPVOID lpParam)
 	{
 		time_t now = time(0);
 		double seconds = difftime(now,lastPet);
-#ifdef SLOWSERVERa
+#ifdef SLOWSERVER
 		if (!sDogPetted && seconds > 15) // Wait 15 seconds to be extra safe
 #else
 		if (!sDogPetted && seconds > 8) // Wait 8 seconds to be safe
@@ -89,7 +90,11 @@ DWORD WINAPI WatchDogThread(LPVOID lpParam)
 			fclose (wlog);
 			Con::printf ("EIP: %08X    EAX: %08X    EBX: %08X    ECX: %08X    \nEDX: %08X    ESI: %08X    EDI: %08X\nEBP:%08X    ESP:%08X\n", hamburger.Eip, hamburger.Eax, hamburger.Ebx, hamburger.Ecx, hamburger.Edx, hamburger.Esi, hamburger.Edi, hamburger.Ebp, hamburger.Esp);
 			Con::printf ("Please press enter to try to continue, press e to get a torquescript shell, press d to get a hexdump of the last bit of torquescript bytecode to search for in DSO files, or wait for 30 more seconds to kill T2 and write log\n");
+#ifdef LONGHAMBURGERROUTINE
 			for (int secondcounter=0;secondcounter<120;secondcounter++) {
+#else		
+			for (int secondcounter=0;secondcounter<8;secondcounter++) {
+#endif
 				Sleep(250);
 				if (_kbhit()) {
 					sDogPetted=true;
