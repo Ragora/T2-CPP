@@ -121,7 +121,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="source\CGameTime.cpp" />
     <ClCompile Include="source\CRigidBody.cpp" />
     <ClCompile Include="source\dllmain.cpp" />
     <ClCompile Include="source\t2ConCmds.cpp" />
@@ -394,7 +393,6 @@
     <ClInclude Include="include\bullet\vectormath\sse\vectormath_aos.h" />
     <ClInclude Include="include\bullet\vectormath\sse\vec_aos.h" />
     <ClInclude Include="include\bullet\vectormath\vmInclude.h" />
-    <ClInclude Include="include\CGameTime.h" />
     <ClInclude Include="include\config.h" />
     <ClInclude Include="include\CRigidBody.h" />
     <ClInclude Include="include\stdafx.h" />

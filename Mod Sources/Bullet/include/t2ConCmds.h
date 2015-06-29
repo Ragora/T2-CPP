@@ -14,7 +14,6 @@ const char* conGetVariable(Linker::SimObject *obj,S32 argc, const char* argv[]);
 // --- BulletDLL functions ------------------------------------------------
 bool conBulletInitialize(Linker::SimObject *obj, S32 argc, const char *argv[]);
 bool conBulletDeinitialize(Linker::SimObject *obj, S32 argc, const char *argv[]);
-bool conBulletUpdate(Linker::SimObject *obj, S32 argc, const char *argv[]);
 
 // --- Get Commands -------------------------------------------------------
 const char *conBulletGetPosition(Linker::SimObject *obj, S32 argc, const char *argv[]);
@@ -29,3 +28,5 @@ bool conBulletSetRotation(Linker::SimObject *obj, S32 argc, const char *argv[]);
 
 // --- Scene Addition Commands --------------------------------------------
 const char *conBulletCreateCube(Linker::SimObject *obj, S32 argc, const char *argv[]);
+
+void updateBullet(const unsigned int& timeDifference);

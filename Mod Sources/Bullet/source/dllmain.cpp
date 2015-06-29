@@ -24,7 +24,6 @@ extern "C"
 	{
 		Con::addMethodB(NULL, "bulletInitialize", &conBulletInitialize, "Initializes the Bullet physics system.", 0, 0);
 		Con::addMethodB(NULL, "bulletDeinitialize", &conBulletDeinitialize, "Deinitializes the Bullet physics system.", 0, 0);
-		Con::addMethodB(NULL, "bulletUpdate", &conBulletUpdate, "Updates the Bullet physics system. Call this as often as your system can handle.", 0, 0);
 
 		Con::addMethodS(NULL, "bulletGetPosition", &conBulletGetPosition, "Queries Bullet for the position of the object identified by the input id.", 2, 2);
 		Con::addMethodS(NULL, "bulletGetRotation", &conBulletGetRotation, "Queries Bullet for the rotation of the object identified by the input id.", 2, 2);
@@ -33,13 +32,13 @@ extern "C"
 		Con::addMethodB(NULL, "bulletSetGravity", &conBulletSetGravity, "bulletSetGravity(x,y,z)", 4, 4);
 		Con::addMethodB(NULL, "bulletInitialized", &conBulletInitialized, "Returns whether or not if Bullet has been initialized.", 0,0);
 
-		Con::addMethodS(NULL, "bulletCreateCube", &conBulletCreateCube, "bulletMakeCube(mass, scaleX, scaleY, scaleZ)", 5, 5);
+		Con::addMethodS(NULL, "bulletCreateCube", &conBulletCreateCube, "bulletMakeCube(mass, scaleX, scaleY, scaleZ, boundID)", 6, 6);
 
 	}
 
 	__declspec(dllexport) void ServerProcess(unsigned int deltaTime)
 	{
-		// Game will pump updates to here 
+		updateBullet(deltaTime);
 	}
 }
 

@@ -7,84 +7,35 @@
 #include "stdafx.h"
 #include "t2ConCmds.h"
 
-// Linker's implementations
-const char* conGuiTsCtrlProject(Linker::SimObject *obj,S32 argc, const char* argv[]) {
-	Linker::Point3F pt;
-	Linker::Point3F rt;
-	dSscanf(argv[2],"%g %g %g",&pt.x,&pt.y,&pt.z);
-	GuiTSCtrl_project(reinterpret_cast<GuiTSCtrl *>(obj),pt,&rt);
-
-	char* buffer = Con::getReturnBuffer(255);
-	dSprintf(buffer,255,"%g %g %g",rt.x,rt.y,rt.z);
-
-	return buffer;
-}
-
-bool conNetObjectSetGhostable(Linker::SimObject *obj,S32 argc, const char* argv[]) {
-	if (dAtob(argv[2])) {
-		__asm {
-			push ecx
-			mov ecx, [obj]
-			mov eax,[ecx+40h]
-			or eax, 100h
-			mov [ecx+40h], eax
-			pop ecx
-		}
-	} else {
-		__asm {
-			xor eax, eax
-			or eax, 100h
-			not eax
-			push ecx
-			mov ecx,[obj]
-			and eax, [ecx+40h]
-			mov [ecx+40h],eax
-			push    40h
-			mov eax, 0x585BE0
-			call eax
-			pop ecx
-		}
-	}
-	return 1;
-}
-
-const char* conGetVariable(Linker::SimObject *obj,S32 argc, const char* argv[]) {
-	return Con::getVariable(argv[1]);
-}
-
 // BulletDLL Implementations
 // *** NOTE ***
 // All vectors should have their Y and Z axiis switched due to the Z axis being up and down in Tribes 2
-Game::CGameTime *game_time;
-btDefaultCollisionConfiguration *bullet_config = NULL;
-btCollisionDispatcher *bullet_dispatcher = NULL;
-btDbvtBroadphase *bullet_broadphase = NULL;
-btSequentialImpulseConstraintSolver *bullet_constraint = NULL;
-btDiscreteDynamicsWorld *bullet_world = NULL;
+static btDefaultCollisionConfiguration *sBulletConfig = NULL;
+static btCollisionDispatcher *sCollisionDispatcher = NULL;
+static btDbvtBroadphase *sBroadphase = NULL;
+static btSequentialImpulseConstraintSolver *sConstraintSolver = NULL;
+static btDiscreteDynamicsWorld *sBulletWorld = NULL;
 
-btBoxShape *box_shapes[MAXIMUM_BULLET_NODES];
-btRigidBody *rigid_bodies[MAXIMUM_BULLET_NODES];
+struct NodeInformation
+{
+	unsigned int mID;
+	btBoxShape *mShape;
+	btRigidBody *mRigidBody;
+};
 
-unsigned int bullet_node_count;
+static NodeInformation *sActiveNodes[MAXIMUM_BULLET_NODES];
+
+static unsigned int sRigidBodyCount = 0;
 
 bool conBulletInitialize(Linker::SimObject *obj, S32 argc, const char *argv[])
 {
 	Con::printf("Bullet: Attempting to initialize ...");
-	if (!bullet_world)
-	{
-		// Try to create the game timer
-		game_time = Game::CGameTime::getPointer();
-		if (!game_time)
-		{
-			Con::errorf(1, "Bullet: Failed to initialize! Unable to create timing singleton.");
-			return false;
-		}
-		else
-			Con::printf("Bullet: Created timing singleton ...");
 
+	if (!sBulletWorld)
+	{
 		// Try to create the config
-		bullet_config = new btDefaultCollisionConfiguration;
-		if (!bullet_config)
+		sBulletConfig = new btDefaultCollisionConfiguration;
+		if (!sBulletConfig)
 		{
 			Con::errorf(1, "Bullet: Failed to initialize! Unable to create configuration object.");
 			return false;
@@ -93,56 +44,56 @@ bool conBulletInitialize(Linker::SimObject *obj, S32 argc, const char *argv[])
 			Con::printf("Bullet: Bullet configuration object created ...");
 
 		//Try to create the dispatcher
-		bullet_dispatcher = new btCollisionDispatcher(bullet_config);
-		if (!bullet_dispatcher)
+		sCollisionDispatcher = new btCollisionDispatcher(sBulletConfig);
+		if (!sCollisionDispatcher)
 		{
 			Con::errorf(1, "Bullet: Failed to initialize! Unable to create collision dispatch object.");
-			delete bullet_config;
+			delete sBulletConfig;
 			return false;
 		}
 		else
 			Con::printf("Bullet: Bullet collision dispatch object created ...");
 
 		// Try to create the broadphase object
-		bullet_broadphase = new btDbvtBroadphase;
-		if (!bullet_broadphase)
+		sBroadphase = new btDbvtBroadphase;
+		if (!sBroadphase)
 		{
 			Con::errorf(1, "Bullet: Failed to initialize! Unable to create broadphase object.");
-			delete bullet_dispatcher;
-			delete bullet_config;
+			delete sCollisionDispatcher;
+			delete sBulletConfig;
 			return false;
 		}
 		Con::printf("Bullet: Bullet broadphase object created ...");
 
 		// Try to create the sequential impulse constraint solver
-		bullet_constraint = new btSequentialImpulseConstraintSolver;
-		if (!bullet_constraint)
+		sConstraintSolver = new btSequentialImpulseConstraintSolver;
+		if (!sConstraintSolver)
 		{
 			Con::errorf(1, "Bullet: Failed to initialize! Unable to create sequential impulse constraint solver object.");
-			delete bullet_dispatcher;
-			delete bullet_config;
-			delete bullet_broadphase;
+			delete sCollisionDispatcher;
+			delete sBulletConfig;
+			delete sBroadphase;
 			return false;
 		}
 		else
 			Con::printf("Bullet: Bullet sequential impulse constraint solver object created ...");
 
 		// Now try to create the bullet world
-		bullet_world = new btDiscreteDynamicsWorld(bullet_dispatcher, bullet_broadphase, bullet_constraint, bullet_config);
-		if (!bullet_world)
+		sBulletWorld = new btDiscreteDynamicsWorld(sCollisionDispatcher, sBroadphase, sConstraintSolver, sBulletConfig);
+		if (!sBulletWorld)
 		{
 			Con::errorf(1, "Bullet: Failed to initialize! Unable to create discrete dynamics world.");
-			delete bullet_dispatcher;
-			delete bullet_config;
-			delete bullet_broadphase;
-			delete bullet_constraint;
+			delete sCollisionDispatcher;
+			delete sBulletConfig;
+			delete sBroadphase;
+			delete sConstraintSolver;
 			return false;
 		}
 		else
 			Con::printf("Bullet: Bullet discrete dynamics world created! Bullet is now ready.");
 
-		bullet_world->setGravity(btVector3(0,-100,0));
-		bullet_node_count = 0;
+		sBulletWorld->setGravity(btVector3(0,-100,0));
+		sRigidBodyCount = 0;
 		return true;
 	}
 	Con::errorf(1, "Bullet: Already initialized!");
@@ -151,19 +102,23 @@ bool conBulletInitialize(Linker::SimObject *obj, S32 argc, const char *argv[])
 
 bool conBulletDeinitialize(Linker::SimObject *obj, S32 argc, const char *argv[])
 {
-	if (bullet_world)
+	if (sBulletWorld)
 	{
-		delete bullet_world;
-		bullet_world = NULL;
-		delete bullet_dispatcher;
-		bullet_dispatcher = NULL;
-		delete bullet_config;
-		bullet_config = NULL;
-		delete bullet_broadphase;
-		bullet_broadphase = NULL;
-		delete bullet_constraint;
-		bullet_constraint = NULL;
-		Game::CGameTime::destroy();
+		delete sBulletWorld;
+		sBulletWorld = NULL;
+
+		delete sCollisionDispatcher;
+		sCollisionDispatcher = NULL;
+
+		delete sBulletConfig;
+		sBulletConfig = NULL;
+
+		delete sBroadphase;
+		sBroadphase = NULL;
+
+		delete sConstraintSolver;
+		sConstraintSolver = NULL;
+
 		Con::printf("Bullet: Successfully deinitialized.");
 		return true;
 	}
@@ -171,26 +126,34 @@ bool conBulletDeinitialize(Linker::SimObject *obj, S32 argc, const char *argv[])
 	return false;
 }
 
-bool conBulletUpdate(Linker::SimObject *obj, S32 argc, const char *argv[])
+void updateBullet(const unsigned int& timeDifference)
 {
-	if (bullet_world)
+	if (sBulletWorld)
 	{
-		if (argc >= 2)
+		sBulletWorld->stepSimulation(timeDifference);
+
+		// When we pump an update, we need to step through and push updates to the nodes
+		for (size_t iteration = 0; iteration < sRigidBodyCount; iteration++)
 		{
-			btScalar delta = btScalar(atof(argv[1]));
-			bullet_world->stepSimulation(delta);
+			char *result = new char[256];
+
+			// Get the position
+			btTransform transform = sActiveNodes[iteration]->mRigidBody->getCenterOfMassTransform();
+			btVector3 position = transform.getOrigin();
+
+			// Then the rotation
+			btQuaternion rotation = sActiveNodes[iteration]->mRigidBody->getOrientation();
+
+			// Assemble the output
+			sprintf(result, "%u.setTransform(\"%f %f %f %f %f %f %f\");", sActiveNodes[iteration]->mID, position.x(), position.z(), position.y(), rotation.x(), rotation.z(), rotation.y(), rotation.w());
+			Con::evaluate(result, false, NULL, false);
 		}
-		else
-			bullet_world->stepSimulation(game_time->getDelta());
-		game_time->update();
-		return true;
 	}
-	return false;
 }
 
 const char *conBulletGetPosition(Linker::SimObject *obj, S32 argc, const char *argv[])
 {
-	if (!bullet_world)
+	if (!sBulletWorld)
 	{
 		Con::errorf(1, "Bullet: Attempted to retrieve the position of a node without having initialized Bullet!");
 		return "0 0 0";
@@ -202,20 +165,20 @@ const char *conBulletGetPosition(Linker::SimObject *obj, S32 argc, const char *a
 		Con::errorf(1, "Bullet: Attempted to retrieve the position of a out-of-range node! (%u > %u)", id, MAXIMUM_BULLET_NODES);
 		return "0 0 0";
 	}
-	if (id > bullet_node_count)
+	if (id > sRigidBodyCount)
 	{
 		Con::errorf(1, "Bullet: Attempted to retrieve the position of a non-existent node! (%u)", id);
 		return "0 0 0";
 	}
 
-	btRigidBody *body = rigid_bodies[id];
-	if (!body)
+	NodeInformation *node = sActiveNodes[id];
+	if (!node)
 	{
 		Con::errorf(1, "Bullet: Node retrieval for object %u successful, however it is nonexistent!", id);
 		return "0 0 0";
 	}
 
-	btTransform transform = body->getCenterOfMassTransform();
+	btTransform transform = node->mRigidBody->getCenterOfMassTransform();
 	btVector3 position = transform.getOrigin();
 
 	char *output = (char*)malloc(sizeof(char)*256);
@@ -225,7 +188,7 @@ const char *conBulletGetPosition(Linker::SimObject *obj, S32 argc, const char *a
 
 const char *conBulletGetRotation(Linker::SimObject *obj, S32 argc, const char *argv[])
 {
-	if (!bullet_world)
+	if (!sBulletWorld)
 	{
 		Con::errorf(1, "Bullet: Attempted to retrieve the rotation of a node without having initialized Bullet!");
 		return "0 0 0";
@@ -237,20 +200,20 @@ const char *conBulletGetRotation(Linker::SimObject *obj, S32 argc, const char *a
 		Con::errorf(1, "Bullet: Attempted to retrieve the rotation of a out-of-range node! (%u > %u)", id, MAXIMUM_BULLET_NODES);
 		return "0 0 0";
 	}
-	if (id > bullet_node_count)
+	if (id > sRigidBodyCount)
 	{
 		Con::errorf(1, "Bullet: Attempted to retrieve the rotation of a non-existent node! (%u)", id);
 		return "0 0 0";
 	}
 
-	btRigidBody *body = rigid_bodies[id];
-	if (!body)
+	NodeInformation *node = sActiveNodes[id];
+	if (!node)
 	{
 		Con::errorf(1, "Bullet: Node retrieval for object %u successful, however it is nonexistent!", id);
 		return "0 0 0";
 	}
 
-	btQuaternion rotation = body->getOrientation();
+	btQuaternion rotation = node->mRigidBody->getOrientation();
 
 	char *output = (char*)malloc(sizeof(char)*256);
 	sprintf_s(output, 256, "%f %f %f %f", rotation.x(), rotation.y(), rotation.z(), rotation.w());
@@ -259,22 +222,24 @@ const char *conBulletGetRotation(Linker::SimObject *obj, S32 argc, const char *a
 
 bool conBulletInitialized(Linker::SimObject *obj, S32 argc, const char *argv[])
 {
-	if (!bullet_world)
+	if (!sBulletWorld)
 		return false;
 	return true;
 }
 
 const char *conBulletCreateCube(Linker::SimObject *obj, S32 argc, const char *argv[])
 {
-	if (!bullet_world)
+	if (!sBulletWorld)
 	{
 		Con::errorf(1, "Bullet: Attempted to create a cube without having initialized Bullet!");
 		return "0";
 	}
+
 	btScalar mass = btScalar(atof(argv[1]));
 	btScalar X = btScalar(atof(argv[2]));
 	btScalar Y = btScalar(atof(argv[4]));
 	btScalar Z = btScalar(atof(argv[3]));
+	const unsigned int boundID = atoi(argv[4]);
 
 	// Create the Bullet Object
 	btTransform start_transform;
@@ -282,11 +247,16 @@ const char *conBulletCreateCube(Linker::SimObject *obj, S32 argc, const char *ar
 	btBoxShape *shape = new btBoxShape(btVector3(X,Y,Z));
 	btRigidBody::btRigidBodyConstructionInfo info(mass, NULL, shape, btVector3(btScalar(0.0f), btScalar(0.0f), btScalar(0.0f)));
 	btRigidBody *body = new btRigidBody(info);
-	bullet_world->addRigidBody(body);
+	sBulletWorld->addRigidBody(body);
 
-	unsigned int identification = bullet_node_count;
-	rigid_bodies[identification] = body;
-	bullet_node_count++;
+	NodeInformation *newNode = new NodeInformation;
+	newNode->mRigidBody = body;
+	newNode->mShape = shape;
+	newNode->mID = boundID;
+
+	unsigned int identification = sRigidBodyCount;
+	sActiveNodes[identification] = newNode;
+	sRigidBodyCount++;
 
 	char *output = (char*)malloc(sizeof(char)*256);
 	sprintf_s(output, 256, "%u", identification);
@@ -296,7 +266,7 @@ const char *conBulletCreateCube(Linker::SimObject *obj, S32 argc, const char *ar
 bool conBulletSetPosition(Linker::SimObject *obj, S32 argc, const char *argv[])
 {
 	unsigned int id = atoi(argv[1]);
-	if (!bullet_world)
+	if (!sBulletWorld)
 	{
 		Con::errorf(1, "Bullet: Attempted to set the position of an object %u without having Bullet initialized!", id);
 		return false;
@@ -307,14 +277,14 @@ bool conBulletSetPosition(Linker::SimObject *obj, S32 argc, const char *argv[])
 		Con::errorf(1, "Bullet: Attempted to set the rotation of a out-of-range node! (%u > %u)", id, MAXIMUM_BULLET_NODES);
 		return "0 0 0";
 	}
-	if (id > bullet_node_count)
+	if (id > sRigidBodyCount)
 	{
 		Con::errorf(1, "Bullet: Attempted to set the rotation of a non-existent node! (%u)", id);
 		return "0 0 0";
 	}
 
-	btRigidBody *body = rigid_bodies[id];
-	if (!body)
+	NodeInformation *node = sActiveNodes[id];
+	if (!node)
 	{
 		Con::errorf(1, "Bullet: Node retrieval for object %u successful, however it is nonexistent!", id);
 		return "0 0 0";
@@ -324,15 +294,15 @@ bool conBulletSetPosition(Linker::SimObject *obj, S32 argc, const char *argv[])
 	btScalar Y = btScalar(atof(argv[4]));
 	btScalar Z = btScalar(atof(argv[3]));
 
-	btTransform transform = body->getCenterOfMassTransform();
+	btTransform transform = node->mRigidBody->getCenterOfMassTransform();
 	btTransform new_transform(transform.getRotation(),btVector3(btScalar(X),btScalar(Y),btScalar(Z)));
-	body->setWorldTransform(new_transform);
+	node->mRigidBody->setWorldTransform(new_transform);
 	return true;
 }
 
 bool conBulletSetGravity(Linker::SimObject *obj, S32 argc, const char *argv[])
 {
-	if (!bullet_world)
+	if (!sBulletWorld)
 	{
 		Con::errorf(1, "Bullet: Attempted to set the gravity of the Bullet world without having Bullet initialized!");
 		return false;
@@ -341,14 +311,14 @@ bool conBulletSetGravity(Linker::SimObject *obj, S32 argc, const char *argv[])
 	btScalar X = btScalar(atof(argv[1]));
 	btScalar Y = btScalar(atof(argv[3]));
 	btScalar Z = btScalar(atof(argv[2]));
-	bullet_world->setGravity(btVector3(btScalar(X),btScalar(Y),btScalar(Z)));
+	sBulletWorld->setGravity(btVector3(btScalar(X),btScalar(Y),btScalar(Z)));
 	return true;
 }
 
 bool conBulletSetMass(Linker::SimObject *obj, S32 argc, const char *argv[])
 {
     unsigned int id = atoi(argv[1]);
-    if (!bullet_world)
+    if (!sBulletWorld)
     {
         Con::errorf(1, "Bullet: Attempted to set mass of object %u without having Bullet initialized!", id);
         return false;
@@ -358,14 +328,14 @@ bool conBulletSetMass(Linker::SimObject *obj, S32 argc, const char *argv[])
 		Con::errorf(1, "Bullet: Attempted to set the rotation of a out-of-range node! (%u > %u)", id, MAXIMUM_BULLET_NODES);
 		return "0 0 0";
 	}
-	if (id > bullet_node_count)
+	if (id > sRigidBodyCount)
 	{
 		Con::errorf(1, "Bullet: Attempted to set the rotation of a non-existent node! (%u)", id);
 		return "0 0 0";
 	}
 
-    btRigidBody *body = rigid_bodies[id];
-	if (!body)
+    NodeInformation *node = sActiveNodes[id];
+	if (!node)
 	{
 		Con::errorf(1, "Bullet: Node retrieval for object %u successful, however it is nonexistent!", id);
 		return "0 0 0";

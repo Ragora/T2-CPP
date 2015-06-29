@@ -30,5 +30,4 @@
 // TODO: reference additional headers your program requires here
 #include <LinkerAPI.h>
 #include <btBulletDynamicsCommon.h>
-#include "CGameTime.h"
 #include "config.h"

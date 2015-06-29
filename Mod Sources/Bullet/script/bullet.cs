@@ -13,7 +13,7 @@ $Bullet::PhysicsUpdateMS = 100;	// The delay in milliseconds before updating sta
 //---------------------------------------------------------------------------------------------------------------------------
 //	Geek code.
 //======================================================================
-function StaticShape::setMass(%this,%mass)
+function StaticShape::setMass(%this, %mass)
 {
 	if (%this.bullet_id $= "")
 	{
@@ -25,7 +25,7 @@ function StaticShape::setMass(%this,%mass)
 		
 		%id = bulletCreateCube(%mass, getWord(%size, 0)/2, 
 										getWord(%size, 1)/2, 
-									  	getWord(%size, 2)/2);
+									  	getWord(%size, 2)/2, %this);
 		%this.bullet_id = %id;
 		%this.bullet_mass = %mass;
 		bulletSetPosition(%id, getWord(%position, 0), 
@@ -64,28 +64,6 @@ function StaticShape::setMass(%this,%mass)
 	return true;
 }
 
-function bulletPhysicsUpdate()
-{		
-	cancel($Bullet::ScheduleID);
-	if (!bulletInitialized() || !$Bullet::Enabled)
-	{
-		$Bullet::ObjectCount = 0;
-		return false;
-	}
-
-	bulletUpdate();
-	for (%i = 0; %i < $Bullet::ObjectCount; %i++)
-	{
-		%object = $Bullet::ObjectArray[%i];
-		%object.setWorldBoxCenter(bulletGetPosition(%object.bullet_id));
-
-		%rotation = bulletGetRotation(%object.bullet_id);
-		%object.setRotation(%rotation);
-	}
-	$Bullet::ScheduleID = schedule($Bullet::PhysicsUpdateMS,0,"bulletPhysicsUpdate");
-	return true;
-}
-
 $Bullet::Enabled = false;
 $Bullet::ScheduleID = 0;
 $Bullet::ObjectCount = 0;
@@ -103,12 +81,16 @@ function ccTogglePhysics(%sender)
 	
 	$Bullet::Enabled = !$Bullet::Enabled;
 	if ($Bullet::Enabled)
-	{
+    {
 		messageAll('msgAll', "\c3" @ %sender.namebase SPC "has enabled Bullet physics! ~wfx/misc/bounty_completed.wav");
-		bulletPhysicsUpdate();
-	}
+        bulletInitialize();
+    }
 	else
+    {
 		messageAll('msgAll', "\c3" @ %sender.namebase SPC "has disabled Bullet physics! ~wfx/misc/bounty_completed.wav");
+        bulletDeinitialize();
+    }
+    
 	return true;
 }
 
