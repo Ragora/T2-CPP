@@ -20,13 +20,30 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 {
     return true;
 }
-
+const unsigned char moduroutine[] = {0x8B, 0x3D, 0xEC, 0x82, 0x9E, 0x00, 0x89, 0xF8, 0x8B, 0x14, 0x85, 0xFC, 0xA5, 0x88, 0x00, 0x83, 0xFA, 0x00, 0x74, 0x30, 0x8B, 0x3D, 0xEC, 0x82, 0x9E, 0x00, 0x89, 0xF8, 0x31, 0xD2, 0x89, 0xF8, 0x8B, 0x04, 0x85, 0x00, 0xA6, 0x88, 0x00, 0xF7, 0x34, 0xBD, 0xFC, 0xA5, 0x88, 0x00, 0xFF, 0x0D, 0xEC, 0x82, 0x9E, 0x00, 0x89, 0xF8, 0x89, 0x14, 0x85, 0xFC, 0xA5, 0x88, 0x00, 0xB8, 0xC7, 0xCE, 0x42, 0x00, 0xFF, 0xE0, 0xFF, 0x0D, 0xEC, 0x82, 0x9E, 0x00, 0xC7, 0x04, 0x85, 0xFC, 0xA5, 0x88, 0x00, 0x00, 0x00, 0x00, 0x00, 0xB8, 0xC7, 0xCE, 0x42, 0x00, 0xFF, 0xE0};
 const char* congetServPAddr(Linker::SimObject *obj, S32 argc, const char *argv[]) 
 {
 		char test[256] = "";
 		char test2[256]="";
 		int spr=(signed int)*serverProcessReplacement;
 		sprintf(test2,"B8%08XFFD089EC5DC3",endian(spr));
+		/*test2[0]=test[6];
+		test2[1]=test[7];
+		test2[2]=test[4];
+		test2[3]=test[5];
+		test2[4]=test[2];
+		test2[5]=test[3];
+		test2[6]=test[0];
+		test2[7]=test[1];
+		test2[8]=0;*/
+		return test2;
+}
+const char* congetModuAddr(Linker::SimObject *obj, S32 argc, const char *argv[]) 
+{
+		char test[256] = "";
+		char test2[256]="";
+		int spr=(signed int)moduroutine;
+		sprintf(test2,"B8%08XFFE0",endian(spr));
 		/*test2[0]=test[6];
 		test2[1]=test[7];
 		test2[2]=test[4];
@@ -54,11 +71,12 @@ class CImmDevice
 		{ 
 			Con::addVariable("$cpuspeed",TypeS32,reinterpret_cast<void*>(0x8477F8)); //1 - S32, this is so i can set my cpu speed to 31337 or osmething =P
 			Con::addVariable("$GameBase::showBoundingBox",TypeBool,reinterpret_cast<void*>(0x9ECF24));
-
+			DWORD oldprotect=0;
 			// Mod Loader Function
 			Con::addMethodB(NULL, "loadMod", &conLoadMod, "Loads a C++ modification.",2,2);
 			Con::addMethodS(NULL, "getServPAddr",&congetServPAddr,"Gets the memPatch data for ServerProcess",1,1);
-
+			VirtualProtect( (LPVOID)moduroutine,sizeof(moduroutine),PAGE_EXECUTE_READWRITE,&oldprotect);
+			Con::addMethodS(NULL, "getModuAddr",&congetModuAddr,"Gets the memPatch data for the MODULO operator routine",1,1); // memPatch("42D89D",getModuAddr());
 			// Load the original TribesNext DLL if available
 			typedef void (*LPINITT2DLL)(void);
 			HINSTANCE hDLL = NULL;
