@@ -26,6 +26,16 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 static bool sDogPetted = false;
 static DWORD mainthreadid=0;
 static bool evaldone=1;
+void overrideputhex(unsigned char hex) {
+	char hexstr[40]="";
+	char outchar=' ';
+	int counter=0;
+	sprintf (hexstr,"%02X",hex);
+	while (hexstr[counter] != 0x0) {
+		_putch(hexstr[counter]);
+		counter++;
+	}
+}
 void overridegets(char * string) {
 	int counter=0;
 	char outstr[3]="";
@@ -78,7 +88,7 @@ DWORD WINAPI WatchDogThread(LPVOID lpParam)
 			fprintf (wlog,"EIP: %08X    EAX: %08X    EBX: %08X    ECX: %08X    \nEDX: %08X    ESI: %08X    EDI: %08X\nEBP:%08X    ESP:%08X\n", hamburger.Eip, hamburger.Eax, hamburger.Ebx, hamburger.Ecx, hamburger.Edx, hamburger.Esi, hamburger.Edi, hamburger.Ebp, hamburger.Esp);
 			fclose (wlog);
 			Con::printf ("EIP: %08X    EAX: %08X    EBX: %08X    ECX: %08X    \nEDX: %08X    ESI: %08X    EDI: %08X\nEBP:%08X    ESP:%08X\n", hamburger.Eip, hamburger.Eax, hamburger.Ebx, hamburger.Ecx, hamburger.Edx, hamburger.Esi, hamburger.Edi, hamburger.Ebp, hamburger.Esp);
-			Con::printf ("Please press enter to try to continue, press e to get a torquescript shell, or wait for 30 more seconds to kill T2 and write log\n");
+			Con::printf ("Please press enter to try to continue, press e to get a torquescript shell, press d to get a hexdump of the last bit of torquescript bytecode to search for in DSO files, or wait for 30 more seconds to kill T2 and write log\n");
 			for (int secondcounter=0;secondcounter<120;secondcounter++) {
 				Sleep(250);
 				if (_kbhit()) {
@@ -100,6 +110,24 @@ DWORD WINAPI WatchDogThread(LPVOID lpParam)
 							CloseHandle(thread);
 						}
 						
+					} else if (inputchar=='d') {
+						DWORD codeOffset=*(DWORD *)(0xa3b714);
+						DWORD codeBase=*(DWORD *)(0xa3b710);
+						if (codeBase!=0) {
+							unsigned char *basecodeptr=(unsigned char *)((codeBase+(codeOffset*4)));
+							Con::printf ("CodeOffset: %08X    CodeAddr: %08X    (Codeoffset-128 to CodeOffset+512 is on the next line)\n",codeOffset, (codeBase+(codeOffset*4)));
+							
+							
+							for (int codeOffsetCounter=-128; codeOffsetCounter<512; codeOffsetCounter++) {
+								overrideputhex(*(basecodeptr+codeOffsetCounter));
+								_putch(' ');
+							}
+							_putch('\n');
+							_putch('\r');
+							Con::printf("Search for those hex bytes in a binary search utility to find the DSO file with the last executed opcodes\n");
+						} else {
+							Con::printf ("you forgot to run this command: memPatch(\"42CED1\",getInterAddr());\n");
+						}
 					}
 					ResumeThread(mainThread);
 					break;
@@ -124,6 +152,10 @@ extern "C"
 {
 	__declspec(dllexport) void ModInitialize(void)
 	{
+	   DWORD *codeOffset=(DWORD *)(0xa3b714);
+	   DWORD *codeBase=(DWORD *)(0xa3b710);
+	   *codeOffset=0x0;
+	   *codeBase=0x0;
 	   mainthreadid = GetThreadId(GetCurrentThread());
 	   SECURITY_DESCRIPTOR secDescVar;
 	   DWORD threadID;
