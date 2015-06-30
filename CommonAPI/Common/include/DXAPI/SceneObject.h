@@ -12,9 +12,5 @@ namespace DX
 
 		Point3F position;
 		Point3F scale;
-		float &rx;
-		float &ry;
-		float &rz;
-		float &rw;
 	};
 } // End NameSpace DX
