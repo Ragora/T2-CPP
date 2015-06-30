@@ -31,6 +31,7 @@ namespace DX
 		char * argv[] = { &arg0[0], NULL };
 		int argc = 1;
 		Con::setMatrixRotation(objtoworld,argc,(const char **)argv,NULL,0);
+		Con::setMatrixRotation(renderobjtoworld,argc,(const char **)argv,NULL,0);
 	}
 	
 	void SceneObject::setPosition(float pos []) {
@@ -39,5 +40,6 @@ namespace DX
 		char * argv[] = { &arg0[0], NULL };
 		int argc = 1;
 		Con::setMatrixPosition(objtoworld,argc,(const char **)argv,NULL,0);
+		Con::setMatrixPosition(renderobjtoworld,argc,(const char **)argv,NULL,0);
 	}
 }
