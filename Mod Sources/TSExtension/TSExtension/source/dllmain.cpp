@@ -30,16 +30,16 @@ extern "C"
 	__declspec(dllexport) void ServerProcess(unsigned int deltaTime)
 	{
 		//memPatch("602D1E","9090");
-		float *pos;
-		float *rot;
+		float pos[3];
+		float rot[4];
 		if (gravid!=0) {
 			if (movespeed != 0.0) {
 				float timeinseconds=(deltaTime/1000.0f);
 				void * objptr = Sim::findObject(gravid);
 				if ((unsigned int)(objptr)) {
 					DX::SceneObject newobj=DX::SceneObject((unsigned int)objptr);
-					pos=newobj.getPosition();
-					rot=newobj.getRotation();
+					newobj.getPosition(pos);
+					newobj.getRotation(rot);
 					pos[2]+=(movespeed*timeinseconds);
 					newobj.setPosition(pos);
 				}

@@ -9,8 +9,8 @@ namespace DX
 	{
 	public:
 		SceneObject(unsigned int obj);
-		float * SceneObject::getPosition();
-		float * SceneObject::getRotation();
+		void SceneObject::getPosition(float * pos);
+		void SceneObject::getRotation(float * rot);
 		void SceneObject::setRotation(float []);
 		void SceneObject::setPosition(float []);
 		void * worldtoobj;
