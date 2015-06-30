@@ -106,6 +106,10 @@ extern char *	(*getReturnBuffer)(U32 bufferSize);
 extern void (*addMethodB)(const char *nsName, const char *name, BoolCallback   cb,   const char *usage, S32 minArgs, S32 maxArgs);
 extern void (*addMethodS)(const char *nsName, const char *name, StringCallback cb, const char *usage, S32 minArgs, S32 maxArgs);
 extern void (*addMethodI)(const char *nsName, const char *name, IntCallback   cb,   const char *usage, S32 minArgs, S32 maxArgs);
+extern const char * (*getMatrixRotation)(void * matptr, unsigned int *, unsigned int);
+extern const char * (*getMatrixPosition)(void * matptr, unsigned int *, unsigned int);
+extern void (*setMatrixRotation)(void * matptr, S32 argc, const char **argv, unsigned int *, unsigned int);
+extern void (*setMatrixPosition)(void * matptr, S32 argc, const char **argv, unsigned int *, unsigned int);
 extern bool (*addVariable)(const char *name, S32 t, void *dp);
 
 extern void (*printf)(const char* fmt,...);
@@ -116,7 +120,7 @@ extern const char * (*execute)(S32 argc, const char *argv[]);
 extern const char * (*executef)(S32 argc, ...);
 extern const char * (*executem)(Linker::SimObject *object, S32 argc, const char *argv[]);
 extern const char * (*evaluate)(const char* string, bool echo, const char *fileName, bool cf);
-}
+};
 
 //d-util
 extern int (*dSscanf)(const char *buffer, const char *format, ...);

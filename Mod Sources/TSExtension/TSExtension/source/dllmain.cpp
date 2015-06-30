@@ -25,6 +25,28 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 
 extern "C"
 {
+	static S32 gravid=0;
+	static float movespeed=0.0;
+	__declspec(dllexport) void ServerProcess(unsigned int deltaTime)
+	{
+		//memPatch("602D1E","9090");
+		float *pos;
+		float *rot;
+		if (gravid!=0) {
+			if (movespeed != 0.0) {
+				float timeinseconds=(deltaTime/1000.0f);
+				void * objptr = Sim::findObject(gravid);
+				if ((unsigned int)(objptr)) {
+					DX::SceneObject newobj=DX::SceneObject((unsigned int)objptr);
+					pos=newobj.getPosition();
+					rot=newobj.getRotation();
+					pos[2]+=(movespeed*timeinseconds);
+					newobj.setPosition(pos);
+				}
+			}
+
+		}
+	}
 	__declspec(dllexport) void ModInitialize(void)
 	{
 		// Init WSA
@@ -79,6 +101,10 @@ extern "C"
 
 		// Add this Gvar to signify that TSExtension is active
 		static bool is_active = true;
+
+
+		Con::addVariable("$TSExtension::UberGravity", TypeF32, &movespeed);
+		Con::addVariable("$TSExtension::UberId",TypeS32, &gravid);
 		Con::addVariable("$TSExtension::isActive", TypeBool, &is_active);
 	}
 }

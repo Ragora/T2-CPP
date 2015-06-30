@@ -33,6 +33,10 @@ namespace Con
 char* (*getReturnBuffer)(U32 bufferSize) = 
 	(char *(__cdecl *)(U32))
 	0x42caa0;
+const char * (*getMatrixRotation)(void * matptr, unsigned int *, unsigned int) = (const char * (__cdecl *)(void *, unsigned int *, unsigned int)) 0x5503A0;
+void (*setMatrixRotation)(void * matptr, S32 argc, const char **argv, unsigned int *, unsigned int) = (void (__cdecl *)(void *, S32, const char **, unsigned int *, unsigned int)) 0x550420;
+const char * (*getMatrixPosition)(void * matptr, unsigned int *, unsigned int) = (const char * (__cdecl *)(void *, unsigned int *, unsigned int)) 0x550260;
+void (*setMatrixPosition)(void * matptr, S32 argc, const char **argv, unsigned int *, unsigned int) = (void (__cdecl *)(void *, S32, const char **, unsigned int *, unsigned int)) 0x550300;
 
 void (*addMethodI)(const char *nsName, const char *name, IntCallback   cb,   const char *usage, S32 minArgs, S32 maxArgs) = 
 	(void (__cdecl *)(const char *, const char *,IntCallback,const char *,S32,S32))
