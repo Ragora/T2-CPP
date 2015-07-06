@@ -84,6 +84,7 @@
     <ClInclude Include="include\DXAPI\GameBase.h" />
     <ClInclude Include="include\DXAPI\GameConnection.h" />
     <ClInclude Include="include\DXAPI\GrenadeProjectile.h" />
+    <ClInclude Include="include\DXAPI\Move.h" />
     <ClInclude Include="include\DXAPI\NetConnection.h" />
     <ClInclude Include="include\DXAPI\NetObject.h" />
     <ClInclude Include="include\DXAPI\Player.h" />
@@ -104,6 +105,7 @@
     <ClCompile Include="source\DXAPI\GameBase.cpp" />
     <ClCompile Include="source\DXAPI\GameConnection.cpp" />
     <ClCompile Include="source\DXAPI\GrenadeProjectile.cpp" />
+    <ClCompile Include="source\DXAPI\Move.cpp" />
     <ClCompile Include="source\DXAPI\NetConnection.cpp" />
     <ClCompile Include="source\DXAPI\NetObject.cpp" />
     <ClCompile Include="source\DXAPI\Player.cpp" />

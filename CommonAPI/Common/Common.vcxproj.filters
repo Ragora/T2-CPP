@@ -69,6 +69,9 @@
     <ClInclude Include="include\LinkerAPI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\DXAPI\Move.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\DXAPI\DXAPI.cpp">
@@ -123,6 +126,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\LinkerAPI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\DXAPI\Move.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

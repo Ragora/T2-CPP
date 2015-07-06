@@ -20,11 +20,116 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 
 #include <DXAPI/DXAPI.h>
 #include <LinkerAPI.h>
-
+#include <DXAPI/Move.h>
 #include <DXConCmds.h>
+static DX::Move curmove;
+static unsigned int tmpobjptr=0;
+
 
 extern "C"
 {
+	static DX::AIMove aimoves[1024];
+	
+	DX::AIMove * getAIMovePtr(unsigned int id) {
+		int moveindex=0;
+		bool foundindex=false;
+		for (int x=0; x<1024; x++) {
+			if (aimoves[x].id==id && aimoves[x].used==true) {
+				moveindex=x;
+				foundindex=true;
+				break;
+			}
+			if (aimoves[x].used==false) {
+				moveindex=x;
+				break;
+			}
+		}
+		if (foundindex==true) {
+			return &aimoves[moveindex];
+		} else {
+			aimoves[moveindex].id=id;
+			aimoves[moveindex].used=true;
+			DX::generateNullMove(&(aimoves[moveindex].move));
+			return &aimoves[moveindex];
+		}
+	}
+	DX::Move tmpmove;
+    __declspec(dllexport) void __cdecl newAIMoveListGenerator(DX::Move** moves, unsigned int * moveCount) {
+		__asm {
+			mov tmpobjptr,ecx
+		}
+
+		unsigned int * origobjptr;
+		origobjptr=(unsigned int *) tmpobjptr;
+		DX::AIMove * aimove;
+		DX::GameConnection * aiconn;
+		//Con::printf ("Possible offsets for ID starting at 0x4\n");
+		if (origobjptr !=0 ) {
+		//unsigned int * idptr;
+		//unsigned int offset=0x4;
+		//for (offset=0x4; offset<0x100; offset+=0x4) {
+		
+			//idptr=(unsigned int *)((* (origobjptr))+offset);
+			//Con::printf ("Offset: %08X Addr: %08X Data: %d",offset, idptr, *idptr);
+		
+		//}
+		aiconn = &DX::GameConnection((unsigned int)origobjptr+0xA0);
+		aimove = getAIMovePtr(aiconn->identifier);
+		char movecallback[120]="";
+		sprintf (movecallback,"AIMoveCallback(%d);",aiconn->identifier);
+		Con::evaluate(movecallback,false,NULL,NULL);
+		//Con::printf ("BasePointer: %08X", aiconn.base_pointer_value);
+		//Con::printf ("Ecx Value: %08X", origobjptr);
+		//Con::printf("ID: %d\n",aiconn.identifier);
+		//Con::evaluate ("listPlayers();",true,NULL,NULL);
+
+		//Con::printf("orig: %08X   obj: %08X\n",origobjptr,0xBADABEEB);
+		
+			
+			
+			//Con::printf("Move processed for %08X\n",(aicon.identifier));
+		}
+		//memcpy (&tmpmove,&(aimove->move),sizeof(DX::Move));
+		//DX::generateNullMove(&(aimove->move));
+		*moves = &(aimove->move);
+		*moveCount=1;
+		return;
+
+
+	}
+	bool consetTrigger(Linker::SimObject *obj, S32 argc, const char *argv[]) {
+		unsigned int aiconid = atoi(argv[1]);
+		unsigned int index = atoi(argv[2]);
+		if (index < 6) {
+			DX::AIMove * aimove = getAIMovePtr(aiconid);
+			bool value = dAtob(argv[3]);
+			aimove->move.triggers[index]=value;
+			return true;
+		}
+		return false;
+	}
+	bool consetMove(Linker::SimObject *obj, S32 argc, const char *argv[]) {
+	// setMove(%aicon, x, y, z, yaw, pitch, roll);
+		unsigned int aiconid = atoi(argv[1]);
+		DX::AIMove * aimove = getAIMovePtr(aiconid);
+		aimove->move.x=DX::clampFloat(atof(argv[2]));
+		aimove->move.y=DX::clampFloat(atof(argv[3]));
+		aimove->move.z=DX::clampFloat(atof(argv[4]));
+		aimove->move.yaw=DX::clampMove(atof(argv[5]));
+		aimove->move.pitch=DX::clampMove(atof(argv[6]));
+		aimove->move.roll=DX::clampMove(atof(argv[7]));
+		//Con::printf ("Set move variables for %d to x:%f y:%f z:%f yaw:%f pitch:%f roll:%f\n",aimove->id,aimove->move.x,aimove->move.y,aimove->move.z,aimove->move.yaw,aimove->move.pitch,aimove->move.roll);
+		return true;
+	}
+
+
+	bool conEnableNewAI(Linker::SimObject *obj, S32 argc, const char *argv[]) 
+	{
+
+		(*((unsigned int *)0x75e360))=(unsigned int)newAIMoveListGenerator;
+		return true;
+	}
+
 	static S32 gravid=0;
 	static float movespeed=0.0;
 	__declspec(dllexport) void ServerProcess(unsigned int deltaTime)
@@ -60,7 +165,9 @@ extern "C"
 		Con::addMethodB("GrenadeProjectile", "explode", &conProjectileExplode,"Explodes the given projectile", 5, 5);
 		Con::addMethodB("GameBase","setProcessTicks",&conSetProcessTicks,"Sets the flag for processing ticks or not", 3, 3);
 		Con::addMethodB("Projectile", "explode", &conProjectileExplode,"Explodes the given projectile", 5, 5);
-
+		Con::addMethodB(NULL,"enableNewAI",&conEnableNewAI,"Enables the new Move Generation code for the AI", 1,4);
+		Con::addMethodB(NULL,"setAIMove",&consetMove,"setAIMove(%aicon, x, y, z, yaw, pitch, roll)", 2,10);
+		Con::addMethodB(NULL,"setAITrigger", &consetTrigger, "setAITrigger(%aicon,triggerid,value);",2,5);
 		Con::addMethodS("GrenadeProjectile", "getposition", &conGrenadeProjectileGetPosition,"Accurately gets the position of the GrenadeProjectile", 2, 2);
 		Con::addMethodS("GrenadeProjectile", "getvelocity", &conGrenadeProjectileGetVelocity,"Gets the velocity of the GrenadeProjectile", 2, 2);
 		Con::addMethodB("Projectile", "makeNerf", &conProjectileMakeNerf,"Makes the Projectile deal no damage", 2, 2);

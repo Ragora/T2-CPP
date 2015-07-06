@@ -27,6 +27,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 static bool sDogPetted = false;
 static DWORD mainthreadid=0;
 static bool evaldone=1;
+
 void overrideputhex(unsigned char hex) {
 	char hexstr[40]="";
 	char outchar=' ';

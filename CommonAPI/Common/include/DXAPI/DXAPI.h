@@ -18,6 +18,7 @@
 
 #include <DXAPI/Point3F.h>
 #include <DXAPI/GameBase.h>
+#include <DXAPI/Move.h>
 #include <DXAPI/NetObject.h>
 #include <DXAPI/Player.h>
 #include <DXAPI/Projectile.h>
@@ -31,7 +32,6 @@
 #include <DXAPI/NetConnection.h>
 #include <DXAPI/TCPObject.h>
 #include <DXAPI/ScriptObject.h>
-
 namespace DX
 {
 	//! A typedef referring to some type of unresolved object in the game.
