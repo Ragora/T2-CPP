@@ -37,7 +37,7 @@ static float turnStrength = 1.0;
 extern "C"
 {
 	static DX::AIMove aimoves[1024];
-	
+
 #define MECH_TURNING_SPEED 0.4
 	// Maximum radians per 32ms tick
 __declspec(naked) void updateMoveHook()
@@ -58,11 +58,6 @@ __declspec(naked) void updateMoveHook()
 
     if (dAtob((playervar->CallMethod("isMechControlEnabled",0))) && mechchangedmove.freelook && (mechchangedmove.y>0.0))
     {
-        mechchangedmove.pitch = 0;
-        mechchangedmove.yaw = 0;
-        mechchangedmove.roll = 0;
-        mechchangedmove.freelook = true;
-
         // FIXME: The 3 here should reference the datablock's maximum turning angle -- we're essentially normalizing our rotation here.
         float turnStrength = playervar->headRotationZ / 3;
         // Use whatever is leftover in our forward movement
@@ -72,14 +67,18 @@ __declspec(naked) void updateMoveHook()
 		float newHeadTurn = turnStrength * (MECH_TURNING_SPEED/20);
 
         mechchangedmove.y = forwardStrength;
-        mechchangedmove.x = turnStrength;
+        mechchangedmove.x += turnStrength;
         // FIXME: Is the yaw value definitely in radians?
-		playervar->mRotZ += newTurn;
+		playervar->mRotZ += newTurn + mechchangedmove.yaw;
 
         // Now, we must translate the turning strength into an appropriate subtraction for our
         // head rotation.
         playervar->headRotationZ += -newTurn;
 
+        mechchangedmove.pitch = 0;
+        mechchangedmove.yaw = 0;
+        mechchangedmove.roll = 0;
+        mechchangedmove.freelook = true;
 	}
     __asm {
         mov eax,offset mechchangedmove
@@ -131,10 +130,10 @@ __declspec(naked) void updateMoveHook()
 		//unsigned int * idptr;
 		//unsigned int offset=0x4;
 		//for (offset=0x4; offset<0x100; offset+=0x4) {
-		
+
 			//idptr=(unsigned int *)((* (origobjptr))+offset);
 			//Con::printf ("Offset: %08X Addr: %08X Data: %d",offset, idptr, *idptr);
-		
+
 		//}
 		aiconn = &DX::GameConnection((unsigned int)origobjptr+0xA0);
 		aimove = getAIMovePtr(aiconn->identifier);
@@ -147,9 +146,9 @@ __declspec(naked) void updateMoveHook()
 		//Con::evaluate ("listPlayers();",true,NULL,NULL);
 
 		//Con::printf("orig: %08X   obj: %08X\n",origobjptr,0xBADABEEB);
-		
-			
-			
+
+
+
 			//Con::printf("Move processed for %08X\n",(aicon.identifier));
 		}
 		//memcpy (&tmpmove,&(aimove->move),sizeof(DX::Move));
@@ -186,7 +185,7 @@ __declspec(naked) void updateMoveHook()
 	}
 
 
-	bool conEnableNewAI(Linker::SimObject *obj, S32 argc, const char *argv[]) 
+	bool conEnableNewAI(Linker::SimObject *obj, S32 argc, const char *argv[])
 	{
 
 		(*((unsigned int *)0x75e360))=(unsigned int)newAIMoveListGenerator;
@@ -284,4 +283,3 @@ __declspec(naked) void updateMoveHook()
 		DX::memPatch(0x5D2D6E,(unsigned char *)mechcode,7);
 	}
 }
-
