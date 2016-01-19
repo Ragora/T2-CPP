@@ -20,6 +20,8 @@ namespace DX
 		const bool &is_jetting;
 		//! Player Object Jumping State (readonly, writing it doesn't do anything)
 		const bool &is_jumping;
+		float &headRotationZ;
+		float &mRotZ;
 		//! Player Object Using Toggable Pack
 		bool &is_using_toggledpack;
 

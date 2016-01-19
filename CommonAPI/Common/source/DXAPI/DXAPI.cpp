@@ -14,12 +14,58 @@
 
 #include <DXAPI/Point3F.h>
 #include <DXAPI/DXAPI.h>
-
+#include <Windows.h>
 #include <LinkerAPI.h>
 
 namespace DX 
 {
-	
+	bool memPatch(unsigned int addr, unsigned char * data, unsigned int size){
+		DWORD oldprotect=0;
+		DWORD oldnewprotect=0;
+		VirtualProtect((void *)addr,size,PAGE_EXECUTE_READWRITE,&oldprotect);
+		memcpy((void *)addr,(void*) data,size);
+		VirtualProtect((void *)addr,size,oldprotect,&oldnewprotect);
+		return true;
+	}
+	float memToFloat(unsigned int addr){
+		DWORD oldprotect=0;
+		DWORD oldnewprotect=0;
+		VirtualProtect((void *)addr,4,PAGE_EXECUTE_READWRITE,&oldprotect);
+		float * floatout=(float *)addr;
+		float retfloat=0.0;
+		retfloat = *floatout;
+		VirtualProtect((void *)addr,4,oldprotect,&oldnewprotect);
+		return true;
+	}
+	unsigned int memToUInt(unsigned int addr){
+		DWORD oldprotect=0;
+		DWORD oldnewprotect=0;
+		VirtualProtect((void *)addr,4,PAGE_EXECUTE_READWRITE,&oldprotect);
+		unsigned int * intout=(unsigned int *)addr;
+		int retint=0;
+		retint = *intout;
+		VirtualProtect((void *)addr,4,oldprotect,&oldnewprotect);
+		return true;
+	}
+	bool memToHex(unsigned int addr, char * dst, int size, bool spaces=false){
+		DWORD oldprotect=0;
+		DWORD oldnewprotect=0;
+		char hexdigits[20]="";
+		char outstr[256];
+		VirtualProtect((void *)addr,size,PAGE_EXECUTE_READWRITE,&oldprotect);
+		for (int i=0; i<size; i++) {
+			if (spaces==true) {
+				sprintf(hexdigits,"%02X ",*((unsigned char*)addr+i));
+			} else {
+				sprintf(hexdigits,"%02X",*((unsigned char*)addr+i));
+			}
+			strncat(outstr,hexdigits,254-strlen(hexdigits));
+
+		}
+		VirtualProtect((void *)addr,size,oldprotect,&oldnewprotect);
+		strncpy(dst,outstr,255);
+		return true;
+	}
 	const char *GetModPaths(void)
 	{
 		int pointer = *(int*)0x9E8690;

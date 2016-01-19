@@ -1,7 +1,8 @@
 // dllmain.cpp : Defines the entry point for the DLL application.
 #include <SDKDDKVer.h>
 #include <Windows.h>
-
+#define _USE_MATH_DEFINES
+#include <math.h>
 BOOL APIENTRY DllMain( HMODULE hModule,
                        DWORD  ul_reason_for_call,
                        LPVOID lpReserved
@@ -24,12 +25,74 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 #include <DXConCmds.h>
 static DX::Move curmove;
 static unsigned int tmpobjptr=0;
-
-
+unsigned char movemem[500];
+static DX::Move mechchangedmove;
+static void * moveptrmech;
+unsigned int updatemoveretptr=0x5d2d7c;
+float maxrot=2.9;
+float minrot=-2.9;
+static unsigned int playerptr=0x0;
+static float newTurn = 0.1;
+static float turnStrength = 1.0;
 extern "C"
 {
 	static DX::AIMove aimoves[1024];
 	
+#define MECH_TURNING_SPEED 0.4
+	// Maximum radians per 32ms tick
+__declspec(naked) void updateMoveHook()
+{
+    // this gets run from 0x5D2D6E
+
+    __asm {
+        mov playerptr,ebx
+        mov eax,[ebp+0x8]
+        mov moveptrmech,eax
+    };
+
+    unsigned playerptr2;
+    DX::Player *playervar;
+    playerptr2=playerptr;
+    playervar=&(DX::Player(playerptr2));
+    memcpy((void *)&mechchangedmove,(void *)(moveptrmech),sizeof(DX::Move));
+
+    if (dAtob((playervar->CallMethod("isMechControlEnabled",0))) && mechchangedmove.freelook && (mechchangedmove.y>0.0))
+    {
+        mechchangedmove.pitch = 0;
+        mechchangedmove.yaw = 0;
+        mechchangedmove.roll = 0;
+        mechchangedmove.freelook = true;
+
+        // FIXME: The 3 here should reference the datablock's maximum turning angle -- we're essentially normalizing our rotation here.
+        float turnStrength = playervar->headRotationZ / 3;
+        // Use whatever is leftover in our forward movement
+        float forwardStrength = 1 - fabs(turnStrength);
+        // Calculate a new turn value that we use for both the main body and the head.
+        float newTurn = turnStrength * MECH_TURNING_SPEED;
+		float newHeadTurn = turnStrength * (MECH_TURNING_SPEED/20);
+
+        mechchangedmove.y = forwardStrength;
+        mechchangedmove.x = turnStrength;
+        // FIXME: Is the yaw value definitely in radians?
+		playervar->mRotZ += newTurn;
+
+        // Now, we must translate the turning strength into an appropriate subtraction for our
+        // head rotation.
+        playervar->headRotationZ += -newTurn;
+
+	}
+    __asm {
+        mov eax,offset mechchangedmove
+        mov [ebp+8],eax
+        mov ebx,playerptr
+        mov eax,[ebp+8]
+        mov edx,[eax]
+        mov [ebx+0x894],edx
+        mov eax,[eax+4]
+        jmp [updatemoveretptr]
+    };
+}
+	static unsigned int updatemovehookptr = (unsigned int)updateMoveHook;
 	DX::AIMove * getAIMovePtr(unsigned int id) {
 		int moveindex=0;
 		bool foundindex=false;
@@ -157,7 +220,9 @@ extern "C"
 		// Init WSA
 		WSADATA wsadata;
 		WSAStartup(0x0202, &wsadata);
-
+		Con::addMethodS(NULL,"dumpHex",&conDumpHex,"dumpHex(addr,size,spaces)",4,5);
+		Con::addMethodS(NULL,"dumpDec",&conDumpUInt,"dumpDec(addr)",2,3);
+		Con::addMethodS(NULL,"dumpFloat",&conDumpFloat,"dumpFloat(addr)",2,3);
 		Con::addMethodB("Player", "isjumping", &conPlayerGetJumpingState,"Returns whether or not the player is jumping", 2, 2);
 		Con::addMethodB("Player", "isjetting", &conPlayerGetJettingState,"Returns whether or not the player is jetting", 2, 2);
 		Con::addMethodB("GameConnection", "setheat", &conGameConnectionSetHeatLevel,"Sets the heat level", 3, 3);
@@ -213,6 +278,10 @@ extern "C"
 		Con::addVariable("$TSExtension::UberGravity", TypeF32, &movespeed);
 		Con::addVariable("$TSExtension::UberId",TypeS32, &gravid);
 		Con::addVariable("$TSExtension::isActive", TypeBool, &is_active);
+		char mechcode[8]="\xA1\xAA\xAA\xAA\xAA\xFF\xE0";
+
+		*((unsigned int*)(mechcode+1))=(unsigned int)&updatemovehookptr;
+		DX::memPatch(0x5D2D6E,(unsigned char *)mechcode,7);
 	}
 }
 

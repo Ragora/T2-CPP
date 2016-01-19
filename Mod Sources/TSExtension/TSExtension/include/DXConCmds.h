@@ -18,6 +18,10 @@ bool conShapeBaseSetCloakValue(Linker::SimObject *obj, S32 argc, const char* arg
 const char* congetServPAddr(Linker::SimObject *obj, S32 argc, const char *argv[]);
 // Returns the address of an object in memory
 const char* conGetAddress(Linker::SimObject *obj, S32 argc, const char *argv[]);
+const char *conGetAddressDec(Linker::SimObject *obj, S32 argc, const char *argv[]);
+const char *conDumpHex(Linker::SimObject *obj, S32 argc, const char *argv[]);
+const char *conDumpUInt(Linker::SimObject *obj, S32 argc, const char *argv[]);
+const char *conDumpFloat(Linker::SimObject *obj, S32 argc, const char *argv[]);
 
 // Player Commands -----------------------------------
 bool conPlayerGetJumpingState(Linker::SimObject *obj, S32 argc, const char* argv[]);

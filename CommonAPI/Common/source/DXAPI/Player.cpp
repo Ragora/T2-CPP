@@ -6,6 +6,8 @@ namespace DX
 	name(0x00), id(*(unsigned int*)(obj + 32)),
 	is_jetting(*(bool*)(obj + 735)),
 	is_jumping(*(bool*)(obj + 734)),
+	headRotationZ(*(float*)(obj + 2376)),
+	mRotZ(*(float*)(obj + 2388)),
 	is_using_toggledpack(*(bool*)(obj + 1172)),
 	velocity(*(float*)(obj + 2392), *(float*)(obj + 2396), *(float*)(obj + 2400))
 	{

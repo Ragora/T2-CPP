@@ -3,7 +3,36 @@
  */
 #include <LinkerAPI.h>
 #include <DXAPI/DXAPI.h>
+const char *conDumpHex(Linker::SimObject *obj, S32 argc, const char *argv[])
+{
+	// Hmm...
+	char result[256];
 
+	unsigned int addr=atoi(argv[1]);
+	DX::memToHex(addr,result,atoi(argv[2]),dAtob(argv[3]));
+	return result;
+
+}
+const char *conDumpUInt(Linker::SimObject *obj, S32 argc, const char *argv[])
+{
+	// Hmm...
+	char result[256];
+
+	unsigned int addr=atoi(argv[1]);
+	sprintf(result,"%d",DX::memToUInt(addr));
+	return result;
+
+}
+const char *conDumpFloat(Linker::SimObject *obj, S32 argc, const char *argv[])
+{
+	// Hmm...
+	char result[256];
+
+	unsigned int addr=atoi(argv[1]);
+	sprintf(result,"%f",DX::memToFloat(addr));
+	return result;
+
+}
 const char *conGetAddress(Linker::SimObject *obj, S32 argc, const char *argv[])
 {
 	// Hmm...
@@ -11,7 +40,13 @@ const char *conGetAddress(Linker::SimObject *obj, S32 argc, const char *argv[])
 	sprintf(result, "%x", obj);
 	return result;
 }
-
+const char *conGetAddressDec(Linker::SimObject *obj, S32 argc, const char *argv[])
+{
+	// Hmm...
+	char result[256];
+	sprintf(result, "%d", obj);
+	return result;
+}
 bool conShapeBaseSetCloakValue(Linker::SimObject *obj, S32 argc, const char* argv[])
 {
 	DX::ShapeBase operand = DX::ShapeBase((unsigned int)obj);

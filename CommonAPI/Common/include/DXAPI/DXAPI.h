@@ -42,6 +42,9 @@ namespace DX
 
 	bool GetRelativePath(const char *filename, char *ret, int buffer_length);
 	bool GetRunningMod(char *ret, int buffer_length);
-
+	bool memPatch(unsigned int addr, unsigned char * data, unsigned int size);
+	bool memToHex(unsigned int addr, char * dst, int size, bool spaces);
+	unsigned int memToUInt(unsigned int addr);
+	float memToFloat(unsigned int addr);
 	bool SanitizeFileName(char *ret, int buffer_length);
 } // End NameSpace DX
