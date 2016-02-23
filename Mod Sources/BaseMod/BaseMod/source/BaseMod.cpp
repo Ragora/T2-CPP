@@ -5,6 +5,11 @@ extern "C"
 {
 	__declspec(dllexport) void ModInitialize(void)
 	{
-		return;
+
+	}
+	
+	__declspec(dllexport) void ServerProcess(unsigned int deltaTime)
+	{
+			
 	}
 }
