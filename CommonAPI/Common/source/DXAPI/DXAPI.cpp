@@ -19,6 +19,20 @@
 
 namespace DX 
 {
+	const char * StringTableInsert(const char * str,bool casesensitive) {
+		const char* retval;
+		unsigned int * StringTablePtr=(unsigned int *)0x9e618c;
+		unsigned int StrTableAddr=*StringTablePtr;
+		__asm {
+			mov ecx,StrTableAddr
+			push casesensitive
+			push str
+			mov eax,0x441A00
+			call eax
+			mov retval,eax
+		}
+		return retval;
+	}
 	bool memPatch(unsigned int addr, unsigned char * data, unsigned int size){
 		DWORD oldprotect=0;
 		DWORD oldnewprotect=0;

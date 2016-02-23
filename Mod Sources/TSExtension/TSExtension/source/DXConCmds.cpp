@@ -33,6 +33,16 @@ const char *conDumpFloat(Linker::SimObject *obj, S32 argc, const char *argv[])
 	return result;
 
 }
+const char *conFloatToHex(Linker::SimObject *obj, S32 argc, const char *argv[])
+{
+	char result[256];
+	float input=atof(argv[1]);
+	float * inputptr=&input;
+	void * inputptr2 = (void *)inputptr;
+	unsigned int * inputptr3=(unsigned int*)inputptr2;
+	sprintf (result,"%08X",*inputptr3);
+	return result;
+}
 const char *conGetAddress(Linker::SimObject *obj, S32 argc, const char *argv[])
 {
 	// Hmm...
@@ -104,6 +114,9 @@ bool conProjectileMakeNerf(Linker::SimObject *obj, S32 argc, const char* argv[])
 	return true;
 }
 bool conForceUpdate(Linker::SimObject *obj, S32 argc, const char* argv[]) {
+	if (obj == NULL || (unsigned int)Sim::findObjectc(argv[2]) == NULL) {
+		return 0;
+	}
 	DX::NetConnection conn = DX::NetConnection((unsigned int)obj);
 	DX::NetObject netobj = DX::NetObject((unsigned int)Sim::findObjectc(argv[2]));
 	GhostInfo * mGhostRefs=conn.mGhostRefs;
@@ -120,35 +133,64 @@ bool conForceUpdate(Linker::SimObject *obj, S32 argc, const char* argv[]) {
 	}
 }
 const char* conGetGhostIndex(Linker::SimObject *obj, S32 argc, const char* argv[]) {
-	char outint[20]="";
+	char outint[20]="4231";
+	char returnvar[255]="";
+	Con::printf("%s\n",argv[2]);
+	unsigned int objptr2=(unsigned int)Sim::findObjectc(argv[2]);
+	if ((unsigned int)obj == NULL || objptr2==NULL) {
+		strcpy(returnvar,"-1");
+		return returnvar;
+	}
 	DX::NetConnection conn = DX::NetConnection((unsigned int)obj);
-	DX::NetObject netobj = DX::NetObject((unsigned int)Sim::findObjectc(argv[2]));
+	char aicommand[255]="";
+	sprintf (aicommand,"return (%d.isAIControlled());",conn.identifier);
+	if (dAtob(Con::evaluate(aicommand,false,NULL,false))==true) {
+		strcpy(returnvar,"-1");
+		return returnvar;
+	}
+	char command[255]="";
+	sprintf (command,"return (%d.getAddress());",conn.identifier);
+	if (strcmp(Con::evaluate(command,false,NULL,false),"local")==0) {
+		strncpy(returnvar,argv[2],255);
+		returnvar[255]=0x0;
+		return returnvar;
+	}
+	
+	DX::NetObject netobj = DX::NetObject(objptr2);
 	if (netobj.base_pointer_value!=0) {
 		S32 index = conn.getGhostIndex(netobj);
+		Con::printf("%d",index);
 		itoa(index,outint,10);
 		return outint;
-	} else {
-		return "";
 	}
 }
 const char* conResolveGhost(Linker::SimObject *obj, S32 argc, const char* argv[]) {
 	char outint[20]="";
+	if (obj==NULL) {
+		return "";
+	}
 	DX::NetConnection conn = DX::NetConnection((unsigned int)obj);
 	S32 id = atoi(argv[2]);
-	DX::NetObject realobject = conn.resolveGhost(id);
-	if (realobject.base_pointer_value) {
-		return itoa(realobject.identifier,outint,10);
+	if (id==-1) {
+		return "";
+	}
+	if (conn.resolveGhost(id)!=NULL) {
+		itoa(DX::NetObject(conn.resolveGhost(id)).identifier,outint,10);
+		return outint;
 	}
 	return "";
 }
 const char* conResolveGhostParent(Linker::SimObject *obj, S32 argc, const char* argv[]) {
 	char outint[20]="";
+	if (((unsigned int)obj)==NULL) {
+		return "";
+	}
 	DX::NetConnection conn = DX::NetConnection((unsigned int)obj);
 	S32 ghostindex = atoi(argv[2]);
 	if (conn.base_pointer_value!=0) {
-		if (conn.resolveGhostParent(ghostindex).base_pointer_value)
+		if (conn.resolveGhostParent(ghostindex))
 			{
-				S32 objid = conn.resolveGhostParent(ghostindex).identifier;
+				S32 objid = DX::NetObject(conn.resolveGhostParent(ghostindex)).identifier;
 				if (objid != 0) {
 					itoa(objid,outint,10);
 					return outint;

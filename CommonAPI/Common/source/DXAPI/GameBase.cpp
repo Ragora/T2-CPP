@@ -4,6 +4,7 @@ namespace DX
 {
 	GameBase::GameBase(unsigned int obj) : SceneObject(obj)
 	{
+
 	}
 
 

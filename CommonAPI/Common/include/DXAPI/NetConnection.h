@@ -14,8 +14,8 @@ namespace DX
 		S32 getGhostIndex(NetObject obj);
 		unsigned char getGhostFrom();
 		unsigned char getGhostTo();
-		NetObject resolveGhostParent(S32 id);
-		NetObject resolveGhost(S32 id);
+		unsigned int resolveGhostParent(S32 id);
+		unsigned int resolveGhost(S32 id);
 		unsigned int actualbaseptr;
 		GhostInfo * mGhostRefs;
 		NetObject **mLocalGhosts;

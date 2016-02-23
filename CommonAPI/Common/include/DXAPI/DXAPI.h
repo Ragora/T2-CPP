@@ -39,7 +39,7 @@ namespace DX
 
 	const char *GetModPaths(void);
 	bool IsFile(const char *filename);
-
+	const char * StringTableInsert(const char * str,bool casesensitive) ;
 	bool GetRelativePath(const char *filename, char *ret, int buffer_length);
 	bool GetRunningMod(char *ret, int buffer_length);
 	bool memPatch(unsigned int addr, unsigned char * data, unsigned int size);

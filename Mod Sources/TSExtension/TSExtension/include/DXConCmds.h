@@ -11,8 +11,11 @@
  */
 
 #pragma once
-
+#pragma check_stack(off)
 #include <LinkerAPI.h>
+#ifdef NEW_DB_CODE
+#undef NEW_DB_CODE
+#endif
 void serverProcessReplacement(unsigned int timeDelta) ;
 bool conShapeBaseSetCloakValue(Linker::SimObject *obj, S32 argc, const char* argv[]);
 const char* congetServPAddr(Linker::SimObject *obj, S32 argc, const char *argv[]);
@@ -22,7 +25,7 @@ const char *conGetAddressDec(Linker::SimObject *obj, S32 argc, const char *argv[
 const char *conDumpHex(Linker::SimObject *obj, S32 argc, const char *argv[]);
 const char *conDumpUInt(Linker::SimObject *obj, S32 argc, const char *argv[]);
 const char *conDumpFloat(Linker::SimObject *obj, S32 argc, const char *argv[]);
-
+const char *conFloatToHex(Linker::SimObject *obj, S32 argc, const char *argv[]);
 // Player Commands -----------------------------------
 bool conPlayerGetJumpingState(Linker::SimObject *obj, S32 argc, const char* argv[]);
 bool conPlayerGetJettingState(Linker::SimObject *obj, S32 argc, const char* argv[]);

@@ -24,18 +24,24 @@ namespace DX
 		}
 		return ghostid;
 	}
-		NetObject NetConnection::resolveGhostParent(S32 id) {
+		unsigned int NetConnection::resolveGhostParent(S32 id) {
 			if (this->getGhostFrom()) {
 			if (this->mGhostRefs[id].obj)
 			{
-			return NetObject((unsigned int)(this->mGhostRefs[id].obj));
+			return (unsigned int)(this->mGhostRefs[id].obj);
 			}
 			}
 			return NULL;
 		}
-		NetObject NetConnection::resolveGhost(S32 id) {
+		unsigned int NetConnection::resolveGhost(S32 id) {
+			if (id == NULL) {
+				return NULL;
+			}
 			if (this->getGhostTo()) {
-				return NetObject((unsigned int)this->mLocalGhosts[id]);
+				if ((unsigned int)this->mLocalGhosts[id] == NULL) {
+					return NULL;
+				}
+				return (unsigned int)this->mLocalGhosts[id];
 			}
 			return NULL;
 		}

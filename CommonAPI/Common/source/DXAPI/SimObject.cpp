@@ -6,7 +6,7 @@
 
 namespace DX
 {
-	SimObject::SimObject(unsigned int obj) : identifier(*(unsigned int*)(obj + 32)),
+	SimObject::SimObject(unsigned int obj) : identifier(*(unsigned int*)(obj + 32)), fieldDictionary(*(unsigned int*)(obj + 0x2C)), dataBlock(*(unsigned int*)(obj + 0x248)),
 	base_pointer_value(obj)
 	{
 	}	
@@ -44,5 +44,40 @@ namespace DX
 		free(argv);
 
 		return result;
+	}
+	const char *SimObject::getFieldValue(const char *slotname)
+	{
+		void * getfieldvalueptr=(void *)0x435210;
+		const char* retptr;
+		void * thisptr=(void *)this->base_pointer_value;
+		void * fieldDictPtr=(void*)this->fieldDictionary;
+		if (this->base_pointer_value!=0 && this->fieldDictionary!=0) {
+			__asm {
+				push slotname
+				mov ecx,fieldDictPtr
+				call getfieldvalueptr
+				mov retptr,eax
+			};
+			if (retptr != NULL) {
+				return retptr;
+			} else {
+				return "";
+			}
+		}
+		return "";
+	}
+	void SimObject::setDataField(const char *slotname, const char *array, const char *value)
+	{
+		void * setfieldptr=(void *)0x4364E0;
+		void * retptr;
+		void * thisptr=(void *)this->base_pointer_value;
+		__asm {
+			push value
+			push array
+			push slotname
+			mov ecx,thisptr
+			call setfieldptr
+		};
+		return;
 	}
 }
