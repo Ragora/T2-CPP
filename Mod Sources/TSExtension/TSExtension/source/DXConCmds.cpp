@@ -8,63 +8,77 @@
 const char *conDumpHex(Linker::SimObject *obj, S32 argc, const char *argv[])
 {
 	// Hmm...
-	char result[256];
-
-	unsigned int addr=atoi(argv[1]);
-	DX::memToHex(addr,result,atoi(argv[2]),dAtob(argv[3]));
-	return result;
-
-}
-const char *conDumpUInt(Linker::SimObject *obj, S32 argc, const char *argv[])
-{
-	// Hmm...
-	char result[256];
-
-	unsigned int addr=atoi(argv[1]);
-	sprintf(result,"%d",DX::memToUInt(addr));
-	return result;
-
-}
-const char *conDumpFloat(Linker::SimObject *obj, S32 argc, const char *argv[])
-{
-	// Hmm...
-	char result[256];
-
-	unsigned int addr=atoi(argv[1]);
-	sprintf(result,"%f",DX::memToFloat(addr));
-	return result;
-
-}
-const char *conFloatToHex(Linker::SimObject *obj, S32 argc, const char *argv[])
-{
 	char formatResult[256];
-	float input=atof(argv[1]);
-	float * inputptr=&input;
-	void * inputptr2 = (void *)inputptr;
-	unsigned int * inputptr3=(unsigned int*)inputptr2;
-	sprintf (formatResult,"%08X",*inputptr3);
+
+	unsigned int addr=atoi(argv[1]);
+	DX::memToHex(addr,formatResult,atoi(argv[2]),dAtob(argv[3]));
 
 	char* result = new char[256];
 	memcpy(result, formatResult, 256);
 
 	return result;
 }
+
+const char *conDumpUInt(Linker::SimObject *obj, S32 argc, const char *argv[])
+{
+	// Hmm...
+	char formatResult[256];
+
+	unsigned int addr=atoi(argv[1]);
+	sprintf_s<256>(formatResult,"%d",DX::memToUInt(addr));
+
+	char* result = new char[256];
+	memcpy(result, formatResult, 256);
+
+	return result;
+}
+
+const char *conDumpFloat(Linker::SimObject *obj, S32 argc, const char *argv[])
+{
+	// Hmm...
+	char formatResult[256];
+
+	unsigned int addr = atoi(argv[1]);
+	sprintf_s<256>(formatResult,"%f",DX::memToFloat(addr));
+
+	char* result = new char[256];
+	memcpy(result, formatResult, 256);
+
+	return result;
+}
+
+const char *conFloatToHex(Linker::SimObject *obj, S32 argc, const char *argv[])
+{
+	char formatResult[256];
+	float input=std::stof(argv[1]);
+	float * inputptr=&input;
+	void * inputptr2 = (void *)inputptr;
+	unsigned int * inputptr3=(unsigned int*)inputptr2;
+	sprintf_s<256>(formatResult,"%08X",*inputptr3);
+
+	char* result = new char[256];
+	memcpy(result, formatResult, 256);
+
+	return result;
+}
+
 const char *conGetAddress(Linker::SimObject *obj, S32 argc, const char *argv[])
 {
 	// Hmm...
 	char formatResult[256];
-	sprintf(formatResult, "%x", obj);
+	sprintf_s<256>(formatResult, "%x", obj);
 
 	char* result = new char[256];
 	memcpy(result, formatResult, 256);
 
 	return result;
 }
+
 const char *conGetAddressDec(Linker::SimObject *obj, S32 argc, const char *argv[])
 {
 	// Hmm...
 	char formatResult[256];
-	sprintf(formatResult, "%d", obj);
+	sprintf_s<256>(formatResult, "%d", obj);
 
 	char* result = new char[256];
 	memcpy(result, formatResult, 256);
@@ -156,13 +170,13 @@ S32 conGetGhostIndex(Linker::SimObject *obj, S32 argc, const char* argv[])
 
 	DX::NetConnection conn = DX::NetConnection((unsigned int)obj);
 
-	char aicommand[255]="";
-	sprintf (aicommand,"return (%d.isAIControlled());", conn.identifier);
+	char aicommand[256]="";
+	sprintf_s<256>(aicommand,"return (%d.isAIControlled());", conn.identifier);
 	if (dAtob(Con::evaluate(aicommand, false, NULL, false)) == true) 
 		return -1;
 
-	char command[255]="";
-	sprintf (command,"return (%d.getAddress());",conn.identifier);
+	char command[256]="";
+	sprintf_s<256>(command,"return (%d.getAddress());",conn.identifier);
 	if (strcmp(Con::evaluate(command, false, NULL, false), "local") == 0) 
 		return atoi(argv[2]);
 
@@ -354,7 +368,7 @@ const char* conSprintf(Linker::SimObject *obj, S32 argc, const char* argv[])
 	char formatResult[256];
 	
 	va_list variable_args = reinterpret_cast<va_list>(input.data());
-	vsprintf(formatResult, argv[1], variable_args);
+	vsprintf_s<256>(formatResult, argv[1], variable_args);
 
 	char* result = new char[256];
 	memcpy(result, formatResult, 256);
@@ -410,10 +424,14 @@ const char* reReplace(Linker::SimObject* obj, S32 argc, const char* argv[])
 {
 	try
 	{
-		std::string result = std::regex_replace(std::string(argv[2]),
+		std::string replaceResult = std::regex_replace(std::string(argv[2]),
 				std::regex(argv[1], std::regex::extended), 
 				std::string(argv[3]));
-		return result.c_str();
+
+		char* result = new char[256];
+		memcpy(result, replaceResult.c_str(), replaceResult.size());
+
+		return result;
 	}
 	catch (std::regex_error)
 	{
