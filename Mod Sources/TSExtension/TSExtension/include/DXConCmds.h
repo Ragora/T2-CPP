@@ -60,11 +60,18 @@ bool conBinaryObjectSetBufferPointer(Linker::SimObject *obj, S32 argc, const cha
 const char *conBinaryObjectGetBufferPointer(Linker::SimObject *obj, S32 argc, const char *argv[]);
 bool conBinaryObjectClose(Linker::SimObject *obj, S32 argc, const char *argv[]);
 bool conBinaryObjectSave(Linker::SimObject *obj, S32 argc, const char *argv[]);
-const char *conResolveGhostParent(Linker::SimObject *obj, S32 argc, const char* argv[]);
-const char* conResolveGhost(Linker::SimObject *obj, S32 argc, const char* argv[]);
+S32 conResolveGhostParent(Linker::SimObject *obj, S32 argc, const char* argv[]);
+S32 conResolveGhost(Linker::SimObject *obj, S32 argc, const char* argv[]);
 // Network Commands ---------------------------------
-const char *conGetGhostIndex(Linker::SimObject *obj, S32 argc, const char* argv[]);
+S32 conGetGhostIndex(Linker::SimObject *obj, S32 argc, const char* argv[]);
 bool conForceUpdate(Linker::SimObject *obj, S32 argc, const char* argv[]);
 // General Commands ---------------------------------
 const char* conSprintf(Linker::SimObject *obj, S32 argc, const char* argv[]);
 bool conTSExtensionUpdate(Linker::SimObject *obj, S32 argc, const char *argv[]);
+// Regex Commands ----------------------------------
+const char* reIterNext(Linker::SimObject* obj, S32 argc, const char* argv[]);
+bool reIterEnd(Linker::SimObject* obj, S32 argc, const char* argv[]);
+bool reIterBegin(Linker::SimObject* obj, S32 argc, const char* argv[]);
+const char* reReplace(Linker::SimObject* obj, S32 argc, const char* argv[]);
+bool reSearch(Linker::SimObject* obj, S32 argc, const char* argv[]);
+bool reMatch(Linker::SimObject* obj, S32 argc, const char* argv[]);

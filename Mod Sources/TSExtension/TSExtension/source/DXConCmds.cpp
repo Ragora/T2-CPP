@@ -1,8 +1,10 @@
 /**
  *	
  */
+
 #include <LinkerAPI.h>
 #include <DXAPI/DXAPI.h>
+
 const char *conDumpHex(Linker::SimObject *obj, S32 argc, const char *argv[])
 {
 	// Hmm...
@@ -35,37 +37,46 @@ const char *conDumpFloat(Linker::SimObject *obj, S32 argc, const char *argv[])
 }
 const char *conFloatToHex(Linker::SimObject *obj, S32 argc, const char *argv[])
 {
-	char result[256];
+	char formatResult[256];
 	float input=atof(argv[1]);
 	float * inputptr=&input;
 	void * inputptr2 = (void *)inputptr;
 	unsigned int * inputptr3=(unsigned int*)inputptr2;
-	sprintf (result,"%08X",*inputptr3);
+	sprintf (formatResult,"%08X",*inputptr3);
+
+	char* result = new char[256];
+	memcpy(result, formatResult, 256);
+
 	return result;
 }
 const char *conGetAddress(Linker::SimObject *obj, S32 argc, const char *argv[])
 {
 	// Hmm...
-	char result[256];
-	sprintf(result, "%x", obj);
+	char formatResult[256];
+	sprintf(formatResult, "%x", obj);
+
+	char* result = new char[256];
+	memcpy(result, formatResult, 256);
+
 	return result;
 }
 const char *conGetAddressDec(Linker::SimObject *obj, S32 argc, const char *argv[])
 {
 	// Hmm...
-	char result[256];
-	sprintf(result, "%d", obj);
+	char formatResult[256];
+	sprintf(formatResult, "%d", obj);
+
+	char* result = new char[256];
+	memcpy(result, formatResult, 256);
+
 	return result;
 }
 bool conShapeBaseSetCloakValue(Linker::SimObject *obj, S32 argc, const char* argv[])
 {
 	DX::ShapeBase operand = DX::ShapeBase((unsigned int)obj);
 	operand.cloaked=dAtob(argv[2]);
-	if (operand.cloaked==true) {
-		operand.cloak_level=atof(argv[3]);
-	} else {
-		operand.cloak_level=atof(argv[3]);
-	}
+
+	operand.cloak_level = std::stof(argv[3]);
 	operand.setMaskBits(0x40);
 
 	return true;
@@ -88,7 +99,8 @@ bool conPlayerGetJettingState(Linker::SimObject *obj, S32 argc, const char* argv
 bool conGameConnectionSetHeatLevel(Linker::SimObject *obj, S32 argc, const char *argv[])
 {
 	DX::GameConnection operand = DX::GameConnection((unsigned int)obj);
-	operand.getControlObject().heat_level = atof(argv[1]);
+	operand.getControlObject().heat_level = std::stof(argv[1]);
+
 	return true;
 }
 
@@ -113,92 +125,88 @@ bool conProjectileMakeNerf(Linker::SimObject *obj, S32 argc, const char* argv[])
 
 	return true;
 }
-bool conForceUpdate(Linker::SimObject *obj, S32 argc, const char* argv[]) {
-	if (obj == NULL || (unsigned int)Sim::findObjectc(argv[2]) == NULL) {
+
+bool conForceUpdate(Linker::SimObject *obj, S32 argc, const char* argv[]) 
+{
+	if (obj == NULL || (unsigned int)Sim::findObjectc(argv[2]) == NULL)
 		return 0;
-	}
+
 	DX::NetConnection conn = DX::NetConnection((unsigned int)obj);
 	DX::NetObject netobj = DX::NetObject((unsigned int)Sim::findObjectc(argv[2]));
 	GhostInfo * mGhostRefs=conn.mGhostRefs;
-	if (netobj.base_pointer_value!=0) {
-	S32 index = conn.getGhostIndex(netobj);
-		if (index > 0) {
+	if (netobj.base_pointer_value!=0) 
+	{
+		S32 index = conn.getGhostIndex(netobj);
+
+		if (index > 0) 
 			mGhostRefs[index].updateMask=mGhostRefs[index].updateMask | GameBaseMasks::InitialUpdateMask;
-		}
+
 		return 1;
 	}
 	else 
-	{
 		return 0;
-	}
 }
-const char* conGetGhostIndex(Linker::SimObject *obj, S32 argc, const char* argv[]) {
-	char outint[20]="4231";
-	char returnvar[255]="";
-	Con::printf("%s\n",argv[2]);
+
+S32 conGetGhostIndex(Linker::SimObject *obj, S32 argc, const char* argv[]) 
+{
 	unsigned int objptr2=(unsigned int)Sim::findObjectc(argv[2]);
-	if ((unsigned int)obj == NULL || objptr2==NULL) {
-		strcpy(returnvar,"-1");
-		return returnvar;
-	}
+
+	if ((unsigned int)obj == NULL || objptr2==NULL) 
+		return -1;
+
 	DX::NetConnection conn = DX::NetConnection((unsigned int)obj);
+
 	char aicommand[255]="";
-	sprintf (aicommand,"return (%d.isAIControlled());",conn.identifier);
-	if (dAtob(Con::evaluate(aicommand,false,NULL,false))==true) {
-		strcpy(returnvar,"-1");
-		return returnvar;
-	}
+	sprintf (aicommand,"return (%d.isAIControlled());", conn.identifier);
+	if (dAtob(Con::evaluate(aicommand, false, NULL, false)) == true) 
+		return -1;
+
 	char command[255]="";
 	sprintf (command,"return (%d.getAddress());",conn.identifier);
-	if (strcmp(Con::evaluate(command,false,NULL,false),"local")==0) {
-		strncpy(returnvar,argv[2],255);
-		returnvar[255]=0x0;
-		return returnvar;
-	}
-	
+	if (strcmp(Con::evaluate(command, false, NULL, false), "local") == 0) 
+		return atoi(argv[2]);
+
 	DX::NetObject netobj = DX::NetObject(objptr2);
-	if (netobj.base_pointer_value!=0) {
-		S32 index = conn.getGhostIndex(netobj);
-		Con::printf("%d",index);
-		itoa(index,outint,10);
-		return outint;
-	}
+	if (netobj.base_pointer_value!=0)
+		return conn.getGhostIndex(netobj);
+	
+	return -1;
 }
-const char* conResolveGhost(Linker::SimObject *obj, S32 argc, const char* argv[]) {
-	char outint[20]="";
-	if (obj==NULL) {
-		return "";
-	}
+
+S32 conResolveGhost(Linker::SimObject *obj, S32 argc, const char* argv[]) 
+{
+	if (obj==NULL)
+		return -1;
+
 	DX::NetConnection conn = DX::NetConnection((unsigned int)obj);
+
 	S32 id = atoi(argv[2]);
-	if (id==-1) {
-		return "";
-	}
-	if (conn.resolveGhost(id)!=NULL) {
-		itoa(DX::NetObject(conn.resolveGhost(id)).identifier,outint,10);
-		return outint;
-	}
-	return "";
+	if (id == -1)
+		return -1;
+
+	if (conn.resolveGhost(id) != NULL)
+		return conn.resolveGhost(id);
+
+	return -1;
 }
-const char* conResolveGhostParent(Linker::SimObject *obj, S32 argc, const char* argv[]) {
-	char outint[20]="";
-	if (((unsigned int)obj)==NULL) {
-		return "";
-	}
+
+S32 conResolveGhostParent(Linker::SimObject *obj, S32 argc, const char* argv[]) {
+	if (((unsigned int)obj) == NULL) 
+		return -1;
+
 	DX::NetConnection conn = DX::NetConnection((unsigned int)obj);
 	S32 ghostindex = atoi(argv[2]);
-	if (conn.base_pointer_value!=0) {
+	if (conn.base_pointer_value!=0) 
 		if (conn.resolveGhostParent(ghostindex))
-			{
-				S32 objid = DX::NetObject(conn.resolveGhostParent(ghostindex)).identifier;
-				if (objid != 0) {
-					itoa(objid,outint,10);
-					return outint;
-				}
-			}
-	}
-		return "";
+		{
+			S32 objid = DX::NetObject(conn.resolveGhostParent(ghostindex)).identifier;
+			if (objid != 0)
+				return objid;
+		}
+
+	return -1;
 }
+
 bool conclientCmdSetGhostTicks(Linker::SimObject *obj, S32 argc, const char* argv[]) {
 		unsigned int result_ptr = 0;
 		unsigned int my_ptr = 0;
@@ -235,43 +243,18 @@ bool conclientCmdSetGhostTicks(Linker::SimObject *obj, S32 argc, const char* arg
 		return 1;
 }
 
-bool conclientCmdSetProcessTicks(Linker::SimObject *obj, S32 argc, const char* argv[]) {
-		unsigned int result_ptr = 0;
-		unsigned int my_ptr = 0;
-		DX::NetObject objptr=(unsigned int)Sim::findObjectc(argv[1]);
-		if (objptr.base_pointer_value) 
-		{ 
-			my_ptr=objptr.base_pointer_value;
-			if (atoi(argv[2])==1) {
-				__asm
-				{
-					mov eax, my_ptr;
-					add eax, 0x264;
-					mov ebx,eax
-					mov al, 1
-					mov [ebx],al
-					
-				}	
-			} else {
-				__asm
-				{
-					mov eax, my_ptr;
-					add eax, 0x264;
-					mov ebx,eax
-					mov al, 0
-					mov [ebx],al
-					
-				}	
-			}
-		}
-			return 1;
-}
+bool conclientCmdSetProcessTicks(Linker::SimObject *obj, S32 argc, const char* argv[]) 
+{
+	unsigned int result_ptr = 0;
+	unsigned int my_ptr = 0;
+	DX::NetObject objptr = (unsigned int)Sim::findObjectc(argv[1]);
 
-bool conSetProcessTicks(Linker::SimObject *obj, S32 argc, const char* argv[]) {
+	if (objptr.base_pointer_value) 
+	{ 
+		my_ptr=objptr.base_pointer_value;
 
-			unsigned int result_ptr = 0;
-		unsigned int my_ptr = (unsigned int) obj;
-		if (atoi(argv[2])==1) {
+		if (atoi(argv[2]) == 1) 
+		{
 			__asm
 			{
 				mov eax, my_ptr;
@@ -279,9 +262,11 @@ bool conSetProcessTicks(Linker::SimObject *obj, S32 argc, const char* argv[]) {
 				mov ebx,eax
 				mov al, 1
 				mov [ebx],al
-				
+					
 			}	
-		} else {
+		} 
+		else 
+		{
 			__asm
 			{
 				mov eax, my_ptr;
@@ -289,26 +274,68 @@ bool conSetProcessTicks(Linker::SimObject *obj, S32 argc, const char* argv[]) {
 				mov ebx,eax
 				mov al, 0
 				mov [ebx],al
-				
+					
 			}	
 		}
+	}
 
+	return 1;
 }
+
+bool conSetProcessTicks(Linker::SimObject *obj, S32 argc, const char* argv[]) 
+{
+	unsigned int result_ptr = 0;
+	unsigned int my_ptr = (unsigned int) obj;
+
+	if (atoi(argv[2])==1) 
+	{
+		__asm
+		{
+			mov eax, my_ptr;
+			add eax, 0x264;
+			mov ebx,eax
+			mov al, 1
+			mov [ebx],al
+				
+		}	
+	} 
+	else 
+	{
+		__asm
+		{
+			mov eax, my_ptr;
+			add eax, 0x264;
+			mov ebx,eax
+			mov al, 0
+			mov [ebx],al
+				
+		}	
+	}
+
+	return true;
+}
+
 const char* conGrenadeProjectileGetPosition(Linker::SimObject *obj, S32 argc, const char* argv[])
 {
-	char result[256];
+	char formatResult[256];
 
 	DX::GrenadeProjectile grenade = DX::GrenadeProjectile((unsigned int)obj);
-	sprintf_s<256>(result, "%f %f %f", grenade.position.x, grenade.position.y, grenade.position.z);
+	sprintf_s<256>(formatResult, "%f %f %f", grenade.position.x, grenade.position.y, grenade.position.z);
+
+	char* result = new char[256];
+	memcpy(result, formatResult, 256);
+
 	return result;
 }
 
 const char* conGrenadeProjectileGetVelocity(Linker::SimObject *obj, S32 argc, const char* argv[])
 {
-	char result[256];
-
+	char formatResult[256];
 	DX::GrenadeProjectile grenade((unsigned int)obj);
-	sprintf_s<256>(result, "%f %f %f", grenade.velocity.x, grenade.velocity.y, grenade.velocity.z);
+	sprintf_s<256>(formatResult, "%f %f %f", grenade.velocity.x, grenade.velocity.y, grenade.velocity.z);
+
+	char* result = new char[256];
+	memcpy(result, formatResult, 256);
 
 	return result;
 }
@@ -321,13 +348,118 @@ const char* conGrenadeProjectileGetVelocity(Linker::SimObject *obj, S32 argc, co
 const char* conSprintf(Linker::SimObject *obj, S32 argc, const char* argv[])
 {
 	std::vector<const char*> input;
-	for (unsigned int i = 2; i < argc; i++)
+	for (int i = 2; i < argc; i++)
 		input.push_back(argv[i]);
 
-	char result[256];
+	char formatResult[256];
 	
 	va_list variable_args = reinterpret_cast<va_list>(input.data());
-	vsprintf(result, argv[1], variable_args);
+	vsprintf(formatResult, argv[1], variable_args);
+
+	char* result = new char[256];
+	memcpy(result, formatResult, 256);
 
 	return result;
+}
+
+// RE Commands -----------------------------------
+
+#include <regex>
+
+bool reMatch(Linker::SimObject* obj, S32 argc, const char* argv[])
+{
+	try
+	{
+		std::smatch match;
+
+		std::regex sequence(argv[1], std::regex::extended);
+		std::regex_match(std::string(argv[2]), match, sequence);
+
+		return !match.empty() && match.size() != 0;
+	}
+	catch (std::regex_error)
+	{
+		Con::errorf(0, "RE: Invalid regex sequence: %s", argv[1]);
+		return false;
+	}
+
+	return false;
+}
+
+bool reSearch(Linker::SimObject* obj, S32 argc, const char* argv[])
+{
+	try
+	{
+		std::smatch match;
+
+		std::regex sequence(argv[1], std::regex::extended);
+		std::regex_search(std::string(argv[2]), match, sequence);
+
+		return !match.empty() && match.size() != 0;
+	}
+	catch (std::regex_error)
+	{
+		Con::errorf(0, "RE: Invalid regex sequence: %s", argv[1]);
+		return false;
+	}
+
+	return false;
+}
+
+const char* reReplace(Linker::SimObject* obj, S32 argc, const char* argv[])
+{
+	try
+	{
+		std::string result = std::regex_replace(std::string(argv[2]),
+				std::regex(argv[1], std::regex::extended), 
+				std::string(argv[3]));
+		return result.c_str();
+	}
+	catch (std::regex_error)
+	{
+		Con::errorf(0, "RE: Invalid regex sequence: %s", argv[1]);
+		return "-1";
+	}
+
+	return "-1";
+}
+
+static std::string currentString = "";
+static std::regex currentRegex = std::regex("", std::regex::extended);
+static auto matchBegin = std::sregex_iterator(currentString.begin(), currentString.end(), currentRegex);
+static auto matchEnd = std::sregex_iterator();
+static std::sregex_iterator currentMatchIter = matchEnd;
+
+bool reIterBegin(Linker::SimObject* obj, S32 argc, const char* argv[])
+{
+	try
+	{
+		currentRegex = std::regex(argv[1], std::regex::extended);
+		currentString = std::string(argv[2]);
+		matchBegin = std::sregex_iterator(currentString.begin(), currentString.end(), currentRegex);
+		matchEnd = std::sregex_iterator();
+		currentMatchIter = matchBegin;
+
+		return true;
+	}
+	catch (std::regex_error)
+	{
+		Con::errorf(0, "RE: Invalid regex sequence: %s", argv[1]);
+		return false;
+	}
+
+	return false;
+}
+
+bool reIterEnd(Linker::SimObject* obj, S32 argc, const char* argv[])
+{
+	return currentMatchIter == matchEnd;
+}
+
+const char* reIterNext(Linker::SimObject* obj, S32 argc, const char* argv[])
+{
+	std::string currentResult = (*currentMatchIter).str();
+	++currentMatchIter;
+
+	return currentResult.c_str();
 }

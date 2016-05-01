@@ -24,6 +24,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 #include <LinkerAPI.h>
 #include <DXAPI/Move.h>
 #include <DXConCmds.h>
+
 static DX::Move curmove;
 static unsigned int tmpobjptr=0;
 static char test[100];
@@ -31,11 +32,12 @@ static DX::Move *mechchangedmove;
 static char test2[100];
 static void * moveptrmech;
 unsigned int updatemoveretptr=0x5d2d7c;
-float maxrot=2.9;
-float minrot=-2.9;
+float maxrot=2.9f;
+float minrot=-2.9f;
 static unsigned int playerptr=0x0;
-static float newTurn = 0.1;
-static float turnStrength = 1.0;
+static float newTurn = 0.1f;
+static float turnStrength = 1.0f;
+
 extern "C"
 {
 	static DX::AIMove aimoves[1024];
@@ -45,11 +47,13 @@ extern "C"
 //#define MECH_TURNING_SPEED 0.4
 	
 	// Maximum radians per 32ms tick
-void * readIntptr=(void *)0x43BF10;
-void * writeIntptr=(void *)0x43BF60;
-void * writeStringptr=(void *)0x43C6D0;
-void * readStringptr=(void *)0x43C630;
-int streamReadInt(void * stream,int bitcount) {
+void *readIntptr=(void *)0x43BF10;
+void *writeIntptr=(void *)0x43BF60;
+void *writeStringptr=(void *)0x43C6D0;
+void *readStringptr=(void *)0x43C630;
+
+int streamReadInt(void * stream,int bitcount) 
+{
 	int retvalue=0x0;
 	__asm {
 		mov ecx,stream
@@ -59,6 +63,7 @@ int streamReadInt(void * stream,int bitcount) {
 	}
 	return retvalue;
 }
+
 void streamWriteInt(void * stream,int value,int bitcount) {
 	__asm {
 		mov ecx,stream
@@ -68,6 +73,7 @@ void streamWriteInt(void * stream,int value,int bitcount) {
 	}
 	return;
 }
+
 void streamWriteString(void * stream,const char * stringvar,int maxlen) {
 	__asm {
 		mov ecx,stream
@@ -77,6 +83,7 @@ void streamWriteString(void * stream,const char * stringvar,int maxlen) {
 	}
 	return;
 }
+
 void streamReadString(void * stream,char *stringvar) {
 	__asm {
 		mov ecx,stream
@@ -85,6 +92,7 @@ void streamReadString(void * stream,char *stringvar) {
 	}
 	return;
 }
+
 static char fieldnames[127][256];
 static char fieldvalues[127][256];
 static DX::Player *playervar;
@@ -141,21 +149,24 @@ void DBpackData(void *stream) {
 		mov thisptr,ecx
 	};
 	DX::SimObject dbobj = DX::SimObject((unsigned int)thisptr);
-	char readcommand[255]="";
-	sprintf (readcommand,"return getWordCount(%d.extraNetFields);",dbobj.identifier);
-	char str[255]="";
-	strncpy(str,Con::evaluate(readcommand,false,NULL,true),254);
+	char readcommand[256]="";
+	sprintf_s<256>(readcommand,"return getWordCount(%d.extraNetFields);", dbobj.identifier);
+
+	char str[256]="";
+	strncpy_s<256>(str,Con::evaluate(readcommand,false,NULL,true), 256);
+
 	Con::printf ("GWC returned %s\n",str);
 	int realcount=atoi(str);
 	int i=0;
 	int counter=0;
 	for (i; (i<126 && i<realcount); i++) {
-		sprintf (readcommand,"return getWord(%d.extraNetFields,%d);",dbobj.identifier,i);
-		strncpy(fieldnames[i],Con::evaluate(readcommand,false,NULL,true),254);
+		sprintf_s<256>(readcommand,"return getWord(%d.extraNetFields,%d);",dbobj.identifier,i);
+		strncpy_s<256>(fieldnames[i],Con::evaluate(readcommand,false,NULL,true), 256);
+
 		Con::printf (fieldnames[i]);
-		_snprintf (readcommand,255,"return(%d.%s);",dbobj.identifier,fieldnames[i]);
-		strncpy(fieldvalues[i],Con::evaluate(readcommand,false,NULL,true),254);
-		strcpy(buf,dbobj.getFieldValue(DX::StringTableInsert(fieldnames[i],false)));
+		_snprintf_s<256>(readcommand,256,"return(%d.%s);",dbobj.identifier,fieldnames[i]);
+		strncpy_s<256>(fieldvalues[i],Con::evaluate(readcommand,false,NULL,true), 256);
+		strcpy_s<256>(buf,dbobj.getFieldValue(DX::StringTableInsert(fieldnames[i],false)));
 		Con::printf ("fieldvalues[i]:%s GDF: %s\n",fieldvalues[i],buf);
 
 	}
@@ -174,16 +185,16 @@ void DBunpackData(void *stream) {
 		mov thisptr,ecx
 	};
 
-	char setcommand[255]="";
+	char setcommand[256]="";
 	DX::SimObject dbobj = DX::SimObject((unsigned int)thisptr);
 	int counter=streamReadInt(stream,7);
 	char buf[256]="";
 	Con::printf ("Receiving %d extra fields",counter);
 	for (int i=0; i < counter; i++) {
 		streamReadString(stream,buf);
-		strcpy(fieldnames[i],buf);
+		strcpy_s<256>(fieldnames[i],buf);
 		streamReadString(stream,buf);
-		strcpy(fieldvalues[i],buf);
+		strcpy_s<256>(fieldvalues[i],buf);
 	}
 	for (int i=0; i < counter; i++ ){
 		Con::printf (fieldnames[i]);
@@ -195,8 +206,9 @@ void DBunpackData(void *stream) {
 }
 
 
-float MECH_TURNING_SPEED=0.4;
+float MECH_TURNING_SPEED=0.4f;
 static unsigned int playerptr2;
+
 __declspec(naked) void updateMoveHook()
 {
     // this gets run from 0x5D2D6E
@@ -207,9 +219,9 @@ __declspec(naked) void updateMoveHook()
         mov moveptrmech,eax
 		pusha
     };
-	MECH_TURNING_SPEED=0.4;
-    //=NULL;
-	unsigned int dbptr;
+
+	MECH_TURNING_SPEED=0.4f;
+
 	if (playerptr!=0) {
 		playervar=&DX::Player(playerptr);
 		mechchangedmove=(DX::Move*) moveptrmech;
@@ -219,16 +231,18 @@ __declspec(naked) void updateMoveHook()
 
 			playerdatavar = &DX::SimObject(playervar->dataBlock);
 			//Con::printf("Datablock is %s\n",buf);
-			if (playerdatavar->base_pointer_value!=0) {
-				strcpy(buf,playerdatavar->getFieldValue(DX::StringTableInsert("mechControlEnabled",false)));
+			if (playerdatavar->base_pointer_value!=0) 
+			{
+				strcpy_s<256>(buf,playerdatavar->getFieldValue(DX::StringTableInsert("mechControlEnabled",false)));
 				Con::printf("mechControlEnabled: %s",buf);
+
 				if ((mechchangedmove)->freelook && ((mechchangedmove)->y>0.0) && dAtob(buf))
 				{
 					//sprintf (command,"return (%d.getDataBlock().mechTurnSpeed);",playervar->identifier);
-					strcpy(buf,playerdatavar->getFieldValue(DX::StringTableInsert("mechTurnSpeed",false)));
+					strcpy_s<256>(buf,playerdatavar->getFieldValue(DX::StringTableInsert("mechTurnSpeed",false)));
 					Con::printf("mechTurnSpeed: %s",buf);
 					MECH_TURNING_SPEED=atof(buf);
-					// FIXME: The 3 here should reference the datablock's maximum turning angle -- we're essentially normalizing our rotation here.
+
 					// FIXME: The 3 here should reference the datablock's maximum turning angle -- we're essentially normalizing our rotation here.
 					float turnStrength = playervar->headRotationZ / 3;
 					// Use whatever is leftover in our forward movement
@@ -239,6 +253,7 @@ __declspec(naked) void updateMoveHook()
 
 					(mechchangedmove)->y = forwardStrength;
 					(mechchangedmove)->x += turnStrength;
+
 					// FIXME: Is the yaw value definitely in radians?
 					playervar->mRotZ += newTurn + (mechchangedmove)->yaw;
 
@@ -254,7 +269,8 @@ __declspec(naked) void updateMoveHook()
 			}			
 		}
 	}
-    __asm {
+    __asm 
+	{
 		popa
         mov ebx,playerptr
         mov eax,[ebp+8]
@@ -311,7 +327,7 @@ __declspec(naked) void updateMoveHook()
 		aiconn = &DX::GameConnection((unsigned int)origobjptr+0xA0);
 		aimove = getAIMovePtr(aiconn->identifier);
 		char movecallback[120]="";
-		sprintf (movecallback,"AIMoveCallback(%d);",aiconn->identifier);
+		sprintf_s<120>(movecallback,"AIMoveCallback(%d);",aiconn->identifier);
 		Con::evaluate(movecallback,false,NULL,NULL);
 		//Con::printf ("BasePointer: %08X", aiconn.base_pointer_value);
 		//Con::printf ("Ecx Value: %08X", origobjptr);
@@ -329,9 +345,8 @@ __declspec(naked) void updateMoveHook()
 		*moves = &(aimove->move);
 		*moveCount=1;
 		return;
-
-
 	}
+
 	bool consetTrigger(Linker::SimObject *obj, S32 argc, const char *argv[]) {
 		unsigned int aiconid = atoi(argv[1]);
 		unsigned int index = atoi(argv[2]);
@@ -343,16 +358,17 @@ __declspec(naked) void updateMoveHook()
 		}
 		return false;
 	}
+
 	bool consetMove(Linker::SimObject *obj, S32 argc, const char *argv[]) {
 	// setMove(%aicon, x, y, z, yaw, pitch, roll);
 		unsigned int aiconid = atoi(argv[1]);
 		DX::AIMove * aimove = getAIMovePtr(aiconid);
-		aimove->move.x=DX::clampFloat(atof(argv[2]));
-		aimove->move.y=DX::clampFloat(atof(argv[3]));
-		aimove->move.z=DX::clampFloat(atof(argv[4]));
-		aimove->move.yaw=DX::clampMove(atof(argv[5]));
-		aimove->move.pitch=DX::clampMove(atof(argv[6]));
-		aimove->move.roll=DX::clampMove(atof(argv[7]));
+		aimove->move.x=DX::clampFloat(std::stof(argv[2]));
+		aimove->move.y=DX::clampFloat(std::stof(argv[3]));
+		aimove->move.z=DX::clampFloat(std::stof(argv[4]));
+		aimove->move.yaw=DX::clampMove(std::stof(argv[5]));
+		aimove->move.pitch=DX::clampMove(std::stof(argv[6]));
+		aimove->move.roll=DX::clampMove(std::stof(argv[7]));
 		//Con::printf ("Set move variables for %d to x:%f y:%f z:%f yaw:%f pitch:%f roll:%f\n",aimove->id,aimove->move.x,aimove->move.y,aimove->move.z,aimove->move.yaw,aimove->move.pitch,aimove->move.roll);
 		return true;
 	}
@@ -360,7 +376,6 @@ __declspec(naked) void updateMoveHook()
 
 	bool conEnableNewAI(Linker::SimObject *obj, S32 argc, const char *argv[])
 	{
-
 		(*((unsigned int *)0x75e360))=(unsigned int)newAIMoveListGenerator;
 		return true;
 	}
@@ -433,17 +448,23 @@ __declspec(naked) void updateMoveHook()
 		Con::addMethodS("BinaryObject", "getbufferlength", &conBinaryObjectGetBufferLength, "Returns the length of the buffer", 2, 2);
 		Con::addMethodS("BinaryObject", "getbufferpointer", &conBinaryObjectGetBufferPointer, "Returns the buffer pointer", 2, 2);
 		Con::addMethodB("BinaryObject", "close", &conBinaryObjectClose, "Closes the binary object", 2, 2);
-		Con::addMethodS("NetConnection","getGhostIndex", &conGetGhostIndex, "Gets a ghost index for an object id", 3, 3);
+		Con::addMethodI("NetConnection","getGhostIndex", &conGetGhostIndex, "Gets a ghost index for an object id", 3, 3);
 		Con::addMethodB("NetConnection","forceUpdate", &conForceUpdate,"Forces an initial update for an object id", 3, 3);
-		Con::addMethodS("NetConnection","resolveGhostParent",&conResolveGhostParent,"Resolves a ghost index parent", 3, 3);
+		Con::addMethodI("NetConnection","resolveGhostParent",&conResolveGhostParent,"Resolves a ghost index parent", 3, 3);
 		Con::addMethodS(NULL,"floatToHex",&conFloatToHex,"converts float to hex",2,3);
-		Con::addMethodS("NetConnection","resolveGhost",&conResolveGhost,"Resolves an object from a ghost ID for ServerConnection", 3, 3);
+		Con::addMethodI("NetConnection","resolveGhost",&conResolveGhost,"Resolves an object from a ghost ID for ServerConnection", 3, 3);
 		Con::addMethodB(NULL,"clientCmdSetGhostTicks",&conclientCmdSetGhostTicks,"Client Command for disabling tick processing on ghost index",2,10);
 		Con::addMethodB(NULL,"clientCmdsetProcessTicks",&conclientCmdSetProcessTicks,"Client Command for disabling tick processing on ghost object",2,10);
 		// General
 		Con::addMethodS(NULL, "sprintf", &conSprintf,"Formats a string. See the C sprintf.", 2, 20);
 		Con::addMethodB(NULL, "tsExtensionUpdate", &conTSExtensionUpdate,"Updates the TSExtension.", 1, 1);
-
+		// Regex
+		Con::addMethodB(NULL, "reSearch", &reSearch,"reSearch(pattern, target): Searches for a pattern within the target string.", 3, 3);
+		Con::addMethodB(NULL, "reMatch", &reMatch,"reMatch(pattern, pattern): Attempts to match the entire target string to a pattern.", 3, 3);
+		Con::addMethodB(NULL, "reIterBegin", &reIterBegin,"reIterBegin(pattern, target): Begins an iterator search for patterns in the target string.", 3, 3);
+		Con::addMethodB(NULL, "reIterEnd", &reIterEnd,"reIterEnd(): Returns true when the iterator search ends.", 1, 1);
+		Con::addMethodS(NULL,"reIterNext",&reIterNext,"reIterNext(): Returns the next matched pattern in the string.", 1, 1);
+		Con::addMethodS(NULL,"reReplace",&reReplace,"reReplace(pattern, target, replace): Replaces the pattern within the target string with another string.", 4, 4);
 
 		// Add this Gvar to signify that TSExtension is active
 		static bool is_active = true;
