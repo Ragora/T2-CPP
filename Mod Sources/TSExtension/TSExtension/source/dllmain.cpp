@@ -460,7 +460,7 @@ __declspec(naked) void updateMoveHook()
 		Con::addMethodB(NULL, "tsExtensionUpdate", &conTSExtensionUpdate,"Updates the TSExtension.", 1, 1);
 		// Regex
 		Con::addMethodB(NULL, "reSearch", &reSearch,"reSearch(pattern, target): Searches for a pattern within the target string.", 3, 3);
-		Con::addMethodB(NULL, "reMatch", &reMatch,"reMatch(pattern, pattern): Attempts to match the entire target string to a pattern.", 3, 3);
+		Con::addMethodB(NULL, "reMatch", &reMatch,"reMatch(pattern, target): Attempts to match the entire target string to a pattern.", 3, 3);
 		Con::addMethodB(NULL, "reIterBegin", &reIterBegin,"reIterBegin(pattern, target): Begins an iterator search for patterns in the target string.", 3, 3);
 		Con::addMethodB(NULL, "reIterEnd", &reIterEnd,"reIterEnd(): Returns true when the iterator search ends.", 1, 1);
 		Con::addMethodS(NULL,"reIterNext",&reIterNext,"reIterNext(): Returns the next matched pattern in the string.", 1, 1);

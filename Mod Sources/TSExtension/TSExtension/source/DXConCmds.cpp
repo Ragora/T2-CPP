@@ -13,7 +13,7 @@ const char *conDumpHex(Linker::SimObject *obj, S32 argc, const char *argv[])
 	unsigned int addr=atoi(argv[1]);
 	DX::memToHex(addr,formatResult,atoi(argv[2]),dAtob(argv[3]));
 
-	char* result = new char[256];
+	char* result = Con::getReturnBuffer(256);
 	memcpy(result, formatResult, 256);
 
 	return result;
@@ -27,7 +27,7 @@ const char *conDumpUInt(Linker::SimObject *obj, S32 argc, const char *argv[])
 	unsigned int addr=atoi(argv[1]);
 	sprintf_s<256>(formatResult,"%d",DX::memToUInt(addr));
 
-	char* result = new char[256];
+	char* result = Con::getReturnBuffer(256);
 	memcpy(result, formatResult, 256);
 
 	return result;
@@ -41,7 +41,7 @@ const char *conDumpFloat(Linker::SimObject *obj, S32 argc, const char *argv[])
 	unsigned int addr = atoi(argv[1]);
 	sprintf_s<256>(formatResult,"%f",DX::memToFloat(addr));
 
-	char* result = new char[256];
+	char* result = Con::getReturnBuffer(256);
 	memcpy(result, formatResult, 256);
 
 	return result;
@@ -56,7 +56,7 @@ const char *conFloatToHex(Linker::SimObject *obj, S32 argc, const char *argv[])
 	unsigned int * inputptr3=(unsigned int*)inputptr2;
 	sprintf_s<256>(formatResult,"%08X",*inputptr3);
 
-	char* result = new char[256];
+	char* result =Con::getReturnBuffer(256);
 	memcpy(result, formatResult, 256);
 
 	return result;
@@ -68,7 +68,7 @@ const char *conGetAddress(Linker::SimObject *obj, S32 argc, const char *argv[])
 	char formatResult[256];
 	sprintf_s<256>(formatResult, "%x", obj);
 
-	char* result = new char[256];
+	char* result = Con::getReturnBuffer(256);
 	memcpy(result, formatResult, 256);
 
 	return result;
@@ -80,11 +80,12 @@ const char *conGetAddressDec(Linker::SimObject *obj, S32 argc, const char *argv[
 	char formatResult[256];
 	sprintf_s<256>(formatResult, "%d", obj);
 
-	char* result = new char[256];
+	char* result = Con::getReturnBuffer(256);
 	memcpy(result, formatResult, 256);
 
 	return result;
 }
+
 bool conShapeBaseSetCloakValue(Linker::SimObject *obj, S32 argc, const char* argv[])
 {
 	DX::ShapeBase operand = DX::ShapeBase((unsigned int)obj);
@@ -336,7 +337,7 @@ const char* conGrenadeProjectileGetPosition(Linker::SimObject *obj, S32 argc, co
 	DX::GrenadeProjectile grenade = DX::GrenadeProjectile((unsigned int)obj);
 	sprintf_s<256>(formatResult, "%f %f %f", grenade.position.x, grenade.position.y, grenade.position.z);
 
-	char* result = new char[256];
+	char* result = Con::getReturnBuffer(256);
 	memcpy(result, formatResult, 256);
 
 	return result;
@@ -348,7 +349,7 @@ const char* conGrenadeProjectileGetVelocity(Linker::SimObject *obj, S32 argc, co
 	DX::GrenadeProjectile grenade((unsigned int)obj);
 	sprintf_s<256>(formatResult, "%f %f %f", grenade.velocity.x, grenade.velocity.y, grenade.velocity.z);
 
-	char* result = new char[256];
+	char* result = Con::getReturnBuffer(256);
 	memcpy(result, formatResult, 256);
 
 	return result;
@@ -370,7 +371,7 @@ const char* conSprintf(Linker::SimObject *obj, S32 argc, const char* argv[])
 	va_list variable_args = reinterpret_cast<va_list>(input.data());
 	vsprintf_s<256>(formatResult, argv[1], variable_args);
 
-	char* result = new char[256];
+	char* result = Con::getReturnBuffer(256);
 	memcpy(result, formatResult, 256);
 
 	return result;
@@ -428,8 +429,11 @@ const char* reReplace(Linker::SimObject* obj, S32 argc, const char* argv[])
 				std::regex(argv[1], std::regex::extended), 
 				std::string(argv[3]));
 
-		char* result = new char[256];
-		memcpy(result, replaceResult.c_str(), replaceResult.size());
+		char* result = NULL;	
+		U32 bufferSize = replaceResult.size() + 1;
+
+		result = Con::getReturnBuffer(bufferSize);
+		memcpy(result, replaceResult.data(), bufferSize);
 
 		return result;
 	}
