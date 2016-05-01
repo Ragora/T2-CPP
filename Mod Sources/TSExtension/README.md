@@ -42,7 +42,7 @@ Ex: echo(reReplace("[0-9]", "123|456|789|12345678111111", "*"));
 #### reIterBegin(pattern, target)
 Begins a regular expression iterator through the target string, matching the input regular expression pattern. Use reIterNext to find all matching patterns and reIterEnd to determine if the iterator has ended.
 
-Ex: echo(reIterBegin("[A-z]+\\|", "ONE|TWO|THREE|FOUR|FIVE"));
+Ex: echo(reIterBegin("[A-z]+\\|?", "ONE|TWO|THREE|FOUR|FIVE"));
 
 #### reIterNext()
 Returns the next matching pattern in the input text specified in reIterBegin.
