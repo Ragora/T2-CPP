@@ -459,7 +459,6 @@ bool reIterBegin(Linker::SimObject* obj, S32 argc, const char* argv[])
 		currentRegex = std::regex(argv[1], std::regex::extended);
 		currentString = std::string(argv[2]);
 		matchBegin = std::sregex_iterator(currentString.begin(), currentString.end(), currentRegex);
-		matchEnd = std::sregex_iterator();
 		currentMatchIter = matchBegin;
 
 		return true;
@@ -480,8 +479,11 @@ bool reIterEnd(Linker::SimObject* obj, S32 argc, const char* argv[])
 
 const char* reIterNext(Linker::SimObject* obj, S32 argc, const char* argv[])
 {
+	if (currentMatchIter == matchEnd)
+		return "-1";
+
 	std::string currentResult = (*currentMatchIter).str();
 	++currentMatchIter;
 
-	return currentResult.c_str();
+	return currentResult.data();
 }
