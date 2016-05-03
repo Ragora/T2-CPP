@@ -408,6 +408,7 @@ __declspec(naked) void updateMoveHook()
 		// Init WSA
 		WSADATA wsadata;
 		WSAStartup(0x0202, &wsadata);
+
 		Con::addMethodS(NULL,"dumpHex",&conDumpHex,"dumpHex(addr,size,spaces)",4,5);
 		Con::addMethodS(NULL,"dumpDec",&conDumpUInt,"dumpDec(addr)",2,3);
 		Con::addMethodS(NULL,"dumpFloat",&conDumpFloat,"dumpFloat(addr)",2,3);
@@ -482,7 +483,9 @@ __declspec(naked) void updateMoveHook()
 		char dbclient[3]="\x90\x90";
 		char gboaonadd[8]="FF\x25\xAA\xAA\xAA\xAA";
 			//memPatch("42e05f",
+#ifdef MECH_MOVE_CODE
 		*((unsigned int*)(mechcode+1))=(unsigned int)&updatemovehookptr;
+#endif
 		*((unsigned int*)(dbpack+1))=(unsigned int)&DBpackData;
 		*((unsigned int*)(dbunpack+1))=(unsigned int)&DBunpackData;
 		*((unsigned int*)(gboaonadd+2))=(unsigned int)&gboaptr;

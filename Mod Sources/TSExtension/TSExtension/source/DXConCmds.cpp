@@ -485,5 +485,8 @@ const char* reIterNext(Linker::SimObject* obj, S32 argc, const char* argv[])
 	std::string currentResult = (*currentMatchIter).str();
 	++currentMatchIter;
 
-	return currentResult.data();
+	char* result = Con::getReturnBuffer(currentResult.size() + 1);
+	memcpy(result, currentResult.data(), currentResult.size() + 1);
+
+	return result;
 }
