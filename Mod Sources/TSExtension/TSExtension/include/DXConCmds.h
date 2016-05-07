@@ -68,6 +68,8 @@ bool conForceUpdate(Linker::SimObject *obj, S32 argc, const char* argv[]);
 // General Commands ---------------------------------
 const char* conSprintf(Linker::SimObject *obj, S32 argc, const char* argv[]);
 bool conTSExtensionUpdate(Linker::SimObject *obj, S32 argc, const char *argv[]);
+// memPatch Disabler -------------------------------
+bool disableMempatch(Linker::SimObject* obj, S32 argc, const char* argv[]);
 // Regex Commands ----------------------------------
 const char* reIterNext(Linker::SimObject* obj, S32 argc, const char* argv[]);
 bool reIterEnd(Linker::SimObject* obj, S32 argc, const char* argv[]);

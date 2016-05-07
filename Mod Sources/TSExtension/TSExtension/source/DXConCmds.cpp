@@ -377,6 +377,19 @@ const char* conSprintf(Linker::SimObject *obj, S32 argc, const char* argv[])
 	return result;
 }
 
+// memPatch Disabler
+bool memPatchStub(Linker::SimObject* obj, S32 argc, const char* argv[])
+{
+	Con::errorf(0, "TSExtension: Attempted usage of memPatch after disabling it!");
+	return false;
+}
+
+bool disableMempatch(Linker::SimObject* obj, S32 argc, const char* argv[])
+{
+	Con::addMethodB(NULL, "memPatch", &memPatchStub,"Currently not available.", 1, 1);
+	return true;
+}
+
 // RE Commands -----------------------------------
 
 #include <regex>

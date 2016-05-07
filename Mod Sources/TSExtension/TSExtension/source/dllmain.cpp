@@ -459,6 +459,8 @@ __declspec(naked) void updateMoveHook()
 		// General
 		Con::addMethodS(NULL, "sprintf", &conSprintf,"Formats a string. See the C sprintf.", 2, 20);
 		Con::addMethodB(NULL, "tsExtensionUpdate", &conTSExtensionUpdate,"Updates the TSExtension.", 1, 1);
+		// memPatch Disabler
+		Con::addMethodB(NULL, "disableMempatch", &disableMempatch,"Disables memPatch.", 1, 1);
 		// Regex
 		Con::addMethodB(NULL, "reSearch", &reSearch,"reSearch(pattern, target): Searches for a pattern within the target string.", 3, 3);
 		Con::addMethodB(NULL, "reMatch", &reMatch,"reMatch(pattern, target): Attempts to match the entire target string to a pattern.", 3, 3);
