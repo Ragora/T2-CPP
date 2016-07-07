@@ -250,7 +250,7 @@ bool conTSExtensionUpdate(Linker::SimObject *obj, S32 argc, const char *argv[])
 					}
 
 					connectionInfo->is_connected = false;
-					disconnections.insert(disconnections.end(), currentConnection.get());
+					disconnections.insert(disconnections.end(), std::unique_ptr<DX::TCPObject>(currentConnection.get()));
 					Con::errorf(0,"Got a send error! SimID: %u - Error %u", currentConnection->identifier, wsa_error);
 
 					break;
@@ -276,14 +276,14 @@ bool conTSExtensionUpdate(Linker::SimObject *obj, S32 argc, const char *argv[])
 		{
 			Con::errorf(0, "Got an error! %u - SimID %u", currentError, currentConnection.get()->identifier);
 
-			disconnections.insert(disconnections.end(), currentConnection.get());
+			disconnections.insert(disconnections.end(), std::unique_ptr<DX::TCPObject>(currentConnection.get()));
 		}
 		else if (data_length == 0)
 		{
 			Con::errorf(0, "Finished receiving?");
 
 			// Put us on the D/C list
-			disconnections.insert(disconnections.end(), currentConnection.get());
+			disconnections.insert(disconnections.end(), std::unique_ptr<DX::TCPObject>(currentConnection.get()));
 
 			// Stream the data into ::onLine
 			unsigned int current_start = 0;

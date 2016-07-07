@@ -399,9 +399,9 @@ bool reMatch(Linker::SimObject* obj, S32 argc, const char* argv[])
 	try
 	{
 		std::smatch match;
-
+		std::string tmps = std::string(argv[2]);
 		std::regex sequence(argv[1], std::regex::extended);
-		std::regex_match(std::string(argv[2]), match, sequence);
+		std::regex_match(tmps, match, sequence);
 
 		return !match.empty() && match.size() != 0;
 	}
@@ -421,7 +421,8 @@ bool reSearch(Linker::SimObject* obj, S32 argc, const char* argv[])
 		std::smatch match;
 
 		std::regex sequence(argv[1], std::regex::extended);
-		std::regex_search(std::string(argv[2]), match, sequence);
+		std::string tmps = std::string(argv[2]);
+		std::regex_search(tmps, match, sequence);
 
 		return !match.empty() && match.size() != 0;
 	}
