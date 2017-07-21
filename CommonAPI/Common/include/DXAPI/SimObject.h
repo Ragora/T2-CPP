@@ -15,5 +15,7 @@ namespace DX
 		const unsigned int &identifier;
 		const unsigned int base_pointer_value;
 		const unsigned int &dataBlock;
+
+		char& mName;
 	};
 } // End NameSpace DX

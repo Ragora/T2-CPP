@@ -2,12 +2,17 @@
 //
 
 #include "BaseMod.h"
-
+#include <ModLoader\ModLoader.h>
 #include "LinkerAPI.h"
 #include "randomCmds.h"
 
 extern "C"
 {
+	BASEMOD_API unsigned int getModLoaderVersion(void)
+	{
+		return 0;
+	}
+
 	BASEMOD_API void ModInitialize(void)
 	{
 		Con::addMethodS(NULL,"getRandom",&conMRandom,"Random number generation based upon the Mersenne Twister algorithm.",1,3);
@@ -18,4 +23,19 @@ extern "C"
 
 		return;
 	}
+
+	BASEMOD_API const char* getManagementName(void) 
+	{
+		return "RandomMod";
+	}
+
+	BASEMOD_API ModLoader::ModLoaderCallables* getModCallables(void)
+	{
+		ModLoader::ModLoaderCallables* result = new ModLoader::ModLoaderCallables();
+		result->mInitializeModPointer = ModInitialize;
+		result->mGetManagementName = getManagementName;
+		return result; 
+	}
+
+
 }

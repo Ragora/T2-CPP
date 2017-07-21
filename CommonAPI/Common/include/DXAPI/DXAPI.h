@@ -38,13 +38,25 @@ namespace DX
 	typedef void* UnresolvedObject;
 
 	const char *GetModPaths(void);
+
 	bool IsFile(const char *filename);
-	const char * StringTableInsert(const char * str,bool casesensitive) ;
+
+	const char * StringTableInsert(const char * str,bool casesensitive);
+
 	bool GetRelativePath(const char *filename, char *ret, int buffer_length);
+
 	bool GetRunningMod(char *ret, int buffer_length);
+
 	bool memPatch(unsigned int addr, unsigned char * data, unsigned int size);
+
 	bool memToHex(unsigned int addr, char * dst, int size, bool spaces);
+
 	unsigned int memToUInt(unsigned int addr);
+
 	float memToFloat(unsigned int addr);
+
 	bool SanitizeFileName(char *ret, int buffer_length);
+
+	//! Initializes all hooks for the engine.
+	void initializeHooks(void);
 } // End NameSpace DX

@@ -79,6 +79,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\DXAPI\AIConnection.h" />
     <ClInclude Include="include\DXAPI\DXAPI.h" />
     <ClInclude Include="include\DXAPI\FlyingVehicle.h" />
     <ClInclude Include="include\DXAPI\GameBase.h" />
@@ -98,8 +99,10 @@
     <ClInclude Include="include\DXAPI\TCPObject.h" />
     <ClInclude Include="include\DXAPI\Vehicle.h" />
     <ClInclude Include="include\LinkerAPI.h" />
+    <ClInclude Include="include\ModLoader\ModLoader.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="source\DXAPI\AIConnection.cpp" />
     <ClCompile Include="source\DXAPI\DXAPI.cpp" />
     <ClCompile Include="source\DXAPI\FlyingVehicle.cpp" />
     <ClCompile Include="source\DXAPI\GameBase.cpp" />

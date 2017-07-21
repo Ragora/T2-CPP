@@ -6,7 +6,9 @@
 #include <LinkerAPI.h>
 namespace DX
 {
-
+	/**
+	 *	@brief Move structure. 
+	 */
 	struct Move {
 		int px;
 		int py;
@@ -26,13 +28,14 @@ namespace DX
 		bool triggers[6];
 
 	};
+
 	struct AIMove {
 		unsigned int id;
 		Move move;
 		bool used;
 	};
+
 	float clampFloat(float in);
 	float clampMove(float in);
 	void generateNullMove(Move * ret);
-
 };

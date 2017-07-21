@@ -7,7 +7,7 @@
 namespace DX
 {
 	SimObject::SimObject(unsigned int obj) : identifier(*(unsigned int*)(obj + 32)), fieldDictionary(*(unsigned int*)(obj + 0x2C)), dataBlock(*(unsigned int*)(obj + 0x248)),
-	base_pointer_value(obj)
+	base_pointer_value(obj), mName(*(char*)(obj + 4))
 	{
 	}	
 
@@ -45,6 +45,7 @@ namespace DX
 
 		return result;
 	}
+
 	const char *SimObject::getFieldValue(const char *slotname)
 	{
 		void * getfieldvalueptr=(void *)0x435210;

@@ -23,6 +23,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WatchDog", "Mod Sources\Wat
 		{9B3A3214-400B-4245-85FD-EA12D5F791D4} = {9B3A3214-400B-4245-85FD-EA12D5F791D4}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PythonMod", "Mod Sources\PythonMod\PythonMod\PythonMod.vcxproj", "{2BF01D65-C8F6-4565-AB0A-9F73B2E3D6E3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -49,6 +51,10 @@ Global
 		{1C8B5AA4-B172-45DD-9D27-55F41B6F1755}.Debug|Win32.Build.0 = Debug|Win32
 		{1C8B5AA4-B172-45DD-9D27-55F41B6F1755}.Release|Win32.ActiveCfg = Release|Win32
 		{1C8B5AA4-B172-45DD-9D27-55F41B6F1755}.Release|Win32.Build.0 = Release|Win32
+		{2BF01D65-C8F6-4565-AB0A-9F73B2E3D6E3}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2BF01D65-C8F6-4565-AB0A-9F73B2E3D6E3}.Debug|Win32.Build.0 = Debug|Win32
+		{2BF01D65-C8F6-4565-AB0A-9F73B2E3D6E3}.Release|Win32.ActiveCfg = Release|Win32
+		{2BF01D65-C8F6-4565-AB0A-9F73B2E3D6E3}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

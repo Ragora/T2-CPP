@@ -33,6 +33,7 @@ namespace DX
 		}
 		return retval;
 	}
+
 	bool memPatch(unsigned int addr, unsigned char * data, unsigned int size){
 		DWORD oldprotect=0;
 		DWORD oldnewprotect=0;
@@ -41,6 +42,7 @@ namespace DX
 		VirtualProtect((void *)addr,size,oldprotect,&oldnewprotect);
 		return true;
 	}
+
 	float memToFloat(unsigned int addr){
 		DWORD oldprotect=0;
 		DWORD oldnewprotect=0;
@@ -51,6 +53,7 @@ namespace DX
 		VirtualProtect((void *)addr,4,oldprotect,&oldnewprotect);
 		return true;
 	}
+
 	unsigned int memToUInt(unsigned int addr){
 		DWORD oldprotect=0;
 		DWORD oldnewprotect=0;
@@ -61,6 +64,7 @@ namespace DX
 		VirtualProtect((void *)addr,4,oldprotect,&oldnewprotect);
 		return true;
 	}
+
 	bool memToHex(unsigned int addr, char * dst, int size, bool spaces=false){
 		DWORD oldprotect=0;
 		DWORD oldnewprotect=0;
@@ -80,6 +84,7 @@ namespace DX
 		strncpy(dst,outstr,255);
 		return true;
 	}
+
 	const char *GetModPaths(void)
 	{
 		int pointer = *(int*)0x9E8690;
@@ -182,5 +187,10 @@ namespace DX
 			}
 
 		return was_dirty;
+	}
+
+	void initializeHooks(void)
+	{
+
 	}
 }

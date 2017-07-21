@@ -11,3 +11,7 @@
 *.idb
 *.unsuccessfulbuild
 *.lastbuildstate
+*.cache
+*.ipch
+*.exp
+*.suo
