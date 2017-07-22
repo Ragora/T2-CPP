@@ -57,6 +57,6 @@ namespace DX
 
 	bool SanitizeFileName(char *ret, int buffer_length);
 
-	//! Initializes all hooks for the engine.
-	void initializeHooks(void);
+//	bool memPatch(void* address, void* payload, unsigned int payloadSize);
+	bool memPatch(unsigned int address, void* payload, unsigned int payloadSize);
 } // End NameSpace DX

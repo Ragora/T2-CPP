@@ -63,6 +63,36 @@ const char* congetInterpreterAddr(Linker::SimObject *obj, S32 argc, const char *
 		sprintf(test2,"B8%08XFFE0",endian(spr));
 		return test2;
 }
+
+void initializeHooks()
+{
+	// Replicates:
+	// memPatch("5BBBDC",getServPAddr());
+	// sprintf(test2,"B8 FFD089EC5DC3",endian(spr));
+	unsigned char serverProcessBytes[] = {
+		0xB8,
+
+		// Replacement processs
+		0x00,
+		0x00,
+		0x00,
+		0x00,
+
+		// Other code
+		0xFF,
+		0xD0,
+		0x89,
+		0xEC,
+		0x5D,
+		0xC3
+	};
+
+	// Write in the process address
+	unsigned int* serverProcessOffset = reinterpret_cast<unsigned int*>(&serverProcessBytes[1]);
+	*serverProcessOffset = reinterpret_cast<unsigned int>(*serverProcessReplacement);
+
+	DX::memPatch(0x5BBBDC, serverProcessBytes, sizeof(serverProcessBytes));
+}
 	
 
 class CImmCompoundEffect 
@@ -106,7 +136,7 @@ class CImmDevice
 				lpinitT2DLL(); // The function was loaded, call TribesNext and move on to postTN Startup
 
 			// Initialize all engine hooks
-			DX::initializeHooks();
+			initializeHooks();
 
 			return 0;
 		}

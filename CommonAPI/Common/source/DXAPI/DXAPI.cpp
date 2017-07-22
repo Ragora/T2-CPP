@@ -189,8 +189,28 @@ namespace DX
 		return was_dirty;
 	}
 
-	void initializeHooks(void)
+	bool memPatch(void* address, void* payload, unsigned int payloadSize)
 	{
+		DWORD oldProtect;
+		bool success = VirtualProtect(address, payloadSize, PAGE_EXECUTE_READWRITE, &oldProtect);
 
+		if (!success)
+			return false;
+
+		// Come on Microsoft... why can't anything you make actually be good.
+		// NOTE: This memcpy invocation was crashing the linker...
+		//memcpy(address, payload, payloadSize);
+
+		unsigned char* destination = reinterpret_cast<unsigned char*>(address);
+		unsigned char* sourceData = reinterpret_cast<unsigned char*>(payload);
+		for (unsigned int iteration = 0; iteration < payloadSize; ++iteration)
+			destination[iteration] = sourceData[iteration];
+
+		return true;
+	}
+
+	bool memPatch(unsigned int address, void* payload, unsigned int payloadSize)
+	{
+		return memPatch(reinterpret_cast<void*>(address), payload, payloadSize);
 	}
 }
