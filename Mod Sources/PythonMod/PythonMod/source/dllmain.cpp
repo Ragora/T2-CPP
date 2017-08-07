@@ -257,6 +257,8 @@ __declspec(dllexport) void ModInitialize(void)
 {
 	Con::addMethodB(NULL,"enableNewAI",&conEnableNewAI,"Enables the new Move Generation code for the AI", 1,4);
 	Con::addMethodB(NULL,"disableNewAI",&conDisableNewAI,"Disables the new Move Generation code for the AI", 1,4);
+
+	Py_SetProgramName("AIInterpreter");
 }
 	
 __declspec(dllexport) void ServerProcess(unsigned int deltaTime)

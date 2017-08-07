@@ -44,6 +44,7 @@ void *readIntptr=(void *)0x43BF10;
 void *writeIntptr=(void *)0x43BF60;
 void *writeStringptr=(void *)0x43C6D0;
 void *readStringptr=(void *)0x43C630;
+}
 
 
 
@@ -201,36 +202,57 @@ void DBunpackData(void *stream) {
 	}
 }
 
+#define TSEXTENSION_API __declspec( dllexport )
+#include <ModLoader\ModLoader.h>
 
 
 
+
+const char* conGuiTsCtrlProject(Linker::SimObject *obj,S32 argc, const char* argv[]) {
+	Linker::Point3F pt;
+	Linker::Point3F rt;
+	dSscanf(argv[2],"%g %g %g",&pt.x,&pt.y,&pt.z);
+	GuiTSCtrl_project(reinterpret_cast<GuiTSCtrl *>(obj),pt,&rt);
+	
+	char* buffer = Con::getReturnBuffer(255);
+	dSprintf(buffer,255,"%g %g %g",rt.x,rt.y,rt.z);
+
+	return buffer;
+}
 
 	
-
-	static S32 gravid=0;
-	static float movespeed=0.0;
-	__declspec(dllexport) void ServerProcess(unsigned int deltaTime)
-	{
-		//memPatch("602D1E","9090");
-		float pos[3];
-		float rot[4];
-		if (gravid!=0) {
-			if (movespeed != 0.0) {
-				float timeinseconds=(deltaTime/1000.0f);
-				void * objptr = Sim::findObject(gravid);
-				if ((unsigned int)(objptr)) {
-					DX::SceneObject newobj=DX::SceneObject((unsigned int)objptr);
-					newobj.getPosition(pos);
-					newobj.getRotation(rot);
-					pos[2]+=(movespeed*timeinseconds);
-					newobj.setPosition(pos);
-				}
+static S32 gravid=0;
+static float movespeed=0.0;
+__declspec(dllexport) void ServerProcess(unsigned int deltaTime)
+{
+	//memPatch("602D1E","9090");
+	float pos[3];
+	float rot[4];
+	if (gravid!=0) {
+		if (movespeed != 0.0) {
+			float timeinseconds=(deltaTime/1000.0f);
+			void * objptr = Sim::findObject(gravid);
+			if ((unsigned int)(objptr)) {
+				DX::SceneObject newobj=DX::SceneObject((unsigned int)objptr);
+				newobj.getPosition(pos);
+				newobj.getRotation(rot);
+				pos[2]+=(movespeed*timeinseconds);
+				newobj.setPosition(pos);
 			}
-
 		}
+
 	}
-	static unsigned int gboaptr =(unsigned int ) &GameBaseOnAddHook;
-	__declspec(dllexport) void ModInitialize(void)
+}
+static unsigned int gboaptr =(unsigned int ) &GameBaseOnAddHook;
+
+extern "C"
+{
+	TSEXTENSION_API unsigned int getModLoaderVersion(void)
+	{
+		return 0;
+	}
+
+	TSEXTENSION_API void ModInitialize(void)
 	{
 		// Init WSA
 		WSADATA wsadata;
@@ -246,14 +268,15 @@ void DBunpackData(void *stream) {
 		Con::addMethodB("GrenadeProjectile", "explode", &conProjectileExplode,"Explodes the given projectile", 5, 5);
 		Con::addMethodB("GameBase","setProcessTicks",&conSetProcessTicks,"Sets the flag for processing ticks or not", 3, 3);
 		Con::addMethodB("Projectile", "explode", &conProjectileExplode,"Explodes the given projectile", 5, 5);
-		Con::addMethodB(NULL,"setAIMove",&consetMove,"setAIMove(%aicon, x, y, z, yaw, pitch, roll)", 2,10);
-		Con::addMethodB(NULL,"setAITrigger", &consetTrigger, "setAITrigger(%aicon,triggerid,value);",2,6);
+		//Con::addMethodB(NULL,"setAIMove",&consetMove,"setAIMove(%aicon, x, y, z, yaw, pitch, roll)", 2,10);
+		//Con::addMethodB(NULL,"setAITrigger", &consetTrigger, "setAITrigger(%aicon,triggerid,value);",2,6);
 		Con::addMethodS("GrenadeProjectile", "getposition", &conGrenadeProjectileGetPosition,"Accurately gets the position of the GrenadeProjectile", 2, 2);
 		Con::addMethodS("GrenadeProjectile", "getvelocity", &conGrenadeProjectileGetVelocity,"Gets the velocity of the GrenadeProjectile", 2, 2);
 		Con::addMethodB("Projectile", "makeNerf", &conProjectileMakeNerf,"Makes the Projectile deal no damage", 2, 2);
 
 		// TCPObject
 #ifdef ENABLE_TCPOBJECT
+		/*
 		Con::addMethodS("TCPObject", "connect", &conTCPObjectConnect, "Connects to a remote server", 3, 3);
 		Con::addMethodB("TCPObject", "send", &conTCPObjectSend, "Sends data to the remote server", 3, 3);
 		Con::addMethodB("TCPObject", "disconnect", &conTCPObjectDisconnect, "Disconnects from the remote server", 2, 2);
@@ -264,6 +287,7 @@ void DBunpackData(void *stream) {
 		Con::addMethodB("HTTPObject", "send", &conHTTPObjectDoNothing, "Disconnects from the remote server", 6, 6);
 		Con::addMethodB("HTTPObject", "connect", &conHTTPObjectDoNothing, "Disconnects from the remote server", 6, 6);
 		Con::addMethodB("HTTPObject", "listen", &conHTTPObjectDoNothing, "Disconnects from the remote server", 6, 6);
+		*/
 #endif
 		// BinaryObject
 		Con::addMethodB("BinaryObject", "openforread", &conBinaryObjectOpenForRead, "Opens the input file for reading binary data", 3, 4);
@@ -282,6 +306,7 @@ void DBunpackData(void *stream) {
 		Con::addMethodI("NetConnection","resolveGhost",&conResolveGhost,"Resolves an object from a ghost ID for ServerConnection", 3, 3);
 		Con::addMethodB(NULL,"clientCmdSetGhostTicks",&conclientCmdSetGhostTicks,"Client Command for disabling tick processing on ghost index",2,10);
 		Con::addMethodB(NULL,"clientCmdsetProcessTicks",&conclientCmdSetProcessTicks,"Client Command for disabling tick processing on ghost object",2,10);
+
 		// General
 		Con::addMethodS(NULL, "sprintf", &conSprintf,"Formats a string. See the C sprintf.", 2, 20);
 		Con::addMethodB(NULL, "tsExtensionUpdate", &conTSExtensionUpdate,"Updates the TSExtension.", 1, 1);
@@ -294,6 +319,9 @@ void DBunpackData(void *stream) {
 		Con::addMethodB(NULL, "reIterEnd", &reIterEnd,"reIterEnd(): Returns true when the iterator search ends.", 1, 1);
 		Con::addMethodS(NULL,"reIterNext",&reIterNext,"reIterNext(): Returns the next matched pattern in the string.", 1, 1);
 		Con::addMethodS(NULL,"reReplace",&reReplace,"reReplace(pattern, target, replace): Replaces the pattern within the target string with another string.", 4, 4);
+
+		// GUI projection
+		Con::addMethodS("GuiTSCtrl","project",&conGuiTsCtrlProject,"projects a world space vector to on-screen position",3,3);
 
 		// Add this Gvar to signify that TSExtension is active
 		static bool is_active = true;
@@ -327,6 +355,22 @@ void DBunpackData(void *stream) {
 		DX::memPatch(0x438415,(unsigned char *)dbpatch3,7);
 		DX::memPatch(0x5E29F0,(unsigned char *)gboaonadd,7);
 #endif
-		Py_SetProgramName("AIInterpreter");
+
+
+		return;
+	}
+
+	TSEXTENSION_API const char* getManagementName(void) 
+	{
+		return "TSExtension";
+	}
+
+	TSEXTENSION_API ModLoader::ModLoaderCallables* getModCallables(void)
+	{
+		ModLoader::ModLoaderCallables* result = new ModLoader::ModLoaderCallables();
+		result->mInitializeModPointer = ModInitialize;
+		result->mGetManagementName = getManagementName;
+		return result; 
 	}
 }
+
