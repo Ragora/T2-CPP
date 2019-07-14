@@ -67,8 +67,8 @@ const char* congetInterpreterAddr(Linker::SimObject *obj, S32 argc, const char *
 void initializeHooks()
 {
 	// Replicates:
-	// memPatch("5BBBDC",getServPAddr());
-	// sprintf(test2,"B8 FFD089EC5DC3",endian(spr));
+	// memPatch("5240FD", "B00190");
+	// memPatch("5BBBDC", getServPAddr());
 	unsigned char serverProcessBytes[] = {
 		0xB8,
 
@@ -91,6 +91,13 @@ void initializeHooks()
 	unsigned int* serverProcessOffset = reinterpret_cast<unsigned int*>(&serverProcessBytes[1]);
 	*serverProcessOffset = reinterpret_cast<unsigned int>(*serverProcessReplacement);
 
+	unsigned char addressBytes[] = {
+		0xB0,
+		0x01,
+		0x90
+	};
+
+	DX::memPatch(0x5240FD, addressBytes, sizeof(addressBytes));
 	DX::memPatch(0x5BBBDC, serverProcessBytes, sizeof(serverProcessBytes));
 }
 	
@@ -124,16 +131,6 @@ class CImmDevice
 			HINSTANCE hDLL = NULL;
 			LPINITT2DLL lpinitT2DLL = NULL;
 			hDLL = LoadLibrary(L"tribesnext.dll"); // AfxLoadLibrary is probably better.
-
-			if (hDLL == NULL)
-				return 0; // The DLL doesn't exist
-			else
-				lpinitT2DLL = (LPINITT2DLL)GetProcAddress(hDLL, "_Z9initT2Dllv"); // Attempt to load our entry point
-
-			if (lpinitT2DLL == NULL)
-				return 0; // Unable to load entry point
-			else
-				lpinitT2DLL(); // The function was loaded, call TribesNext and move on to postTN Startup
 
 			// Initialize all engine hooks
 			initializeHooks();

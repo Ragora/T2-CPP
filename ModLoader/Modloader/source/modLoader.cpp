@@ -23,8 +23,6 @@ void serverProcessReplacement(unsigned int timeDelta)
 			currentCallables->mServerProcessPointer(timeDelta);
 	}
 
-	Con::errorf(0, "Bla -bla blallaaa");
-
 	__asm 
 	{
 		mov ecx,serverthisptr
