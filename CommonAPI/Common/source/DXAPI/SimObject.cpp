@@ -11,7 +11,8 @@ namespace DX
 		fieldDictionary(MEMBER_FIELD(obj, unsigned int, 0x2C)), 
 		dataBlock(MEMBER_FIELD(obj, unsigned int, 0x248)),
 		base_pointer_value(MEMBER_FIELD(obj, unsigned int, 0)),
-		mName(MEMBER_FIELD(obj, char, 4))
+		mName(MEMBER_FIELD(obj, char, 4)),
+		type(MEMBER_FIELD(obj, TypeMasks, 0x28))
 	{
 	}	
 
