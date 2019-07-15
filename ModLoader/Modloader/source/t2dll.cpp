@@ -126,12 +126,6 @@ class CImmDevice
 			Con::addMethodS(NULL, "getModuAddr",&congetModuAddr,"Gets the memPatch data for the MODULO operator routine",1,1); // memPatch("42D89D",getModuAddr());
 			Con::addMethodS(NULL, "getInterAddr", &congetInterpreterAddr, "Gets the memPatch data for the interpreter switchtable",1,1); // memPatch("42CED1",getInterAddr());
 
-			// Load the original TribesNext DLL if available
-			typedef void (*LPINITT2DLL)(void);
-			HINSTANCE hDLL = NULL;
-			LPINITT2DLL lpinitT2DLL = NULL;
-			hDLL = LoadLibrary(L"tribesnext.dll"); // AfxLoadLibrary is probably better.
-
 			// Initialize all engine hooks
 			initializeHooks();
 

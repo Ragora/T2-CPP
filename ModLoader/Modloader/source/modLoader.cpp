@@ -9,6 +9,8 @@
 
 //! A vector of mod callables.
 static std::vector<ModLoader::ModLoaderCallables*> sModCallables;
+//! A vector of mod DLL handles.
+static std::vector<HMODULE> sModHandles;
 
 void serverProcessReplacement(unsigned int timeDelta) 
 {
@@ -38,6 +40,7 @@ bool conUnloadLoadMod(Linker::SimObject *obj,S32 argc, const char* argv[])
 {
 	const char* targetName = argv[1];
 
+	unsigned int modIndex = 0;
 	for (auto it = sModCallables.begin(); it != sModCallables.end(); it++)
 	{
 		ModLoader::ModLoaderCallables* currentMod = *it;
@@ -46,9 +49,16 @@ bool conUnloadLoadMod(Linker::SimObject *obj,S32 argc, const char* argv[])
 			// Deinitialize the mod and remove it from the list.
 			if (currentMod->mDeinitializeModPointer != NULL)
 				currentMod->mDeinitializeModPointer();
+
+			// FIXME: Create a structure to track mod data runtime
 			sModCallables.erase(it);
+			// FIXME: This will cause crashes because mods currently don't actually fully unload.
+			// FreeLibrary(sModHandles[modIndex]);
+			sModHandles.erase(sModHandles.begin() + modIndex);
 			return true;
 		}
+
+		++modIndex;
 	}
 
 	// Something weird happened.
@@ -118,5 +128,6 @@ bool conLoadMod(Linker::SimObject *obj,S32 argc, const char* argv[])
 		callables->mInitializeModPointer();
 
 	sModCallables.push_back(callables);
+	sModHandles.push_back(hDLL);
 	return true;
 }
