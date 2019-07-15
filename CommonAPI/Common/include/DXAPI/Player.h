@@ -11,11 +11,6 @@ namespace DX
 	public:
 		Player(unsigned int obj);
 
-		//! Object Name
-		const char *name;
-		//! Object ID
-		const unsigned int &id;
-
 		//! Player Object Jetting State (readonly, writing it doesn't do anything)
 		const bool &is_jetting;
 		//! Player Object Jumping State (readonly, writing it doesn't do anything)

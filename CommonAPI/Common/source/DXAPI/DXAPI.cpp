@@ -180,7 +180,7 @@ namespace DX
 			if (ret[iteration] == '.' || ret[iteration] == '\\' || ret[iteration] == '/' || ret[iteration] == '~')
 			{
 				was_dirty = true;
-				ret[iteration] == 0x20; // In the event the occurence is at the very end
+				ret[iteration] = 0x20; // In the event the occurence is at the very end
 
 				for (unsigned int replace_iteration = iteration; replace_iteration < strlen(ret); replace_iteration++)
 					ret[replace_iteration] = ret[replace_iteration + 1];

@@ -6,6 +6,4 @@ namespace DX
 	{
 
 	}
-
-
 } // End NameSpace DX

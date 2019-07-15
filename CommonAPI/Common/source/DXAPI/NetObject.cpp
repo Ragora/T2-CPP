@@ -2,11 +2,12 @@
 
 namespace DX
 {
-	NetObject::NetObject(unsigned int obj) : net_flags(*(unsigned int*)(obj + 64)),
-	SimObject(obj)
+	NetObject::NetObject(unsigned int obj) : SimObject(obj),
+		net_flags(MEMBER_FIELD(obj, unsigned int, 64))
 	{
 
 	}
+
 	void NetObject::setMaskBits(unsigned int bits){
 		unsigned int localbits=bits;
 		unsigned int bpv = this->base_pointer_value;
@@ -18,6 +19,7 @@ namespace DX
 			call eax
 		};
 	}
+
 	void NetObject::clearMaskBits(unsigned int bits){
 		unsigned int localbits=bits;
 		unsigned int bpv = this->base_pointer_value;

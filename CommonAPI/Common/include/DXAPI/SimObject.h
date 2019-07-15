@@ -1,5 +1,9 @@
 #pragma once
 
+#define MEMBER_POINTER(obj, type, offset) (type*)(obj + offset)
+#define MEMBER_FIELD(obj, type, offset) *(type*)(obj + offset)
+#define MEMBER_POINT3F(obj, offset, spacing) MEMBER_FIELD(obj, float, offset), MEMBER_FIELD(obj, float, offset + spacing), MEMBER_FIELD(obj, float, offset + (spacing * 2))
+
 namespace DX
 {
 	class SimObject

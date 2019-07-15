@@ -3,9 +3,12 @@
 namespace DX
 {
 	ShapeBase::ShapeBase(unsigned int obj) : GameBase(obj),
-	heat_level(*(float*)(obj + 1972)), cloak_level(*(float*)(obj+0x810)), cloaked(*(bool*)(obj+0x80D))
+		heat_level(MEMBER_FIELD(obj, float, 1972)),
+		cloak_level(MEMBER_FIELD(obj, float, 0x810)),
+		cloaked(MEMBER_FIELD(obj, bool, 0x80D))
 	{
 	}
+
 	void ShapeBase::setMaskBits(int value){
 		unsigned int addr=this->base_pointer_value;
 		unsigned int bits=value;

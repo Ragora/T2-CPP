@@ -6,8 +6,12 @@
 
 namespace DX
 {
-	SimObject::SimObject(unsigned int obj) : identifier(*(unsigned int*)(obj + 32)), fieldDictionary(*(unsigned int*)(obj + 0x2C)), dataBlock(*(unsigned int*)(obj + 0x248)),
-	base_pointer_value(obj), mName(*(char*)(obj + 4))
+	SimObject::SimObject(unsigned int obj) : 
+		identifier(MEMBER_FIELD(obj, unsigned int, 32)),
+		fieldDictionary(MEMBER_FIELD(obj, unsigned int, 0x2C)), 
+		dataBlock(MEMBER_FIELD(obj, unsigned int, 0x248)),
+		base_pointer_value(MEMBER_FIELD(obj, unsigned int, 0)),
+		mName(MEMBER_FIELD(obj, char, 4))
 	{
 	}	
 

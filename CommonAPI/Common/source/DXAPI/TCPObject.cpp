@@ -2,8 +2,8 @@
 
 namespace DX
 {
-	TCPObject::TCPObject(unsigned int obj): state(*(unsigned int*)(obj + 56)),
-	SimObject(obj)
+	TCPObject::TCPObject(unsigned int obj) : SimObject(obj),
+		state(MEMBER_FIELD(obj, unsigned int, 56))
 	{
 	}
 }
