@@ -34,15 +34,6 @@ namespace DX
 		return retval;
 	}
 
-	bool memPatch(unsigned int addr, unsigned char * data, unsigned int size){
-		DWORD oldprotect=0;
-		DWORD oldnewprotect=0;
-		VirtualProtect((void *)addr,size,PAGE_EXECUTE_READWRITE,&oldprotect);
-		memcpy((void *)addr,(void*) data,size);
-		VirtualProtect((void *)addr,size,oldprotect,&oldnewprotect);
-		return true;
-	}
-
 	float memToFloat(unsigned int addr){
 		DWORD oldprotect=0;
 		DWORD oldnewprotect=0;
@@ -73,15 +64,16 @@ namespace DX
 		VirtualProtect((void *)addr,size,PAGE_EXECUTE_READWRITE,&oldprotect);
 		for (int i=0; i<size; i++) {
 			if (spaces==true) {
-				sprintf(hexdigits,"%02X ",*((unsigned char*)addr+i));
+				sprintf_s<20>(hexdigits,"%02X ",*((unsigned char*)addr+i));
 			} else {
-				sprintf(hexdigits,"%02X",*((unsigned char*)addr+i));
+				sprintf_s<20>(hexdigits,"%02X",*((unsigned char*)addr+i));
 			}
-			strncat(outstr,hexdigits,254-strlen(hexdigits));
+			strncat_s(outstr, 256, hexdigits, 254 - strlen(hexdigits));
 
 		}
 		VirtualProtect((void *)addr,size,oldprotect,&oldnewprotect);
-		strncpy(dst,outstr,255);
+
+		strncpy_s(dst, 256, outstr, 255);
 		return true;
 	}
 
@@ -141,8 +133,9 @@ namespace DX
 				sprintf_s(ret, buffer_length, "%s/%s", modname, filename);
 				
 				// Check if it exists
-				FILE *handle = fopen(ret, "r");
-				if (handle)
+				FILE* handle;
+				errno_t error = fopen_s(&handle, ret, "r");
+				if (handle && !error)
 				{
 					fclose(handle);
 					delete[] modpaths_temp;
@@ -197,20 +190,19 @@ namespace DX
 		if (!success)
 			return false;
 
-		// Come on Microsoft... why can't anything you make actually be good.
-		// NOTE: This memcpy invocation was crashing the linker...
-		//memcpy(address, payload, payloadSize);
-
-		unsigned char* destination = reinterpret_cast<unsigned char*>(address);
-		unsigned char* sourceData = reinterpret_cast<unsigned char*>(payload);
-		for (unsigned int iteration = 0; iteration < payloadSize; ++iteration)
-			destination[iteration] = sourceData[iteration];
-
-		return true;
+		DWORD newProtect;
+		memcpy(address, payload, payloadSize);
+		success = VirtualProtect(address, payloadSize, oldProtect, &newProtect);
+		return success;
 	}
 
 	bool memPatch(unsigned int address, void* payload, unsigned int payloadSize)
 	{
 		return memPatch(reinterpret_cast<void*>(address), payload, payloadSize);
+	}
+
+	bool memPatch(unsigned int address, unsigned char* data, unsigned int size)
+	{
+		return memPatch(reinterpret_cast<void*>(address), reinterpret_cast<void*>(data), size);
 	}
 }
